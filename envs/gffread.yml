@@ -1,0 +1,6 @@
+name: eukannot-gffread
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - gffread=0.12.7

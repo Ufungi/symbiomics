@@ -1,0 +1,6 @@
+name: eukannot-htseq
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - htseq=2.0.5

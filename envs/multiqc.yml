@@ -1,0 +1,6 @@
+name: eukannot-multiqc
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - multiqc=1.25.1

@@ -1,0 +1,7 @@
+# eukannot multi-genome batch table.
+# One row = one annotation project. `extra` is a ';'-separated key=value list of
+# parameter overrides, validated against the schema -- an unknown key is a hard
+# error, so a typo cannot silently no-op.
+genome_id	fasta	species	taxid	taxon	busco_lineage	premasked	masker	proteins	reference_gff	rnaseq_sheet	locus_tag	extra
+Tmat	/data/snyoo/Transcriptome/Trima/ASM2607553_masked_nuc.fasta	Tricholoma_matsutake	40145	fungi	basidiomycota_odb12	true	auto	odb12:Fungi	-	samples_tmat.tsv	TMAT	-
+Pinde	/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.genome.fasta	Pinus_densiflora	3350	plant	embryophyta_odb12	false	red	odb12:Viridiplantae	/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.gff3	samples_pinde.tsv	PDEN	hisat2_index=/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.genome;genome_size_class=huge;clade=gymnosperm

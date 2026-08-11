@@ -1,0 +1,8 @@
+# Named reference proteomes with per-row roles and weights.
+# `weight` maps into the AHRD blast-database weighting; `use_for` decides which
+# stages consume the row. This table is what keeps the final GFF3 from being
+# half "hypothetical protein".
+ref_id	species	taxid	protein_fasta	gff3	weight	use_for
+sprot	UniProtKB/Swiss-Prot	-	/data/genome/db/Swiss-prot/uniprot_sprot.fasta	-	100	ahrd,upimapi
+piab	Picea_abies	3329	${db_dir}/refs/Pabies1.0.faa	-	50	ahrd,galba,orthofinder
+pita	Pinus_taeda	3352	${db_dir}/refs/Ptaeda2.0.faa	-	50	galba,orthofinder

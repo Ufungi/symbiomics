@@ -1,0 +1,6 @@
+name: eukannot-agat
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - agat=1.4.0

@@ -1,0 +1,10 @@
+name: eukannot-hisat2-samtools
+# hisat2 pipes directly into samtools so that no SAM is ever written to disk;
+# both tools therefore have to live in the same environment.
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - hisat2=2.2.1
+  - samtools=1.21
+  - htslib=1.21

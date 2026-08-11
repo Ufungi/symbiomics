@@ -1,0 +1,5 @@
+# L1 smoke-test samplesheet. Exercises SE, explicit PE, and inferred PE.
+sample_id	layout	fastq_1	fastq_2	strandedness	condition	replicate	read_type	bam	genome_id	use_for
+testSE	SE	/data/snyoo/eukannot/tests/data/test_se.fastq.gz	-	unstranded	ctrl	1	short	-	-	all
+testPE	PE	/data/snyoo/eukannot/tests/data/test_pe_R1.fastq.gz	/data/snyoo/eukannot/tests/data/test_pe_R2.fastq.gz	unstranded	trt	1	short	-	-	all
+testPEauto	-	/data/snyoo/eukannot/tests/data/test_pe_R1.fastq.gz	-	auto	trt	2	short	-	-	all

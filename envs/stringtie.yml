@@ -1,0 +1,6 @@
+name: eukannot-stringtie
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - stringtie=3.0.0

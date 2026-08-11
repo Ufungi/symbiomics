@@ -1,0 +1,14 @@
+# container	pin_type	checked
+https://depot.galaxyproject.org/singularity/agat:1.4.0--pl5321hdfd78af_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/fastp:0.23.4--h5f740d0_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/gffread:0.12.7--hdcf5f25_4	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/hisat2:2.2.1--h503566f_8	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/htseq:2.1.2--py310ha9eae8f_3	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/multiqc:1.25.1--pyhdfd78af_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/pysam:0.24.0--py310h4a09ff2_1	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/samtools:1.21--h50ea8bc_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/seqkit:2.8.2--h9ee0642_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/stringtie:3.0.0--h29c0135_0	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/subread:2.0.6--he4a0461_2	http-200	2026-08-11
+https://depot.galaxyproject.org/singularity/trim-galore:0.6.10--hdfd78af_0	http-200	2026-08-11
