@@ -8,6 +8,7 @@
 //
 
 include { STRINGTIE_ASSEMBLE; STRINGTIE_MERGE } from '../../../modules/local/quantify'
+include { INSPECT_ANNOTATION                  } from '../../../modules/local/quantify'
 include { FEATURECOUNTS; HTSEQ_COUNT          } from '../../../modules/local/quantify'
 include { MERGE_COUNTS                        } from '../../../modules/local/quantify'
 include { MERGE_COUNTS as MERGE_COUNTS_HTSEQ  } from '../../../modules/local/quantify'
@@ -54,8 +55,18 @@ workflow QUANTIFY {
         .collectFile(name: 'strandedness.tsv', sort: true)
         .ifEmpty(file("${projectDir}/assets/NO_FILE"))
 
+    // Published GFF3s vary more than the counters assume. Rather than hardcode
+    // -t exon -g gene_id and fail opaquely on a file that uses something else,
+    // inspect the annotation and count on what it actually contains.
+    INSPECT_ANNOTATION(annotation)
+    ch_versions = ch_versions.mix(INSPECT_ANNOTATION.out.versions)
+
+    spec = INSPECT_ANNOTATION.out.spec
+        .map { json -> new groovy.json.JsonSlurperClassic().parseText(json.text) }
+        .first()
+
     if( params.counter in ['featurecounts', 'both'] ) {
-        FEATURECOUNTS(bam, annotation)
+        FEATURECOUNTS(bam, annotation, spec)
         ch_versions = ch_versions.mix(FEATURECOUNTS.out.versions.first())
         ch_multiqc  = ch_multiqc.mix(FEATURECOUNTS.out.summary.map { _meta, s -> s })
 
@@ -69,7 +80,7 @@ workflow QUANTIFY {
     }
 
     if( params.counter in ['htseq', 'both'] ) {
-        HTSEQ_COUNT(bam, annotation)
+        HTSEQ_COUNT(bam, annotation, spec)
         ch_versions = ch_versions.mix(HTSEQ_COUNT.out.versions.first())
 
         MERGE_COUNTS_HTSEQ(

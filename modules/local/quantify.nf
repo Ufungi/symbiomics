@@ -93,6 +93,38 @@ process STRINGTIE_MERGE {
     """
 }
 
+process INSPECT_ANNOTATION {
+    label 'process_single'
+    tag "${annotation.name}"
+
+    input:
+    path annotation
+
+    output:
+    path 'annotation_spec.json', emit: spec
+    path 'versions.yml'        , emit: versions
+
+    script:
+    """
+    inspect_annotation.py \\
+        --annotation '${annotation}' \\
+        --want-feature '${params.count_feature}' \\
+        --want-attribute '${params.count_attribute}' \\
+        --out annotation_spec.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    echo '{"feature":"exon","attribute":"gene_id","n_groups":0,"notes":[]}' > annotation_spec.json
+    echo '"${task.process}": {python: stub}' > versions.yml
+    """
+}
+
 process FEATURECOUNTS {
     label 'process_medium'
     tag "${meta.id}"
@@ -100,6 +132,7 @@ process FEATURECOUNTS {
     input:
     tuple val(meta), path(bam), path(index)
     path  annotation
+    val   spec          // [feature: ..., attribute: ...] from INSPECT_ANNOTATION
 
     output:
     tuple val(meta), path('*.featureCounts.txt')        , emit: counts
@@ -113,9 +146,9 @@ process FEATURECOUNTS {
     """
     # An annotation with no countable features makes featureCounts exit 255 with
     # a wall of banner text. Say what is actually wrong instead.
-    if ! awk -F'\\t' -v t=${params.count_feature} \\
+    if ! awk -F'\\t' -v t=${spec.feature} \\
          '\$1 !~ /^#/ && \$3 == t { found = 1; exit } END { exit !found }' '${annotation}'; then
-        echo "ERROR ~ [quantify] ${annotation} contains no '${params.count_feature}' features." >&2
+        echo "ERROR ~ [quantify] ${annotation} contains no '${spec.feature}' features." >&2
         echo "        Nothing can be counted against it. If this is a StringTie merge," >&2
         echo "        no sample yielded transcripts; check 45_assemble/ and the alignment rates." >&2
         exit 1
@@ -123,7 +156,7 @@ process FEATURECOUNTS {
 
     featureCounts \\
         -T ${task.cpus} ${paired} ${multi} \\
-        -t ${params.count_feature} -g ${params.count_attribute} \\
+        -t ${spec.feature} -g ${spec.attribute} \\
         -s ${s} -F GTF \\
         -a '${annotation}' -o ${meta.id}.featureCounts.txt '${bam}'
 
@@ -148,6 +181,7 @@ process HTSEQ_COUNT {
     input:
     tuple val(meta), path(bam), path(index)
     path  annotation
+    val   spec
 
     output:
     tuple val(meta), path('*.htseq.tsv'), emit: counts
@@ -161,7 +195,7 @@ process HTSEQ_COUNT {
     # to -r name, which drops PE mates and blows up memory.
     htseq-count \\
         --order pos --stranded ${s} \\
-        --type ${params.count_feature} --idattr ${params.count_attribute} \\
+        --type ${spec.feature} --idattr ${spec.attribute} \\
         --nprocesses ${task.cpus} \\
         --counts_output ${meta.id}.htseq.tsv \\
         '${bam}' '${annotation}'
