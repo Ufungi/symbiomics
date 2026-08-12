@@ -12,8 +12,11 @@
 nextflow.enable.dsl = 2
 
 include { EUKANNOT     } from './workflows/eukannot'
+include { FUNCTIONAL   } from './workflows/functional'
 include { GENOME_PREP  } from './subworkflows/local/genome_prep'
 include { INPUT_CHECK_WF } from './subworkflows/local/input_check'
+include { HAPLOTYPE_PAIRING } from './subworkflows/local/haplotype_pairing'
+include { INSPECT_VARIATION_FILE } from './modules/local/variation'
 
 def helpMessage() {
     log.info """
@@ -54,14 +57,21 @@ workflow {
         helpMessage()
         return
     }
-    if( !(params.genome ?: params.fasta) ) {
+    // --genome is not required for the two paths that operate on sequences
+    // directly: --transcript_fasta (Salmon-only quantification, no alignment)
+    // and --proteome (functional annotation, no structural annotation at all).
+    def genome_free_ok = params.transcript_fasta || params.proteome
+    if( !(params.genome ?: params.fasta) && !genome_free_ok ) {
         helpMessage()
-        error "Missing required parameter: --genome (or --fasta)"
+        error "Missing required parameter: --genome (or --fasta) -- " +
+              "unless running --quant_engine salmon with --transcript_fasta, " +
+              "or -entry functional with --proteome."
     }
-    if( !params.input && !params.dry_run_strategy ) {
+    if( !params.input && !params.dry_run_strategy && !params.proteome ) {
         helpMessage()
         error "Missing required parameter: --input (a samplesheet). " +
-              "Use --dry_run_strategy to resolve a plan without one."
+              "Use --dry_run_strategy to resolve a plan without one, or " +
+              "-entry functional --proteome for protein-only functional annotation."
     }
     EUKANNOT()
 }
@@ -99,6 +109,56 @@ workflow strategy {
 
     GENOME_PREP(Channel.value([ genome_meta, genome_file ]), evidence, index_bytes)
     GENOME_PREP.out.yml.view { it.text }
+}
+
+/*
+ * -entry functional -- protein-in functional annotation. No genome, no
+ * samplesheet: scripts/eukannot run . -entry functional --proteome p.faa
+ */
+workflow functional {
+    FUNCTIONAL()
+}
+
+/*
+ * -entry pairing -- HA<->HB assembly alignment (minimap2 + SyRI): a phased
+ * VCF for phASER and a gene-level allele-pairing table for the diploid Salmon
+ * EM split. Standalone so this expensive step runs once per genome pair and
+ * both downstream consumers (F6, F7) reuse its output.
+ */
+workflow pairing {
+    if( !params.genome_hb ) {
+        error "Missing required parameter: --genome_hb <second-haplotype genome fasta>"
+    }
+    ha = file(params.genome ?: params.fasta, checkIfExists: true)
+    hb = file(params.genome_hb, checkIfExists: true)
+    // Distinct sentinels: both can be "not given" at once, and staging two
+    // files literally named the same thing into one task dir collides.
+    gff_ha = params.gff3_ha ? file(params.gff3_ha, checkIfExists: true) : file("${projectDir}/assets/NO_FILE_GFF3_HA")
+    gff_hb = params.gff3_hb ? file(params.gff3_hb, checkIfExists: true) : file("${projectDir}/assets/NO_FILE_GFF3_HB")
+
+    HAPLOTYPE_PAIRING(
+        Channel.value(ha), Channel.value(hb),
+        Channel.value(gff_ha), Channel.value(gff_hb),
+        params.minimap_preset
+    )
+    HAPLOTYPE_PAIRING.out.phased_vcf.view   { "phased VCF: ${it}" }
+    HAPLOTYPE_PAIRING.out.allele_table.view { "allele pairing table: ${it}" }
+}
+
+/*
+ * -entry variation -- route 2 for the ASE phased VCF: probe the dataset's own
+ * resequencing variant file rather than compute one from HA/HB alignment.
+ * See docs/allele_specific_expression.md.
+ */
+workflow variation {
+    if( !params.resequencing_variation_file ) {
+        error "Missing required parameter: --resequencing_variation_file <path>"
+    }
+    INSPECT_VARIATION_FILE(
+        file(params.resequencing_variation_file, checkIfExists: true),
+        params.resequencing_accession ?: ''
+    )
+    INSPECT_VARIATION_FILE.out.vcf.view { "VCF: ${it}" }
 }
 
 workflow.onComplete {

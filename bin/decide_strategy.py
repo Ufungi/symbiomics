@@ -59,6 +59,7 @@ DEFAULTS = {
         "huge":  ["funannotate2", "galba"],
     },
     "star_blocked_above": 2_000_000_000,
+    "salmon_decoy_blocked_above": 5_000_000_000,
     "hisat2_large_index_above": 4_000_000_000,
     "hisat2_mm_index_above_gb": 8,
     "bai_max_contig": 536_870_912,
@@ -179,6 +180,8 @@ def main() -> int:
     ap.add_argument("--hisat2-index", default=None)
     ap.add_argument("--hisat2-index-bytes", type=int, default=0)
     ap.add_argument("--bam-index", default="auto")
+    ap.add_argument("--quant-engine", default="hisat2")
+    ap.add_argument("--salmon-decoy", default="auto")
 
     ap.add_argument("--has-rna", default="false")
     ap.add_argument("--has-protein", default="false")
@@ -369,6 +372,35 @@ def main() -> int:
         bam_reason = "all contigs are BAI-addressable; emitting both for tool compatibility"
         bam_source = "policy"
     decisions["bam_index"] = decision(bam_index, bam_reason, source=bam_source)
+
+    # --------------------------------------------------------- salmon decoy
+    # A decoy-aware index means indexing the transcriptome PLUS the full genome
+    # as a decoy -- reads from unannotated/repetitive regions land on the decoy
+    # instead of being forced onto the nearest transcript. Cheap at ordinary
+    # genome sizes; at `huge` it is a comparably heavy build to the HISAT2
+    # index itself, so it defaults off there and must be requested explicitly.
+    decoy_blocked = total_bp > policy["salmon_decoy_blocked_above"]
+    if args.salmon_decoy == "true" and decoy_blocked:
+        decisions["salmon_decoy"] = decision(
+            True,
+            f"explicitly requested despite genome size {total_bp/1e9:.2f} Gb "
+            f"exceeding the usual cutoff {policy['salmon_decoy_blocked_above']/1e9:.0f} Gb "
+            f"-- proceeding, but budget real build time for this",
+            source="user",
+        )
+    elif args.salmon_decoy in ("true", "false"):
+        decisions["salmon_decoy"] = decision(
+            args.salmon_decoy == "true", "explicitly requested", source="user")
+    else:
+        use_decoy = not decoy_blocked
+        decisions["salmon_decoy"] = decision(
+            use_decoy,
+            (f"genome {total_bp/1e9:.2f} Gb exceeds {policy['salmon_decoy_blocked_above']/1e9:.0f} Gb; "
+             f"a decoy-aware index would be a comparably heavy build to the HISAT2 index itself"
+             if decoy_blocked else
+             f"genome {total_bp/1e9:.2f} Gb; decoy-aware indexing is cheap at this size"),
+            escape=["--salmon_decoy true", "--salmon_decoy false"],
+        )
 
     # --------------------------------------------------------- evidence mode
     has_rna, has_protein, has_isoseq = flag(args.has_rna), flag(args.has_protein), flag(args.has_isoseq)

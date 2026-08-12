@@ -1,117 +1,270 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/platform-Linux-blue?logo=linux&logoColor=white" alt="Platform">
+  <img src="https://img.shields.io/badge/nextflow-%E2%89%A524.10-23aa62?logo=nextflow&logoColor=white" alt="Nextflow">
+  <img src="https://img.shields.io/badge/run%20with-singularity%20%7C%20docker%20%7C%20conda-blue?logo=singularity&logoColor=white" alt="Containers">
+  <img src="https://img.shields.io/badge/language-Nextflow%20%7C%20Python%20%7C%20Bash-informational?logo=gnu-bash&logoColor=white" alt="Language">
+  <img src="https://img.shields.io/badge/license-MIT-lightgrey" alt="License">
+</p>
+
 # eukannot
 
-A decision-driven Nextflow pipeline for eukaryote genome annotation and mRNA-seq
-quantification. Built to work on a 160 Mb fungal genome and a 22 Gb conifer
-genome with the same command.
+A decision-driven Nextflow pipeline for eukaryote mRNA-seq quantification and
+genome annotation. It reads the genome first, decides how to handle it, and
+tells you why — before spending a single core-hour.
 
-```
+```bash
 scripts/eukannot run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta --outdir results
 ```
 
-## What makes it different
+Built and verified against two very different targets: *Tricholoma matsutake*
+(161 Mb, softmasked fungal genome) and *Pinus densiflora* (21.74 Gb,
+haplotype-resolved conifer genome, 2,006 contigs, longest contig 2.008 Gb). The
+same command runs on both; the pipeline picks different tools underneath.
 
-Most annotation pipelines make you pick the tools. This one **decides, records
-why, and degrades gracefully**.
+---
 
-After reading the genome, a policy engine writes `strategy.yml`:
+## ✨ Key Features
 
-```yaml
-decisions:
-  masker:
-    choice: red
-    reason: "size_class=huge, taxon=plant; de-novo modelling does not finish at
-             this scale (measured: 52 h to an empty library on a 21.7 Gb conifer)"
-    alternatives: [repeatmodeler_subsample]
-    escape: ["--repeat_lib <fasta>", "--premasked", "--masker <name>"]
-    blocked_at_this_size: [earlgrey, edta]
-  bam_index:
-    choice: csi
-    reason: "longest contig 2,007,914,973 bp exceeds the BAI ceiling 536,870,912 bp"
-budget:
-  braker_sharded:
-    max_time: 240.h
-    on_exceed: continue_without
-    fallback: "drop braker_sharded; finish with the remaining tracks and record
-               the omission in the report"
+*   **A policy engine, not a tool list** — after measuring the genome,
+    [`decide_strategy.py`](bin/decide_strategy.py) writes `strategy.yml`
+    recording, for every choice, what will run, why, what was rejected, and
+    which flag overrides it. `-entry strategy` resolves the whole plan and
+    stops, so a multi-week run can be reviewed before it starts.
+*   **Graceful degradation, not brittle failure** — heavy tracks carry wall-clock
+    budgets. One that overruns is dropped, the run finishes with what is left,
+    and the omission is written into the report instead of being silently lost.
+*   **Align once** — one HISAT2 BAM channel forks to annotation evidence,
+    StringTie assembly and read counting, so a 63-sample project never
+    re-aligns the same reads twice.
+*   **Two quantification engines** — [HISAT2](https://github.com/DaehwanKimLab/hisat2)
+    for real alignments (needed for allele-specific expression and future
+    structural-annotation evidence), or [Salmon](https://github.com/COMBINE-lab/salmon)
+    for fast, bias-corrected, decoy-aware transcript quantification. Pick per run
+    with `--quant_engine`.
+*   **Structural annotation is optional, not assumed** — `-entry functional`
+    takes a protein FASTA straight to functional annotation. If a good gene
+    model already exists (as it does for *P. densiflora*), there is no need to
+    run BRAKER just to get back to where you started.
+*   **Annotation-free strandedness inference** — reads splice-junction motifs
+    (`GT..AG` / `CT..AC`) directly out of the genome, because at this point in
+    the pipeline there is no transcriptome yet to run Salmon- or RSeQC-style
+    inference against.
+*   **Haplotype-aware by design, not by accident** — a haplotype-resolved
+    diploid assembly breaks the one-read-one-locus assumption every counter is
+    built on. `docs/haplotypes.md` names the trap; the pipeline implements the
+    three defensible ways around it, including a real allele-specific-expression
+    workflow ([phASER](https://github.com/secastel/phaser) on
+    [WASP](https://github.com/bmvdgeijn/WASP)-filtered reads).
+
+---
+
+## Pipeline overview
+
+```
+samplesheet.tsv ──► INPUT_CHECK (SE/PE auto-detect) ─────────────────┐
+                                                                       │
+genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.yml ────┤
+                                                                       │
+                        ┌──────────────────────────────────────────────┘
+                        ▼
+              fastp ─► strandedness probe ─► HISAT2 ─► sort ─► CSI/BAI index
+                                                                       │
+                 ┌─────────────────────────────┬─────────────────────┼──────────────┐
+                 ▼                             ▼                     ▼              ▼
+          StringTie assemble          featureCounts / HTSeq    (evidence,     phASER ASE
+                                       or Salmon quant           v0.3+)        (optional,
+                                                                                haplotype-
+                                                                                resolved
+                                                                                genomes)
+                                              │
+                                              ▼
+                                        MultiQC report
+
+  ── independent path, no genome required ──
+  protein FASTA ──► -entry functional ──► taxon=fungi:  funannotate2 + f2a
+                                           taxon=other:  UPIMAPI + eggNOG-mapper +
+                                                          InterProScan + dbCAN + KofamScan
+                                        ──► product-name ladder ──► functional TSV/GFF3
 ```
 
-Three properties follow from that:
+---
 
-1. **Nothing is a black box.** Every choice carries its reason, the alternatives
-   it rejected, and the escape hatches that override it.
-2. **You can review the plan before committing.** `--dry_run_strategy` resolves
-   everything and stops. A 22 Gb genome is a multi-week run; the plan should be
-   read first, not reconstructed from the log afterwards.
-3. **Partial failure is not total failure.** Tracks carry time budgets. One that
-   blows its budget is dropped, the pipeline finishes with what is left, and the
-   omission is recorded in the report rather than silently ignored.
+## Prerequisites
 
-Requesting something that cannot work fails immediately with the arithmetic:
+| | requirement |
+|---|---|
+| OS | Linux |
+| Orchestrator | [Nextflow](https://www.nextflow.io/) ≥ 24.10 (needs Java 17–24) |
+| Runtime | [Singularity](https://sylabs.io/singularity/) or Docker (recommended), or Conda (partial coverage — see `conf/conda.config`) |
+| Storage | genome-dependent; budget ≥ 3× genome size for the work directory |
+| GPU | optional — only used by later-milestone tracks (Helixer, TMbed) |
 
-```
-ERROR ~ [align] bam_index=bai requested but the longest contig is 2,007,914,973 bp,
-        above the BAI limit of 536,870,912.
-        fix: --bam_index csi
-```
+---
 
-## Status
+## Installation
 
-**v0.1.0 — the mRNA-seq arm.** Working end to end:
-
-- samplesheet parsing with SE/PE auto-detection
-- annotation-free strandedness inference
-- HISAT2 alignment (large-index and mmap aware), coordinate sort, CSI/BAI index
-- StringTie assembly and merge
-- featureCounts / HTSeq counting, merged matrices, MultiQC
-- the policy engine and `strategy.yml`
-
-Structural annotation (repeats, BRAKER, Helixer, consensus), functional
-annotation, and the sharded huge-genome path land in later milestones. See
-`docs/roadmap.md`.
-
-## Install
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/Ufungi/eukannot.git
 cd eukannot
-scripts/eukannot preflight        # checks java, nextflow, containers, GPU, disk
 ```
 
-`scripts/eukannot` is the supported entry point. It exists because Nextflow needs
-Java 17–24 and many hosts default to Java 11; the launcher points `JAVA_CMD` at
-the JDK bundled with the Nextflow conda env.
+### 2. Check the environment
 
-## Input
-
-One TSV (or CSV). Only `sample_id` and one of `fastq_1` / `bam` are required.
-
-```tsv
-sample_id	layout	fastq_1	fastq_2	strandedness	condition	replicate	read_type	bam	genome_id	use_for
-SRR8356879	SE	SRR8356879.fastq.gz	-	auto	fruitbody	1	short	-	Tmat	all
-MyPE01	-	MyPE01_R1.fq.gz	MyPE01_R2.fq.gz	auto	mycelium	1	short	-	Tmat	all
-Prealign	-	-	-	reverse	needle	1	short	/x/P.sorted.bam	Pinde	stringtie,count
+```bash
+scripts/eukannot preflight
 ```
 
-`layout` may be left as `-`: the mate is inferred from the filesystem
-(`_R1`→`_R2`, `_1`→`_2`, …) and the pairing is confirmed against the read IDs.
-An explicit `layout` always wins, and a sheet that contradicts itself fails
-loudly rather than being quietly corrected — declaring `SE` while a mate file
-sits in `fastq_2` is an error, not a silent discard.
+Verifies Java version, Nextflow, Singularity/Docker, GPU, disk space, and
+database provisioning — each failure prints the exact fix. `scripts/eukannot`
+is the supported entry point rather than calling `nextflow` directly: it
+points `JAVA_CMD` at the JDK bundled with the Nextflow conda environment,
+because Nextflow needs Java 17–24 and many hosts default to Java 11.
 
-See `assets/samplesheet.example.tsv`, `assets/genomes.example.tsv` (multi-genome
-batches) and `assets/reference_proteomes.example.tsv`.
+```bash
+which nextflow    # should resolve once `conda activate nextflow` — or just
+                   # use scripts/eukannot, which does this for you
+```
 
-## Docs
+### 3. (Optional) provision databases for functional annotation
 
-| | |
-|---|---|
-| `docs/usage.md` | running it, parameters, output layout |
-| `docs/decisions.md` | how the policy engine chooses, and how to override it |
-| `docs/huge_genomes.md` | the 22 Gb conifer path: masking, sharding, CSI, index reuse |
-| `docs/clade_notes.md` | which tools do not support which clades, with citations |
-| `docs/troubleshooting.md` | the errors you will actually hit |
+```bash
+scripts/eukannot run . -entry download_dbs --db_dir /data/db/eukannot
+```
+
+Not required for the mRNA-seq arm. Only needed for `-entry functional`'s
+Phase B modules (InterProScan 6, dbCAN v5, KofamScan) — Phase A
+(UPIMAPI + eggNOG-mapper + dbCAN) runs against databases this lab already has
+on disk. See `docs/functional_annotation.md`.
+
+---
+
+## Input files
+
+| File | Required for | Description |
+|---|---|---|
+| `samplesheet.tsv` | mRNA-seq arm | One row per sample: `sample_id`, `fastq_1`/`fastq_2` or `bam`, optional `layout`/`strandedness`/`use_for`. SE/PE is auto-detected. See `assets/samplesheet.example.tsv`. |
+| `genome.fasta` | mRNA-seq arm, structural annotation | Reference genome. Soft-masked or not — the pipeline masks it if needed and refuses to trust a `--premasked` claim with no lowercase in it. |
+| `proteome.fasta` | `-entry functional` | Predicted protein sequences. No genome or samplesheet required for this path. |
+| `genomes.tsv` | multi-genome batches | One row per project: fasta, taxon, masker, per-project overrides. See `assets/genomes.example.tsv`. |
+| `reference_proteomes.tsv` | product-name ladder | Weighted, labelled reference proteomes (e.g. Swiss-Prot, a close relative) consumed by the functional-annotation product ladder. See `assets/reference_proteomes.example.tsv`. |
+
+---
+
+## Usage
+
+**Full run — align, assemble, count:**
+
+```bash
+scripts/eukannot run . -profile singularity,local64 \
+    --input samplesheet.tsv --genome genome.fasta \
+    --taxon plant --outdir results
+```
+
+**Quantification only, with Salmon instead of HISAT2** (no BAM produced,
+decoy-aware bias correction):
+
+```bash
+scripts/eukannot run . -profile singularity,local64 \
+    --input samplesheet.tsv --quant_engine salmon \
+    --transcript_fasta HA.CDS.fa --outdir results
+```
+
+**Functional annotation only — no structural annotation, no genome:**
+
+```bash
+scripts/eukannot run . -entry functional -profile singularity,local64 \
+    --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
+    --outdir results_functional
+```
+
+**Review the execution plan before committing to a multi-day run:**
+
+```bash
+scripts/eukannot run . -entry strategy \
+    --genome genome.fasta --taxon plant --clade gymnosperm
+```
+
+More: `docs/usage.md` (parameters, output layout), `docs/decisions.md` (how
+the policy engine chooses), `docs/haplotypes.md` (diploid/haplotype-resolved
+genomes), `docs/functional_annotation.md`.
+
+---
+
+## Step reference
+
+| Step | What it does | Runs when |
+|---|---|---|
+| `INPUT_CHECK` | samplesheet parsing, SE/PE inference, validation | always |
+| `GENOME_PREP` / `DECIDE_STRATEGY` | genome stats, size class, `strategy.yml` | always (any entry that reads a genome) |
+| `RNASEQ_ALIGN` | fastp, strandedness inference, HISAT2, sort, index | `--steps` includes `align` |
+| `RNASEQ_ASSEMBLE` | StringTie per-sample assembly + merge | `assemble` |
+| `QUANTIFY` | featureCounts / HTSeq / Salmon, merged matrices | `quantify` |
+| `FUNCTIONAL` | UPIMAPI-equivalent Swiss-Prot transfer / eggNOG / dbCAN (Phase A, shipped); InterProScan / KofamScan / funannotate2 (Phase B, not yet wired) | `-entry functional` |
+| `HAPLOTYPE_PAIRING` | minimap2 + SyRI: HA↔HB phased VCF and allele-pairing table | `-entry pairing`, standalone (its output feeds the two rows below) |
+| `QUANTIFY` (Salmon, diploid mode) | summed + per-haplotype allele matrices | `--quant_engine salmon --transcript_fasta HA.CDS.fa,HB.CDS.fa --haplotype_pairs <pairing output>` |
+| `ALLELE_SPECIFIC_EXPRESSION` | WASP-filtered HISAT2 reads → phASER Gene AE | `--run_ase true --ase_phased_vcf <pairing output>` |
+| `MULTIQC` | consolidated report, `versions.yml`, `strategy.yml` | always |
+
+---
+
+## Tools used
+
+| Tool | Role | Reference |
+|---|---|---|
+| [Nextflow](https://www.nextflow.io/) | workflow engine | Di Tommaso et al., *Nat. Biotechnol.* 2017 |
+| [HISAT2](https://github.com/DaehwanKimLab/hisat2) | spliced short-read alignment | Kim et al., *Nat. Biotechnol.* 2019 |
+| [Salmon](https://github.com/COMBINE-lab/salmon) | decoy-aware, bias-corrected transcript quantification | Patro et al., *Nat. Methods* 2017 |
+| [StringTie](https://github.com/gpertea/stringtie) | transcript assembly | Pertea et al., *Nat. Biotechnol.* 2015 |
+| [Subread/featureCounts](https://subread.sourceforge.net/) | exon-level read counting | Liao et al., *Bioinformatics* 2014 |
+| [HTSeq](https://htseq.readthedocs.io/) | exon-level read counting (cross-check) | Anders et al., *Bioinformatics* 2015 |
+| [samtools](https://www.htslib.org/) | BAM sort/index/stats | Danecek et al., *GigaScience* 2021 |
+| [fastp](https://github.com/OpenGene/fastp) | read trimming/QC | Chen et al., *Bioinformatics* 2018 |
+| [UPIMAPI](https://github.com/iquasere/UPIMAPI) | DIAMOND-vs-UniProt annotation | Sequeira et al., *J. Proteome Res.* 2022 |
+| [eggNOG-mapper](https://github.com/eggnogdb/eggnog-mapper) | orthology-based GO/KEGG/description transfer | Cantalapiedra et al., *Mol. Biol. Evol.* 2021 |
+| [InterProScan](https://github.com/ebi-pf-team/interproscan6) | domain/family/GO annotation | Jones et al., *Bioinformatics* 2014 |
+| [dbCAN / run_dbcan](https://github.com/bcb-unl/run_dbcan) | CAZyme annotation | Zheng et al., *Nucleic Acids Res.* 2023 |
+| [funannotate2](https://github.com/nextgenusfs/funannotate2) | fungal structural + functional annotation | Palmer & Stajich |
+| [minimap2](https://github.com/lh3/minimap2) | assembly-to-assembly alignment (HA↔HB) | Li, *Bioinformatics* 2018 |
+| [SyRI](https://github.com/schneebergerlab/syri) | synteny and structural-variant calling between two assemblies | Goel et al., *Genome Biol.* 2019 |
+| [WASP](https://github.com/bmvdgeijn/WASP) | mapping-bias filtering for allele-specific reads | van de Geijn et al., *Nat. Methods* 2015 |
+| [phASER](https://github.com/secastel/phaser) | read-backed haplotype phasing and allelic expression | Castel et al., *Nat. Commun.* 2016 |
+| [MultiQC](https://multiqc.info/) | consolidated QC report | Ewels et al., *Bioinformatics* 2016 |
+
+Full citation list with DOIs: `docs/citations.md` (filled in as each tool's
+module is verified — see `scripts/check_containers.sh`).
+
+---
+
+## Status
+
+**v0.1.0** — the mRNA-seq arm (samplesheet, strandedness inference, HISAT2,
+StringTie, counting, the policy engine) is built and tagged.
+
+**v0.2** — Salmon as a second quantification engine, `-entry functional`
+(protein-in functional annotation, decoupled from structural annotation), and
+haplotype-resolved-genome support: HA↔HB pairing (`-entry pairing`), diploid
+Salmon quantification, and phASER allele-specific expression (`--run_ase`).
+Salmon and functional-annotation Phase A (UPIMAPI-equivalent Swiss-Prot
+transfer, eggNOG-mapper, dbCAN) are verified against real data this pass;
+haplotype pairing and the ASE workflow are `-stub-run` verified and
+unit-tested on synthetic data, with a known open gap (a WASP container still
+needs building — see `docs/allele_specific_expression.md`) before route B runs
+for real. See `docs/roadmap.md`.
+
+Structural annotation (repeats, BRAKER, Helixer, consensus) is deliberately
+later — a good external annotation already exists for this pipeline's
+reference target, so functional annotation and quantification were
+prioritized first.
+
+---
 
 ## License
 
-MIT.
+MIT. See `LICENSE`.
+
+---
+
+*eukaryote genome annotation · mRNA-seq · Nextflow · haplotype-resolved genomes · allele-specific expression · Pinus densiflora · Tricholoma matsutake*

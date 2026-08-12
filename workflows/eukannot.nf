@@ -26,6 +26,8 @@ include { GENOME_PREP             } from '../subworkflows/local/genome_prep'
 include { RNASEQ_ALIGN            } from '../subworkflows/local/rnaseq_align'
 include { RNASEQ_ASSEMBLE         } from '../subworkflows/local/quantify'
 include { QUANTIFY                } from '../subworkflows/local/quantify'
+include { SALMON_QUANTIFY         } from '../subworkflows/local/salmon_quant'
+include { ALLELE_SPECIFIC_EXPRESSION } from '../subworkflows/local/allele_specific_expression'
 include { MULTIQC                 } from '../modules/local/quantify'
 
 def enabled(String step) {
@@ -57,8 +59,11 @@ workflow EUKANNOT {
     }
 
     // ------------------------------------------------------------- 00 input
-    genome_file = file(params.genome ?: params.fasta, checkIfExists: true)
-    genome_id   = params.genome_id ?: genome_file.simpleName
+    // --genome is optional only for --quant_engine salmon with --transcript_fasta
+    // (main.nf already enforced this combination before reaching here).
+    def has_genome = (params.genome ?: params.fasta) as boolean
+    genome_file = has_genome ? file(params.genome ?: params.fasta, checkIfExists: true) : null
+    genome_id   = params.genome_id ?: (has_genome ? genome_file.simpleName : 'quant_only')
     genome_meta = [ id: genome_id, species: params.species ?: genome_id ]
 
     INPUT_CHECK_WF(
@@ -91,25 +96,75 @@ workflow EUKANNOT {
         : 0
 
     // ------------------------------------------------ 10 genome + strategy
-    GENOME_PREP(
-        Channel.value([ genome_meta, genome_file ]),
-        evidence,
-        index_bytes
-    )
-    ch_versions = ch_versions.mix(GENOME_PREP.out.versions)
+    // Skipped entirely in genome-free Salmon quantification: with no genome
+    // there is nothing to mask, size-class, or decoy-decide against, and a
+    // CDS-only Salmon index needs none of it.
+    if( has_genome ) {
+        GENOME_PREP(
+            Channel.value([ genome_meta, genome_file ]),
+            evidence,
+            index_bytes
+        )
+        ch_versions = ch_versions.mix(GENOME_PREP.out.versions)
 
-    // A value channel: the genome is read by several processes and a queue
-    // channel would be drained by the first of them.
-    ch_genome = GENOME_PREP.out.fai.map { fai -> [ genome_file, fai ] }.first()
+        // A value channel: the genome is read by several processes and a queue
+        // channel would be drained by the first of them.
+        ch_genome = GENOME_PREP.out.fai.map { fai -> [ genome_file, fai ] }.first()
 
-    if( params.dry_run_strategy ) {
-        GENOME_PREP.out.yml.view { "strategy written: ${it}" }
-        return
+        if( params.dry_run_strategy ) {
+            GENOME_PREP.out.yml.view { "strategy written: ${it}" }
+            return
+        }
+
+        // The decoded strategy is a VALUE channel so every consumer sees the same
+        // map without re-deriving decisions and without consuming it.
+        ch_strategy = GENOME_PREP.out.strategy.map { _meta, plan -> plan }.first()
+    } else {
+        ch_strategy = Channel.value([:])
     }
 
-    // The decoded strategy is a VALUE channel so every consumer sees the same
-    // map without re-deriving decisions and without consuming it.
-    ch_strategy = GENOME_PREP.out.strategy.map { _meta, plan -> plan }.first()
+    // --------------------------------------------------------- quant engine
+    if( params.quant_engine == 'salmon' ) {
+        transcript_fastas = (params.transcript_fasta ?: '').tokenize(',')*.trim()
+            .collect { file(it, checkIfExists: true) }
+        if( !transcript_fastas ) {
+            error "--quant_engine salmon needs --transcript_fasta <cds.fa>[,<cds2.fa>]"
+        }
+
+        use_decoy = has_genome
+            ? ch_strategy.map { plan -> (plan?.decisions?.salmon_decoy?.choice ?: false) as boolean }
+            : Channel.value(false)
+        decoy_genome = has_genome ? genome_file : file("${projectDir}/assets/NO_FILE")
+        gff_for_mapping = params.reference_gff
+            ? file(params.reference_gff, checkIfExists: true)
+            : file("${projectDir}/assets/NO_FILE")
+        allele_pairs = params.haplotype_pairs
+            ? file(params.haplotype_pairs, checkIfExists: true)
+            : file("${projectDir}/assets/NO_FILE")
+
+        SALMON_QUANTIFY(
+            INPUT_CHECK_WF.out.reads,
+            transcript_fastas,
+            decoy_genome,
+            use_decoy,
+            gff_for_mapping,
+            allele_pairs
+        )
+        ch_versions = ch_versions.mix(SALMON_QUANTIFY.out.versions)
+        ch_multiqc  = ch_multiqc.mix(SALMON_QUANTIFY.out.multiqc)
+
+        ch_versions
+            .unique()
+            .collectFile(name: 'versions.yml', storeDir: "${params.tracedir}", sort: true)
+            .set { ch_versions_file }
+        if( params.run_multiqc == null || params.run_multiqc ) {
+            MULTIQC(
+                ch_multiqc.mix(ch_versions_file).collect().ifEmpty([]),
+                file("${projectDir}/assets/multiqc_config.yml")
+            )
+        }
+        return
+    }
 
     // ---------------------------------------------------- 30-40 mRNA-seq arm
     if( enabled('align') ) {
@@ -162,6 +217,30 @@ workflow EUKANNOT {
             )
             ch_versions = ch_versions.mix(QUANTIFY.out.versions)
             ch_multiqc  = ch_multiqc.mix(QUANTIFY.out.multiqc)
+        }
+
+        // ------------------------------------------------- 75 ASE (optional)
+        // Consumes the same HA BAM unmodified -- see docs/allele_specific_expression.md.
+        // Needs a phased VCF, which in a full run comes from -entry pairing
+        // having been run first for this genome pair (--ase_phased_vcf points
+        // at its output); this is deliberately not auto-chained since
+        // HAPLOTYPE_PAIRING is an expensive, once-per-genome-pair step.
+        if( params.run_ase ) {
+            if( !params.ase_phased_vcf || !params.gff3_ha ) {
+                error """
+                --run_ase needs --ase_phased_vcf <path> (from -entry pairing)
+                and --gff3_ha <HA gene models>.
+                """.stripIndent()
+            }
+            ALLELE_SPECIFIC_EXPRESSION(
+                bam_fork.to_evidence,
+                Channel.value(file(params.ase_phased_vcf, checkIfExists: true)),
+                Channel.value(file(params.gff3_ha, checkIfExists: true)),
+                RNASEQ_ALIGN.out.hisat2_index,
+                RNASEQ_ALIGN.out.hisat2_index_prefix,
+                RNASEQ_ALIGN.out.hisat2_use_mmap
+            )
+            ch_versions = ch_versions.mix(ALLELE_SPECIFIC_EXPRESSION.out.versions)
         }
     }
 

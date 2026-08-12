@@ -1,0 +1,6 @@
+name: eukannot-syri
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - syri=1.8.2

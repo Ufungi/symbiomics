@@ -1,0 +1,20 @@
+# WASP's mapping/ scripts (find_intersecting_snps.py, filter_remapped_reads.py)
+# are not packaged on bioconda or PyPI (confirmed this session). This env
+# covers their documented dependencies for the --snp_dir (text) input mode --
+# numpy/scipy/pysam, no HDF5/PyTables needed since that trio is only required
+# for WASP's alternative HDF5-based SNP input, which this pipeline does not use.
+#
+# The scripts themselves still need to be present on PATH -- clone them
+# separately: git clone https://github.com/bmvdgeijn/WASP.git and add its
+# mapping/ directory to PATH, or build the container described in
+# docs/allele_specific_expression.md. NOT YET DONE this session -- see the
+# risk noted there before relying on -profile conda for the ASE workflow.
+name: eukannot-wasp
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.10
+  - numpy
+  - scipy
+  - pysam

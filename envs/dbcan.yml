@@ -1,0 +1,8 @@
+# Phase A: an older (v3) run_dbcan line, pinned to match this lab's existing
+# 2021-vintage CAZy database. See docs/functional_annotation.md.
+name: eukannot-dbcan
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - dbcan=3.0.7

@@ -1,0 +1,6 @@
+name: eukannot-diamond
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - diamond=2.2.5

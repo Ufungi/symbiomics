@@ -1,0 +1,6 @@
+name: eukannot-phaser
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - phaser=0.1.1ad5f89

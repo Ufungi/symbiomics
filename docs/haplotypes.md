@@ -109,11 +109,25 @@ after is specifically allelic.
 
 ## Status in this pipeline
 
-v0.1.0 implements option 1 directly — it is just a normal run against one
-haplotype. Options 2 and 3 need a Salmon/RSEM quantification path and an allele
-pairing step, which are not built yet; see `docs/roadmap.md`.
+**Option 1** (v0.1.0): a normal run against one haplotype. Works today —
+`--quant_engine hisat2` (default) or `--quant_engine salmon`.
 
-Until a guard exists, **check the assigned-read fraction** in
-`95_quantify/counts_*.stats.tsv` and the alignment summaries in `40_align/log/`.
-On a single haplotype, expect the usual rates. A sharp drop with a large
-multi-mapping fraction means a duplicated reference slipped in.
+**Option 2** (v0.2, in progress): `--quant_engine salmon --transcript_fasta
+HA.CDS.fa,HB.CDS.fa` runs the diploid EM quantification (`docs/decisions.md`'s
+Salmon section). The summed, PAV-inclusive matrix works as soon as this ships.
+Splitting the combined matrix into a genuine per-haplotype allele-specific
+matrix needs the HA↔HB allele-pairing table from `haplotype_pairing`
+(minimap2 + SyRI) — see below.
+
+**Option 3** (v0.2, in progress): phASER on WASP-filtered HISAT2 reads. See
+`docs/allele_specific_expression.md` for the full design — in short, the phased
+VCF phASER needs is sourced either by aligning HA against HB directly
+(deterministic — the two assemblies already know their own phase, so there is
+no statistical phasing uncertainty to resolve) or from the dataset's own
+published resequencing variant file, as a lower-review-risk cross-check.
+
+Until the guard in `haplotype_pairing` exists for a given project, **check the
+assigned-read fraction** in `95_quantify/counts_*.stats.tsv` and the alignment
+summaries in `40_align/log/`. On a single haplotype, expect the usual rates. A
+sharp drop with a large multi-mapping fraction means a duplicated reference
+slipped in.

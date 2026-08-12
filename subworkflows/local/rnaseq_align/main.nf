@@ -150,6 +150,13 @@ workflow RNASEQ_ALIGN {
     emit:
     bam          = SAMTOOLS_INDEX.out.bam         // [ meta, bam, index ]  <- THE channel
     strandedness = INFER_STRANDEDNESS.out.json.map { _meta, json -> json }
+    // Exposed so a consumer that needs to align AGAIN against the identical
+    // index -- currently only WASP's remap step in ALLELE_SPECIFIC_EXPRESSION
+    // -- reuses it rather than resolving (and potentially re-deciding) it a
+    // second time.
+    hisat2_index        = ch_index
+    hisat2_index_prefix = ch_prefix
+    hisat2_use_mmap      = use_mmap
     multiqc      = ch_multiqc
     versions     = ch_versions
 }
