@@ -257,8 +257,12 @@ process MULTIQC {
     path  config
 
     output:
-    path 'multiqc_report.html' , emit: report
-    path 'multiqc_report_data' , emit: data
+    // optional: a MultiQC input set that resolves to zero recognisable
+    // reports (e.g. -entry functional with only a module MultiQC has no
+    // parser for, such as dbCAN alone) exits 0 but writes no HTML -- that
+    // should not fail the whole run.
+    path 'multiqc_report.html' , emit: report, optional: true
+    path 'multiqc_report_data' , emit: data, optional: true
     path 'versions.yml'        , emit: versions
 
     script:

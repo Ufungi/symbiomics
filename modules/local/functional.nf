@@ -140,6 +140,15 @@ process RUN_DBCAN {
     // 2021-vintage CAZy database. dbCAN's CLI and DB layout changed materially
     // in v4/v5 (see docs/functional_annotation.md) -- do not point this
     // container at a newer DB or vice versa.
+    //
+    // All three callers requested (hmmer + diamond + eCAMI), not hmmer alone --
+    // this is what dbCAN3 is actually designed around: overview.txt's whole
+    // point is a #ofTools consensus column across all three, not a single
+    // caller's raw output. Verified directly against the pinned container
+    // (dbcan:3.0.7--pyh5e36f6f_0): eCAMI's default kmer database ("CAZyme")
+    // ships inside the eCAMI package itself, not something this lab has to
+    // provision separately -- a real run against this DB directory completed
+    // in ~35s with all three columns populated, no missing-input error.
 
     input:
     path proteome
@@ -154,11 +163,12 @@ process RUN_DBCAN {
     """
     run_dbcan '${proteome}' protein \\
         --db_dir '${cazy_db_dir}' --out_dir dbcan_out \\
-        --tools hmmer --hmm_cpu ${task.cpus}
+        --tools hmmer diamond eCAMI \\
+        --hmm_cpu ${task.cpus} --dia_cpu ${task.cpus} --eCAMI_jobs ${task.cpus}
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
-        run_dbcan: 3.0.x (Phase A, pinned to this lab's 2021-vintage CAZy DB)
+        run_dbcan: 3.0.7 (Phase A, hmmer+diamond+eCAMI consensus, pinned to this lab's 2021-vintage CAZy DB)
     END_VERSIONS
     """
 

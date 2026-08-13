@@ -30,7 +30,7 @@ Every tool here reads a database this lab already has on disk.
 |---|---|---|---|
 | `swissprot` | DIAMOND blastp | `/data/genome/db/Swiss-prot/uniprot_sprot.fasta` | best-hit description, parsed straight from the UniProt FASTA header |
 | `eggnog` | eggNOG-mapper 2.1.15, diamond mode | `/data/genome/db/eggnog` (v5) | GO terms, EC numbers, KEGG KO, COG category, orthology-based description |
-| `dbcan` | run_dbcan (v3 line) | `/data/genome/db/CAZy` (2021 vintage) | CAZyme family assignment |
+| `dbcan` | run_dbcan (v3 line), all three callers: HMMER + DIAMOND + eCAMI | `/data/genome/db/CAZy` (2021 vintage) | CAZyme family assignment, with a `#ofTools` consensus column across all three callers in `overview.txt` |
 
 `--functional_modules swissprot,eggnog,dbcan` (the default). Drop any of them,
 or add Phase B modules once provisioned (below).
@@ -57,6 +57,18 @@ aren't there. `RUN_DBCAN` is pinned to `dbcan:3.0.7` specifically to match.
 dbCAN v5 (with the free bundled TCDB/peptidase databases) is a Phase B item —
 see the roadmap — not a drop-in replacement for this container without also
 fetching the matching v5 database.
+
+**All three callers, not HMMER alone**: dbCAN3's `overview.txt` is designed
+around a `#ofTools` consensus column across HMMER, DIAMOND, and eCAMI — an
+earlier pass that ran `--tools hmmer` only was throwing away exactly that
+consensus mechanism. Verified directly against the pinned container
+(`dbcan:3.0.7--pyh5e36f6f_0`, `run_dbcan --help`): `--tools hmmer diamond
+eCAMI` is the correct invocation, and eCAMI's kmer database
+(`--eCAMI_kmer_db`, default `"CAZyme"`) ships bundled inside the eCAMI
+package itself — no separate download or `/data/genome/db/CAZy` layout
+change was needed. A real run against this lab's existing CAZy DB directory
+completed in ~35s with all three columns (`HMMER`, `eCAMI`, `DIAMOND`,
+`#ofTools`) populated.
 
 ## Phase B — needs new database provisioning (~80 GB)
 
