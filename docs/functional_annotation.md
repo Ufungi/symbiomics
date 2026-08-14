@@ -101,6 +101,24 @@ not fails — above the threshold. A high fraction usually means: wrong
 `--taxon`, the reference proteome is too distant, or the Phase B modules
 (InterProScan/KofamScan) would materially help.
 
+## Consensus tags and the HTML report
+
+`products.tsv`'s `source` column is the *ladder winner* — the one source that
+supplied the product name. Independently of that, every row also carries:
+
+- `sources_with_evidence` / `n_sources` — every source that found *any* hit
+  for that protein, not just the one that won the ladder (e.g. a protein can
+  show `swissprot,eggnog,dbcan` even though `source` says `swissprot`).
+- `dbcan_family` / `dbcan_tools` — CAZy family call and dbCAN's own
+  `#ofTools` agreement count, carried through from `overview.txt`.
+
+This is the free, in-pipeline alternative to Blast2GO's per-gene tag column
+(Blast2GO itself is paid) — same idea (which independent programs agree on
+this gene), no external tool. `bin/render_annotation_report.py` turns it into
+`annotation_report.html`: a single self-contained file (embedded data, vanilla
+JS, no server or CDN — this lab's nodes are offline) with a sortable,
+filterable table and colored tag chips per source.
+
 ## Output
 
 ```
@@ -109,8 +127,10 @@ results_functional_HA/
 │   ├── swissprot/    swissprot.diamond.tsv, swissprot_hits.tsv
 │   ├── eggnog/       symbiomics.emapper.annotations
 │   ├── dbcan/         dbcan_out/overview.txt
-│   ├── products.tsv          <- protein_id, product, source, GO, EC, KO, Swiss-Prot hit
-│   └── products_qc.json      <- %hypothetical and the per-source breakdown
+│   ├── products.tsv          <- protein_id, product, source, GO, EC, KO, Swiss-Prot hit,
+│   │                             dbcan_family, dbcan_tools, sources_with_evidence, n_sources
+│   ├── products_qc.json      <- %hypothetical and the per-source breakdown
+│   └── annotation_report.html <- sortable/filterable consensus-tag report (open in a browser)
 └── 99_report/multiqc_report.html
 ```
 

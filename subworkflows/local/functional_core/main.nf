@@ -12,6 +12,7 @@
 
 include { DIAMOND_MAKEDB; DIAMOND_BLASTP_SWISSPROT; PARSE_SWISSPROT_HITS } from '../../../modules/local/functional'
 include { EGGNOG_MAPPER; RUN_DBCAN; ASSIGN_PRODUCTS; QC_PRODUCTS         } from '../../../modules/local/functional'
+include { RENDER_ANNOTATION_REPORT                                      } from '../../../modules/local/functional'
 
 workflow FUNCTIONAL_CORE {
     take:
@@ -49,12 +50,17 @@ workflow FUNCTIONAL_CORE {
         }
     }
 
+    ch_dbcan_overview = Channel.value(file("${projectDir}/assets/NO_FILE_DBCAN"))
     if( 'dbcan' in wanted ) {
         if( !file(params.cazy_db_dir).exists() ) {
             log.warn "[functional] dbcan requested but ${params.cazy_db_dir} not found -- SKIPPED"
         } else {
             RUN_DBCAN(proteome, Channel.fromPath(params.cazy_db_dir))
             ch_versions = ch_versions.mix(RUN_DBCAN.out.versions)
+            // overview.txt is emitted `optional: true` -- fall back to the
+            // sentinel if a run produces no CAZyme calls at all, same as
+            // every other optional functional module here.
+            ch_dbcan_overview = RUN_DBCAN.out.overview.ifEmpty(file("${projectDir}/assets/NO_FILE_DBCAN"))
         }
     }
 
@@ -62,14 +68,18 @@ workflow FUNCTIONAL_CORE {
     ch_funannotate2 = Channel.value(file("${projectDir}/assets/NO_FILE_FUNANNOTATE2"))
     ch_interpro     = Channel.value(file("${projectDir}/assets/NO_FILE_INTERPRO"))
 
-    ASSIGN_PRODUCTS(proteome, ch_swissprot_hits, ch_eggnog, ch_funannotate2, ch_interpro)
+    ASSIGN_PRODUCTS(proteome, ch_swissprot_hits, ch_eggnog, ch_funannotate2, ch_interpro, ch_dbcan_overview)
     ch_versions = ch_versions.mix(ASSIGN_PRODUCTS.out.versions)
 
     QC_PRODUCTS(ASSIGN_PRODUCTS.out.tsv)
     ch_versions = ch_versions.mix(QC_PRODUCTS.out.versions)
 
+    RENDER_ANNOTATION_REPORT(ASSIGN_PRODUCTS.out.tsv)
+    ch_versions = ch_versions.mix(RENDER_ANNOTATION_REPORT.out.versions)
+
     emit:
-    products    = ASSIGN_PRODUCTS.out.tsv
-    products_qc = QC_PRODUCTS.out.json
-    versions    = ch_versions
+    products        = ASSIGN_PRODUCTS.out.tsv
+    products_qc     = QC_PRODUCTS.out.json
+    annotation_report = RENDER_ANNOTATION_REPORT.out.html
+    versions        = ch_versions
 }

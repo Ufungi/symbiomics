@@ -190,13 +190,14 @@ process ASSIGN_PRODUCTS {
     path eggnog_annotations // NO_FILE if not run
     path funannotate2_tsv  // NO_FILE if not run (fungal branch, F4)
     path interpro_tsv      // NO_FILE if not run (Phase B)
+    path dbcan_overview    // NO_FILE if not run
 
     output:
     path 'products.tsv', emit: tsv
     path 'versions.yml', emit: versions
 
     script:
-    // Four independently-optional inputs can all be "not provided" at once,
+    // Five independently-optional inputs can all be "not provided" at once,
     // and staging multiple files literally named the same thing into one task
     // directory collides -- so each has its OWN distinctly-named sentinel
     // (assets/NO_FILE_*) rather than sharing the single NO_FILE used
@@ -205,8 +206,9 @@ process ASSIGN_PRODUCTS {
     def eg = eggnog_annotations.size() > 0 ? "--eggnog '${eggnog_annotations}'" : ''
     def f2 = funannotate2_tsv.size() > 0 ? "--funannotate2 '${funannotate2_tsv}'" : ''
     def ip = interpro_tsv.size() > 0 ? "--interpro '${interpro_tsv}'" : ''
+    def dc = dbcan_overview.size() > 0 ? "--dbcan '${dbcan_overview}'" : ''
     """
-    assign_products.py --proteome '${proteome}' ${sp} ${eg} ${f2} ${ip} --out products.tsv
+    assign_products.py --proteome '${proteome}' ${sp} ${eg} ${f2} ${ip} ${dc} --out products.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -216,7 +218,35 @@ process ASSIGN_PRODUCTS {
 
     stub:
     """
-    printf 'protein_id\\tproduct\\tsource\\tgo_terms\\tec_number\\tkegg_ko\\tswissprot_hit\\tswissprot_pident\\n' > products.tsv
+    printf 'protein_id\\tproduct\\tsource\\tgo_terms\\tec_number\\tkegg_ko\\tswissprot_hit\\tswissprot_pident\\tdbcan_family\\tdbcan_tools\\tsources_with_evidence\\tn_sources\\n' > products.tsv
+    echo '"${task.process}": {python: stub}' > versions.yml
+    """
+}
+
+process RENDER_ANNOTATION_REPORT {
+    label 'process_single'
+    tag "${products.name}"
+
+    input:
+    path products
+
+    output:
+    path 'annotation_report.html', emit: html
+    path 'versions.yml'          , emit: versions
+
+    script:
+    """
+    render_annotation_report.py --products '${products}' --out annotation_report.html
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    touch annotation_report.html
     echo '"${task.process}": {python: stub}' > versions.yml
     """
 }

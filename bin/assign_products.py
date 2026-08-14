@@ -108,6 +108,37 @@ def read_interpro(path: str) -> dict[str, dict]:
     return out
 
 
+def read_dbcan(path: str) -> dict[str, dict]:
+    """dbCAN3 overview.txt: Gene ID, HMMER, eCAMI, DIAMOND, #ofTools -- the
+    column set narrows if RUN_DBCAN was invoked with fewer than all three
+    callers. dbCAN never names a plain-English product, so it doesn't enter
+    the priority ladder; it only contributes a CAZy family call and counts as
+    one more source of evidence for the consensus tag."""
+    out = {}
+    with open(path) as fh:
+        header = fh.readline().rstrip("\n").split("\t")
+        idx = {name: i for i, name in enumerate(header)}
+        gid_col = idx.get("Gene ID", 0)
+        tools_col = idx.get("#ofTools")
+        for line in fh:
+            fields = line.rstrip("\n").split("\t")
+            if len(fields) <= gid_col:
+                continue
+            gid = fields[gid_col]
+            families = set()
+            for caller in ("HMMER", "eCAMI", "DIAMOND"):
+                i = idx.get(caller)
+                if i is None or i >= len(fields):
+                    continue
+                val = fields[i].strip()
+                if val and val != "-":
+                    families.add(val.split("+")[0].split("(")[0])
+            n_tools = fields[tools_col].strip() if tools_col is not None and tools_col < len(fields) else str(len(families))
+            if families or (n_tools not in ("", "0")):
+                out[gid] = {"family": ";".join(sorted(families)), "n_tools": n_tools}
+    return out
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--proteome", required=True, help="FASTA -- defines the full ID set")
@@ -115,6 +146,7 @@ def main() -> int:
     ap.add_argument("--swissprot", default=None)
     ap.add_argument("--eggnog", default=None)
     ap.add_argument("--interpro", default=None)
+    ap.add_argument("--dbcan", default=None, help="dbCAN overview.txt (Phase A)")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -127,17 +159,24 @@ def main() -> int:
     sp = read_swissprot(args.swissprot) if args.swissprot else {}
     eg = read_eggnog(args.eggnog) if args.eggnog else {}
     ip = read_interpro(args.interpro) if args.interpro else {}
+    dc = read_dbcan(args.dbcan) if args.dbcan else {}
 
     source_counts = {"funannotate2": 0, "swissprot": 0, "eggnog": 0, "interpro": 0, "none": 0}
 
     with open(args.out, "w") as out:
-        out.write("protein_id\tproduct\tsource\tgo_terms\tec_number\tkegg_ko\tswissprot_hit\tswissprot_pident\n")
+        out.write(
+            "protein_id\tproduct\tsource\tgo_terms\tec_number\tkegg_ko\t"
+            "swissprot_hit\tswissprot_pident\tdbcan_family\tdbcan_tools\t"
+            "sources_with_evidence\tn_sources\n"
+        )
         for pid in all_ids:
             go = eg.get(pid, {}).get("go", "")
             ec = eg.get(pid, {}).get("ec", "")
             ko = eg.get(pid, {}).get("kegg_ko", "")
             sp_hit = sp.get(pid, {}).get("accession", "")
             sp_pid = sp.get(pid, {}).get("pident", "")
+            dbcan_family = dc.get(pid, {}).get("family", "")
+            dbcan_tools = dc.get(pid, {}).get("n_tools", "")
 
             if pid in f2:
                 product, source = f2[pid]["product"], "funannotate2"
@@ -150,8 +189,21 @@ def main() -> int:
             else:
                 product, source = "hypothetical protein", "none"
 
+            # Evidence tags are independent of the ladder above: a protein can
+            # carry evidence from several sources at once (e.g. swissprot +
+            # eggnog + dbcan all hit the same gene) even though only one of
+            # them supplies the product name. This is the per-gene "different
+            # programs agree" view Blast2GO shows as tags.
+            evidence = [name for name, hit in (
+                ("funannotate2", pid in f2), ("swissprot", pid in sp),
+                ("eggnog", pid in eg), ("dbcan", pid in dc), ("interpro", pid in ip),
+            ) if hit]
+
             source_counts[source] += 1
-            out.write(f"{pid}\t{product}\t{source}\t{go}\t{ec}\t{ko}\t{sp_hit}\t{sp_pid}\n")
+            out.write(
+                f"{pid}\t{product}\t{source}\t{go}\t{ec}\t{ko}\t{sp_hit}\t{sp_pid}\t"
+                f"{dbcan_family}\t{dbcan_tools}\t{','.join(evidence)}\t{len(evidence)}\n"
+            )
 
     total = len(all_ids)
     sys.stderr.write(f"INFO  ~ [products] {total:,} proteins:\n")
