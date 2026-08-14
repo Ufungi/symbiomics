@@ -17,7 +17,7 @@ step both routes depend on.
 ## The pairing step (`-entry pairing`)
 
 ```bash
-scripts/eukannot run . -entry pairing -profile singularity,local64 \
+scripts/symbiomics run . -entry pairing -profile singularity,local64 \
     --genome HA.genome.fasta --genome_hb HB.genome.fasta \
     --gff3_ha HA.gff3 --gff3_hb HB.gff3 \
     --minimap_preset asm10
@@ -73,7 +73,7 @@ review risk — that data is already peer-reviewed, not something this pipeline
 computed and has to defend.
 
 ```bash
-scripts/eukannot run . -entry variation \
+scripts/symbiomics run . -entry variation \
     --resequencing_variation_file Variation_information_of_P.densiflora_accessions.txt.gz \
     --resequencing_accession <name>
 ```
@@ -90,7 +90,7 @@ remains available regardless.
 ## The ASE workflow
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome HA.genome.fasta --hisat2_index HA.genome \
     --run_ase true --ase_phased_vcf results_pairing/70_haplotype_pairing/ha_hb.phased.vcf \
     --gff3_ha HA.gff3 --outdir results

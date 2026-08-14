@@ -37,7 +37,7 @@ def enabled(String step) {
     return wanted == null || step in wanted
 }
 
-workflow EUKANNOT {
+workflow SYMBIOMICS {
 
     ch_versions = Channel.empty()
     ch_multiqc  = Channel.empty()

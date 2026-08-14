@@ -526,7 +526,7 @@ def main() -> int:
     }
 
     with open(args.out, "w") as fh:
-        fh.write("# eukannot execution strategy -- generated, do not edit.\n")
+        fh.write("# symbiomics execution strategy -- generated, do not edit.\n")
         fh.write("# Every decision records why it was made and what it rejected.\n")
         fh.write(yaml_dump(strategy))
     with open(args.out_json, "w") as fh:

@@ -1,4 +1,4 @@
-name: eukannot-eggnog-mapper
+name: symbiomics-eggnog-mapper
 channels:
   - conda-forge
   - bioconda

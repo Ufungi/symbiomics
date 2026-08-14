@@ -8,14 +8,14 @@
 
 <p align="right"><a href="README.en.md">English</a> | <strong>한국어</strong></p>
 
-# eukannot
+# symbiomics
 
 의사결정 기반 진핵생물 mRNA-seq 정량 및 게놈 주석 Nextflow 파이프라인. 게놈을 먼저
 읽고, 어떻게 처리할지 결정한 뒤, 왜 그렇게 결정했는지 코어 시간을 쓰기 전에
 알려줍니다.
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta --outdir results
 ```
 
@@ -108,31 +108,31 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 ### 1. 레포지토리 클론
 
 ```bash
-git clone https://github.com/Ufungi/eukannot.git
-cd eukannot
+git clone https://github.com/Ufungi/symbiomics.git
+cd symbiomics
 ```
 
 ### 2. 환경 점검
 
 ```bash
-scripts/eukannot preflight
+scripts/symbiomics preflight
 ```
 
 Java 버전, Nextflow, Singularity/Docker, GPU, 디스크 공간, 데이터베이스
 프로비저닝을 확인하며 — 실패마다 정확한 해결 명령을 출력합니다.
-`scripts/eukannot`이 `nextflow`를 직접 부르는 대신 지원되는 진입점입니다:
+`scripts/symbiomics`이 `nextflow`를 직접 부르는 대신 지원되는 진입점입니다:
 Nextflow conda 환경에 번들된 JDK로 `JAVA_CMD`를 지정하는데, Nextflow는
 Java 17–24가 필요하지만 많은 호스트의 기본값은 Java 11이기 때문입니다.
 
 ```bash
 which nextflow    # `conda activate nextflow` 이후에만 resolve 됨 — 또는
-                   # 그냥 scripts/eukannot을 쓰면 자동으로 처리됩니다
+                   # 그냥 scripts/symbiomics을 쓰면 자동으로 처리됩니다
 ```
 
 ### 3. (선택) 기능주석용 데이터베이스 프로비저닝
 
 ```bash
-scripts/eukannot run . -entry download_dbs --db_dir /data/db/eukannot
+scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ```
 
 mRNA-seq arm에는 필요하지 않습니다. `-entry functional`의 Phase B
@@ -159,7 +159,7 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 **전체 실행 — 정렬, 조립, 카운트:**
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta \
     --taxon plant --outdir results
 ```
@@ -167,7 +167,7 @@ scripts/eukannot run . -profile singularity,local64 \
 **정량만, HISAT2 대신 Salmon** (BAM 생성 없음, decoy-aware 편향 보정):
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --quant_engine salmon \
     --transcript_fasta HA.CDS.fa --outdir results
 ```
@@ -175,7 +175,7 @@ scripts/eukannot run . -profile singularity,local64 \
 **기능주석만 — 구조 주석 없음, 게놈 없음:**
 
 ```bash
-scripts/eukannot run . -entry functional -profile singularity,local64 \
+scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
     --outdir results_functional
 ```
@@ -183,7 +183,7 @@ scripts/eukannot run . -entry functional -profile singularity,local64 \
 **며칠짜리 실행을 시작하기 전에 실행 계획 검토:**
 
 ```bash
-scripts/eukannot run . -entry strategy \
+scripts/symbiomics run . -entry strategy \
     --genome genome.fasta --taxon plant --clade gymnosperm
 ```
 

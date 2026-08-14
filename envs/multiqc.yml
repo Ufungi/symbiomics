@@ -1,4 +1,4 @@
-name: eukannot-multiqc
+name: symbiomics-multiqc
 channels:
   - conda-forge
   - bioconda

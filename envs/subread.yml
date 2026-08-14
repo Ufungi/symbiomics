@@ -1,4 +1,4 @@
-name: eukannot-subread
+name: symbiomics-subread
 channels:
   - conda-forge
   - bioconda

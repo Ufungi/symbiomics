@@ -10,7 +10,7 @@ Nextflow needs Java 17–24. Many hosts default to Java 11.
 NOTE: Nextflow is trying to use the Java VM defined by the following environment variables...
 ```
 
-**Fix:** use `scripts/eukannot`, which points `JAVA_CMD` at the JDK bundled with
+**Fix:** use `scripts/symbiomics`, which points `JAVA_CMD` at the JDK bundled with
 the Nextflow conda env. If you must call `nextflow` directly:
 
 ```bash
@@ -19,7 +19,7 @@ export JAVA_HOME="$CONDA_PREFIX/lib/jvm"
 export JAVA_CMD="$JAVA_HOME/bin/java"
 ```
 
-`scripts/eukannot preflight` checks this first and prints the exact remedy.
+`scripts/symbiomics preflight` checks this first and prints the exact remedy.
 
 ## `Failed to publish file ... [link]`
 
@@ -34,7 +34,7 @@ Hardlinks cannot cross filesystems, and the launcher puts the work directory on
 the same filesystem as the output:
 
 ```bash
-NXF_WORK=/path/to/results/work scripts/eukannot run . ... --publish_mode link
+NXF_WORK=/path/to/results/work scripts/symbiomics run . ... --publish_mode link
 ```
 
 The pipeline now checks this at startup and refuses up front rather than failing
@@ -84,7 +84,7 @@ once. The map defers building its backing store and the deferred build races.
 Check the "still active" block at the end of `.nextflow.log`:
 
 ```
-[process] EUKANNOT:RNASEQ_ALIGN:HISAT2_BUILD
+[process] SYMBIOMICS:RNASEQ_ALIGN:HISAT2_BUILD
   status=ACTIVE
   port 1: (value) OPEN  ; channel: large_index
 ```
@@ -151,7 +151,7 @@ are not yet in the v0.1 DAG. They become live in later milestones.
 ## Getting more detail
 
 ```bash
-scripts/eukannot run . ... -with-trace -with-report -with-timeline
+scripts/symbiomics run . ... -with-trace -with-report -with-timeline
 less .nextflow.log
 cd <work dir printed in the error>; cat .command.sh .command.err
 ```

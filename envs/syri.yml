@@ -1,4 +1,4 @@
-name: eukannot-syri
+name: symbiomics-syri
 channels:
   - conda-forge
   - bioconda

@@ -1,6 +1,6 @@
 # How the pipeline decides
 
-The centre of eukannot is not a tool list, it is a policy engine. After the
+The centre of symbiomics is not a tool list, it is a policy engine. After the
 genome is measured, `DECIDE_STRATEGY` writes `strategy.yml` and every stage
 downstream reads it instead of re-deriving the same choice in five places.
 
@@ -37,7 +37,7 @@ notes: [...]                     # anything the user should know
 ## Review before you commit
 
 ```bash
-scripts/eukannot run . -entry strategy --genome big.fasta --taxon plant
+scripts/symbiomics run . -entry strategy --genome big.fasta --taxon plant
 ```
 
 Runs the measurement and the decision, prints the plan, and stops. For a

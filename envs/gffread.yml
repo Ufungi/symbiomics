@@ -1,4 +1,4 @@
-name: eukannot-gffread
+name: symbiomics-gffread
 channels:
   - conda-forge
   - bioconda

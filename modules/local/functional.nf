@@ -116,7 +116,7 @@ process EGGNOG_MAPPER {
     script:
     """
     emapper.py -m diamond --itype proteins \\
-        -i '${proteome}' -o eukannot --cpu ${task.cpus} \\
+        -i '${proteome}' -o symbiomics --cpu ${task.cpus} \\
         --dmnd_db '${eggnog_dmnd}' --data_dir '${eggnog_db_dir}' \\
         --evalue 1e-5 --temp_dir \$PWD
 
@@ -128,7 +128,7 @@ process EGGNOG_MAPPER {
 
     stub:
     """
-    printf '## stub\\n#query\\tseed_ortholog\\tevalue\\tscore\\teggNOG_OGs\\tmax_annot_lvl\\tCOG_category\\tDescription\\tPreferred_name\\tGOs\\tEC\\tKEGG_ko\\n' > eukannot.emapper.annotations
+    printf '## stub\\n#query\\tseed_ortholog\\tevalue\\tscore\\teggNOG_OGs\\tmax_annot_lvl\\tCOG_category\\tDescription\\tPreferred_name\\tGOs\\tEC\\tKEGG_ko\\n' > symbiomics.emapper.annotations
     echo '"${task.process}": {eggnog-mapper: stub}' > versions.yml
     """
 }

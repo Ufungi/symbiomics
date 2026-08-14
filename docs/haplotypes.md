@@ -35,7 +35,7 @@ are disjoint before combining anything.
 Align to HA, count on `HA.gff3`. Nothing else changes.
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --genome P.densiflora_v1.0_HA.genome.fasta \
     --hisat2_index /path/P.densiflora_v1.0_HA.genome \
     --quant_gff P.densiflora_v1.0_HA.gff3 \

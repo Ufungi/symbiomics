@@ -1,4 +1,4 @@
-name: eukannot-hisat2-samtools
+name: symbiomics-hisat2-samtools
 # hisat2 pipes directly into samtools so that no SAM is ever written to disk;
 # both tools therefore have to live in the same environment.
 channels:

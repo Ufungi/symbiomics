@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Parse an eukannot samplesheet, infer SE/PE layout, validate, and emit a
+"""Parse an symbiomics samplesheet, infer SE/PE layout, validate, and emit a
 fully-resolved TSV plus a JSON channel description.
 
 The resolved TSV is the reproducible record of what the pipeline actually ran

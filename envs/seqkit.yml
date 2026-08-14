@@ -1,4 +1,4 @@
-name: eukannot-seqkit
+name: symbiomics-seqkit
 channels:
   - conda-forge
   - bioconda

@@ -1,4 +1,4 @@
-# eukannot RNA-seq samplesheet (tab-separated).
+# symbiomics RNA-seq samplesheet (tab-separated).
 #
 # Required : sample_id, and either fastq_1 or bam
 # Optional : everything else. '-' means "not set".

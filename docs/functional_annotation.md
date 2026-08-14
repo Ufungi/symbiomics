@@ -7,7 +7,7 @@ ships `HA.PEP.fa` / `HB.PEP.fa` with 44,233 predicted proteins per haplotype
 and zero functional annotation.
 
 ```bash
-scripts/eukannot run . -entry functional -profile singularity,local64 \
+scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
     --outdir results_functional_HA
 ```
@@ -107,7 +107,7 @@ not fails — above the threshold. A high fraction usually means: wrong
 results_functional_HA/
 ├── 80_functional/
 │   ├── swissprot/    swissprot.diamond.tsv, swissprot_hits.tsv
-│   ├── eggnog/       eukannot.emapper.annotations
+│   ├── eggnog/       symbiomics.emapper.annotations
 │   ├── dbcan/         dbcan_out/overview.txt
 │   ├── products.tsv          <- protein_id, product, source, GO, EC, KO, Swiss-Prot hit
 │   └── products_qc.json      <- %hypothetical and the per-source breakdown
@@ -120,7 +120,7 @@ Each haplotype is a separate protein FASTA, so run it twice:
 
 ```bash
 for hap in HA HB; do
-    scripts/eukannot run . -entry functional -profile singularity,local64 \
+    scripts/symbiomics run . -entry functional -profile singularity,local64 \
         --proteome ${hap}.PEP.fa --genome_id Pinde_${hap} --taxon plant \
         --outdir results_functional_${hap}
 done

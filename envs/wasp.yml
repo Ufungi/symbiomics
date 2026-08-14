@@ -9,7 +9,7 @@
 # mapping/ directory to PATH, or build the container described in
 # docs/allele_specific_expression.md. NOT YET DONE this session -- see the
 # risk noted there before relying on -profile conda for the ASE workflow.
-name: eukannot-wasp
+name: symbiomics-wasp
 channels:
   - conda-forge
   - bioconda

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# eukannot preflight -- environment checks with an exact remedy for each failure.
+# symbiomics preflight -- environment checks with an exact remedy for each failure.
 # Never exits non-zero on warnings; only hard failures (Java, Nextflow) do that.
 set -uo pipefail
 
-: "${EUKANNOT_DB_DIR:=/data/db/eukannot}"
-DB_DIR="${1:-$EUKANNOT_DB_DIR}"
+: "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
+DB_DIR="${1:-$SYMBIOMICS_DB_DIR}"
 
 FAILED=0
 ok()   { printf '[ ok ] %s\n' "$*"; }
@@ -12,7 +12,7 @@ warn() { printf '[warn] %s\n' "$*"; }
 fail() { printf '[FAIL] %s\n' "$*"; FAILED=1; }
 fix()  { printf '       fix: %s\n' "$*"; }
 
-echo "=== eukannot preflight ==="
+echo "=== symbiomics preflight ==="
 
 # ---------------------------------------------------------------- Java
 JAVA_BIN="${JAVA_CMD:-$(command -v java || true)}"
@@ -25,7 +25,7 @@ else
         ok "java $JV via $JAVA_BIN"
     else
         fail "java $JV via $JAVA_BIN -- Nextflow needs 17..24"
-        fix "use scripts/eukannot (sets JAVA_CMD to the conda env JDK)"
+        fix "use scripts/symbiomics (sets JAVA_CMD to the conda env JDK)"
     fi
 fi
 
@@ -35,7 +35,7 @@ if command -v nextflow >/dev/null 2>&1; then
     ok "nextflow ${NFV:-unknown}"
 else
     fail "nextflow not on PATH"
-    fix "conda activate nextflow   (or use scripts/eukannot)"
+    fix "conda activate nextflow   (or use scripts/symbiomics)"
 fi
 
 # --------------------------------------------------------- Containers
@@ -108,7 +108,7 @@ if [[ -d "$DB_DIR" ]]; then
     ok "db_dir $DB_DIR exists"
 else
     warn "db_dir $DB_DIR does not exist yet"
-    fix "scripts/eukannot run . -entry download_dbs --db_dir $DB_DIR"
+    fix "scripts/symbiomics run . -entry download_dbs --db_dir $DB_DIR"
 fi
 
 # --------------------------------------------------------------- misc

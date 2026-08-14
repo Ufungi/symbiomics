@@ -1,7 +1,7 @@
 #!/usr/bin/env nextflow
 /*
- * eukannot -- decision-driven eukaryote genome annotation + mRNA-seq pipeline
- * https://github.com/Ufungi/eukannot
+ * symbiomics -- decision-driven eukaryote genome annotation + mRNA-seq pipeline
+ * https://github.com/Ufungi/symbiomics
  *
  * Entry points:
  *   (default)          full pipeline
@@ -11,7 +11,7 @@
 
 nextflow.enable.dsl = 2
 
-include { EUKANNOT     } from './workflows/eukannot'
+include { SYMBIOMICS     } from './workflows/symbiomics'
 include { FUNCTIONAL   } from './workflows/functional'
 include { GENOME_PREP  } from './subworkflows/local/genome_prep'
 include { INPUT_CHECK_WF } from './subworkflows/local/input_check'
@@ -24,7 +24,7 @@ def helpMessage() {
     ${workflow.manifest.description}
 
     Usage:
-      scripts/eukannot run . -profile singularity,local64 \\
+      scripts/symbiomics run . -profile singularity,local64 \\
           --input samplesheet.tsv --genome genome.fasta --outdir results
 
     Required:
@@ -73,7 +73,7 @@ workflow {
               "Use --dry_run_strategy to resolve a plan without one, or " +
               "-entry functional --proteome for protein-only functional annotation."
     }
-    EUKANNOT()
+    SYMBIOMICS()
 }
 
 /*
@@ -113,7 +113,7 @@ workflow strategy {
 
 /*
  * -entry functional -- protein-in functional annotation. No genome, no
- * samplesheet: scripts/eukannot run . -entry functional --proteome p.faa
+ * samplesheet: scripts/symbiomics run . -entry functional --proteome p.faa
  */
 workflow functional {
     FUNCTIONAL()

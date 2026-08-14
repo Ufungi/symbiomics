@@ -1,4 +1,4 @@
-name: eukannot-pyutils
+name: symbiomics-pyutils
 channels:
   - conda-forge
   - bioconda

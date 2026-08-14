@@ -1,4 +1,4 @@
-name: eukannot-samtools
+name: symbiomics-samtools
 channels:
   - conda-forge
   - bioconda

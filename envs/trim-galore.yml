@@ -1,4 +1,4 @@
-name: eukannot-trim-galore
+name: symbiomics-trim-galore
 channels:
   - conda-forge
   - bioconda

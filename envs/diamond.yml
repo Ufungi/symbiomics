@@ -1,4 +1,4 @@
-name: eukannot-diamond
+name: symbiomics-diamond
 channels:
   - conda-forge
   - bioconda

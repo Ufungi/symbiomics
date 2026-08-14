@@ -1,4 +1,4 @@
-name: eukannot-htseq
+name: symbiomics-htseq
 channels:
   - conda-forge
   - bioconda

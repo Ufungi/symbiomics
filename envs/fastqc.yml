@@ -1,4 +1,4 @@
-name: eukannot-fastqc
+name: symbiomics-fastqc
 channels:
   - conda-forge
   - bioconda

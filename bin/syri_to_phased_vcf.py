@@ -91,7 +91,7 @@ def main() -> int:
 
     with open(args.out, "w") as out:
         out.write("##fileformat=VCFv4.2\n")
-        out.write("##source=eukannot/syri_to_phased_vcf.py\n")
+        out.write("##source=symbiomics/syri_to_phased_vcf.py\n")
         out.write(
             "##INFO=<ID=SRC,Number=1,Type=String,Description="
             "\"HA-vs-HB assembly alignment (SyRI); phase known by construction, not statistically inferred\">\n"

@@ -1,6 +1,6 @@
 # Phase A: an older (v3) run_dbcan line, pinned to match this lab's existing
 # 2021-vintage CAZy database. See docs/functional_annotation.md.
-name: eukannot-dbcan
+name: symbiomics-dbcan
 channels:
   - conda-forge
   - bioconda

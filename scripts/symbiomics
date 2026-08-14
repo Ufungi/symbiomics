@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# eukannot launcher.
+# symbiomics launcher.
 #
 # Nextflow >= 24 requires Java 17-24. The system JVM on many of our hosts is
 # Java 11, which makes the bare `nextflow` binary refuse to start. The conda
@@ -10,22 +10,22 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-: "${EUKANNOT_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
-: "${EUKANNOT_NF_ENV:=nextflow}"
-: "${EUKANNOT_DB_DIR:=/data/db/eukannot}"
+: "${SYMBIOMICS_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
+: "${SYMBIOMICS_NF_ENV:=nextflow}"
+: "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 
-if [[ ! -f "$EUKANNOT_CONDA_SH" ]]; then
-    echo "ERROR: conda profile not found: $EUKANNOT_CONDA_SH" >&2
-    echo "       Set EUKANNOT_CONDA_SH to your conda.sh, or put 'nextflow' on PATH" >&2
+if [[ ! -f "$SYMBIOMICS_CONDA_SH" ]]; then
+    echo "ERROR: conda profile not found: $SYMBIOMICS_CONDA_SH" >&2
+    echo "       Set SYMBIOMICS_CONDA_SH to your conda.sh, or put 'nextflow' on PATH" >&2
     echo "       with a Java 17-24 runtime and call nextflow directly." >&2
     exit 1
 fi
 
 # shellcheck disable=SC1090
-source "$EUKANNOT_CONDA_SH"
+source "$SYMBIOMICS_CONDA_SH"
 
-if ! conda activate "$EUKANNOT_NF_ENV" 2>/dev/null; then
-    echo "ERROR: conda env '$EUKANNOT_NF_ENV' not found." >&2
+if ! conda activate "$SYMBIOMICS_NF_ENV" 2>/dev/null; then
+    echo "ERROR: conda env '$SYMBIOMICS_NF_ENV' not found." >&2
     echo "       fix: conda create -n nextflow -c bioconda -c conda-forge nextflow openjdk=23" >&2
     exit 1
 fi
@@ -40,22 +40,22 @@ elif [[ -x "${CONDA_PREFIX}/bin/java" ]]; then
 fi
 
 # Work dir defaults to the big filesystem, never the smaller /data.
-export NXF_WORK="${NXF_WORK:-${EUKANNOT_DB_DIR}/work}"
-export NXF_SINGULARITY_CACHEDIR="${NXF_SINGULARITY_CACHEDIR:-${EUKANNOT_DB_DIR}/singularity}"
+export NXF_WORK="${NXF_WORK:-${SYMBIOMICS_DB_DIR}/work}"
+export NXF_SINGULARITY_CACHEDIR="${NXF_SINGULARITY_CACHEDIR:-${SYMBIOMICS_DB_DIR}/singularity}"
 export NXF_OPTS="${NXF_OPTS:--Xms1g -Xmx8g}"
 # RepeatMasker and other Perl tools emit locale warnings under ko_KR.UTF-8.
 export LC_ALL="${LC_ALL:-C}"
 
 mkdir -p "$NXF_WORK" "$NXF_SINGULARITY_CACHEDIR" 2>/dev/null || true
 
-# `eukannot preflight` is a shortcut for the shell-level checks; everything
+# `symbiomics preflight` is a shortcut for the shell-level checks; everything
 # else is passed straight through to nextflow.
 if [[ "${1:-}" == "preflight" ]]; then
     shift
     exec "${SCRIPT_DIR}/preflight.sh" "$@"
 fi
 
-# Bare `eukannot` with no args -> run this repo.
+# Bare `symbiomics` with no args -> run this repo.
 if [[ $# -eq 0 ]]; then
     set -- run "$REPO_DIR" --help
 fi

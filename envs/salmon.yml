@@ -1,4 +1,4 @@
-name: eukannot-salmon
+name: symbiomics-salmon
 channels:
   - conda-forge
   - bioconda

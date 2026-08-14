@@ -8,14 +8,14 @@
 
 <p align="right"><strong>English</strong> | <a href="README.md">한국어</a></p>
 
-# eukannot
+# symbiomics
 
 A decision-driven Nextflow pipeline for eukaryote mRNA-seq quantification and
 genome annotation. It reads the genome first, decides how to handle it, and
 tells you why — before spending a single core-hour.
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta --outdir results
 ```
 
@@ -110,31 +110,31 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Ufungi/eukannot.git
-cd eukannot
+git clone https://github.com/Ufungi/symbiomics.git
+cd symbiomics
 ```
 
 ### 2. Check the environment
 
 ```bash
-scripts/eukannot preflight
+scripts/symbiomics preflight
 ```
 
 Verifies Java version, Nextflow, Singularity/Docker, GPU, disk space, and
-database provisioning — each failure prints the exact fix. `scripts/eukannot`
+database provisioning — each failure prints the exact fix. `scripts/symbiomics`
 is the supported entry point rather than calling `nextflow` directly: it
 points `JAVA_CMD` at the JDK bundled with the Nextflow conda environment,
 because Nextflow needs Java 17–24 and many hosts default to Java 11.
 
 ```bash
 which nextflow    # should resolve once `conda activate nextflow` — or just
-                   # use scripts/eukannot, which does this for you
+                   # use scripts/symbiomics, which does this for you
 ```
 
 ### 3. (Optional) provision databases for functional annotation
 
 ```bash
-scripts/eukannot run . -entry download_dbs --db_dir /data/db/eukannot
+scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ```
 
 Not required for the mRNA-seq arm. Only needed for `-entry functional`'s
@@ -161,7 +161,7 @@ lab already has on disk. See `docs/functional_annotation.md`.
 **Full run — align, assemble, count:**
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta \
     --taxon plant --outdir results
 ```
@@ -170,7 +170,7 @@ scripts/eukannot run . -profile singularity,local64 \
 decoy-aware bias correction):
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --quant_engine salmon \
     --transcript_fasta HA.CDS.fa --outdir results
 ```
@@ -178,7 +178,7 @@ scripts/eukannot run . -profile singularity,local64 \
 **Functional annotation only — no structural annotation, no genome:**
 
 ```bash
-scripts/eukannot run . -entry functional -profile singularity,local64 \
+scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
     --outdir results_functional
 ```
@@ -186,7 +186,7 @@ scripts/eukannot run . -entry functional -profile singularity,local64 \
 **Review the execution plan before committing to a multi-day run:**
 
 ```bash
-scripts/eukannot run . -entry strategy \
+scripts/symbiomics run . -entry strategy \
     --genome genome.fasta --taxon plant --clade gymnosperm
 ```
 

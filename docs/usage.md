@@ -3,15 +3,15 @@
 ## Run it
 
 ```bash
-scripts/eukannot preflight                       # check the environment first
+scripts/symbiomics preflight                       # check the environment first
 
-scripts/eukannot run . -profile singularity,local64 \
+scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv \
     --genome genome.fasta \
     --outdir results
 ```
 
-`scripts/eukannot` is the supported entry point. Calling `nextflow` directly
+`scripts/symbiomics` is the supported entry point. Calling `nextflow` directly
 works only if your `java` is already 17–24; the launcher exists because many
 hosts default to Java 11, and it points `JAVA_CMD` at the JDK inside the
 Nextflow conda env.
@@ -19,7 +19,7 @@ Nextflow conda env.
 ### Plan first
 
 ```bash
-scripts/eukannot run . -entry strategy --genome genome.fasta --taxon plant
+scripts/symbiomics run . -entry strategy --genome genome.fasta --taxon plant
 ```
 
 Measures the genome, resolves every decision, prints `strategy.yml`, runs
@@ -28,7 +28,7 @@ nothing else. Do this before launching anything that will take days.
 ### Resume
 
 ```bash
-scripts/eukannot run . -profile singularity,local64 ... -resume
+scripts/symbiomics run . -profile singularity,local64 ... -resume
 ```
 
 ### Subsets
@@ -145,7 +145,7 @@ BAMs but only works when the Nextflow work directory and `--outdir` are on the
 explicitly first:
 
 ```bash
-NXF_WORK=/path/to/results/work scripts/eukannot run . ... --publish_mode link
+NXF_WORK=/path/to/results/work scripts/symbiomics run . ... --publish_mode link
 ```
 
 The pipeline checks this at startup and refuses rather than failing after the

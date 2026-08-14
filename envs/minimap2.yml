@@ -1,4 +1,4 @@
-name: eukannot-minimap2
+name: symbiomics-minimap2
 channels:
   - conda-forge
   - bioconda

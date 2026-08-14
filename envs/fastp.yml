@@ -1,4 +1,4 @@
-name: eukannot-fastp
+name: symbiomics-fastp
 channels:
   - conda-forge
   - bioconda

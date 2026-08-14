@@ -1,4 +1,4 @@
-name: eukannot-stringtie
+name: symbiomics-stringtie
 channels:
   - conda-forge
   - bioconda

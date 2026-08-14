@@ -1,4 +1,4 @@
-name: eukannot-phaser
+name: symbiomics-phaser
 channels:
   - conda-forge
   - bioconda

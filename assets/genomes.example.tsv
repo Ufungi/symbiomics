@@ -1,4 +1,4 @@
-# eukannot multi-genome batch table.
+# symbiomics multi-genome batch table.
 # One row = one annotation project. `extra` is a ';'-separated key=value list of
 # parameter overrides, validated against the schema -- an unknown key is a hard
 # error, so a typo cannot silently no-op.
