@@ -1,0 +1,408 @@
+{
+  "version": "31.3.1",
+  "data": "<mxfile host=\"app.diagrams.net\"><diagram name=\"페이지-1\" id=\"_pmXVGM3FxKsNd0S-Sk7\"><mxGraphModel dx=\"2491\" dy=\"1015\" grid=\"1\" gridSize=\"10\" guides=\"1\" tooltips=\"1\" connect=\"1\" arrows=\"1\" fold=\"1\" page=\"1\" pageScale=\"1\" pageWidth=\"827\" pageHeight=\"1169\" math=\"0\" shadow=\"0\"><root><mxCell id=\"0\"/><mxCell id=\"1\" parent=\"0\"/><mxCell id=\"-lJhI6550lHoW7ErUsEk-10\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-1\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-9\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-20\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-1\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeWidth=1;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-12\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-21\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-1\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-17\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-54\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-1\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\"><mxGeometry relative=\"1\" as=\"geometry\"><mxPoint x=\"620\" y=\"161.83333333333337\" as=\"targetPoint\"/></mxGeometry></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-1\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"소나무\" vertex=\"1\"><mxGeometry height=\"80\" width=\"120\" x=\"354\" y=\"150\" as=\"geometry\"/></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-8\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-2\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;fontSize=13;strokeWidth=1;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-4\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-2\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"&lt;i&gt;Paraburkholderia&lt;/i&gt;\" vertex=\"1\"><mxGeometry height=\"80\" width=\"120\" x=\"670\" y=\"460\" as=\"geometry\"/></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-6\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-3\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;exitX=1;exitY=1;exitDx=0;exitDy=0;fontSize=13;strokeWidth=1;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-4\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"310.03\" y=\"535.29\"/><mxPoint x=\"310.03\" y=\"640.03\"/></Array></mxGeometry></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-28\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-3\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;dashed=1;\" target=\"-lJhI6550lHoW7ErUsEk-14\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"-20\" y=\"480\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-2\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-3\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;fontSize=13;entryX=0.75;entryY=1;entryDx=0;entryDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-12\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"240\" y=\"430\"/><mxPoint x=\"290\" y=\"430\"/></Array><mxPoint x=\"320\" y=\"330\" as=\"targetPoint\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-3\" connectable=\"0\" parent=\"pcEvqygfAMNBlRfcQZmS-2\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"분해\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"0.7077\" y=\"1\" as=\"geometry\"><mxPoint x=\"1\" y=\"31\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-45\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-3\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\" target=\"6gXJM_62xtqHws7h9IQq-1\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"60\" y=\"464.58\"/><mxPoint x=\"60\" y=\"130\"/><mxPoint x=\"414\" y=\"130\"/></Array></mxGeometry></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-3\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"송이\" vertex=\"1\"><mxGeometry height=\"100\" width=\"120\" x=\"180\" y=\"450\" as=\"geometry\"/></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-18\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-4\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=1;entryDx=0;entryDy=0;strokeWidth=1;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"6gXJM_62xtqHws7h9IQq-4\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Mucoromycota\" vertex=\"1\"><mxGeometry height=\"80\" width=\"120\" x=\"354\" y=\"600\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-11\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-9\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;strokeWidth=1;strokeColor=#A8201A;fontSize=13;labelBackgroundColor=none;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-2\" value=\"\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-25\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-9\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;endArrow=classic;endFill=1;strokeColor=#A8201A;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fontColor=default;dashed=1;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"350\" y=\"330\"/><mxPoint x=\"350\" y=\"500\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-14\" connectable=\"0\" parent=\"-lJhI6550lHoW7ErUsEk-25\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"생장 억제\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"0.1838\" y=\"1\" as=\"geometry\"><mxPoint y=\"-20\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-9\" parent=\"1\" style=\"whiteSpace=wrap;html=1;aspect=fixed;rounded=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Aromatic&lt;div&gt;compound&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"80\" width=\"80\" x=\"374\" y=\"290\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-22\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-12\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeWidth=1;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-9\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-23\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-12\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A8201A;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"260\" y=\"410\"/><mxPoint x=\"240\" y=\"410\"/></Array></mxGeometry></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-12\" parent=\"1\" style=\"whiteSpace=wrap;html=1;aspect=fixed;rounded=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Plant litter\" vertex=\"1\"><mxGeometry height=\"80\" width=\"80\" x=\"230\" y=\"290\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-49\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-14\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\" target=\"6gXJM_62xtqHws7h9IQq-1\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-14\" parent=\"1\" style=\"whiteSpace=wrap;html=1;aspect=fixed;rounded=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Fairy&lt;div&gt;chemicals&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"60\" width=\"60\" x=\"-50\" y=\"390\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-24\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-17\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A8201A;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-15\" connectable=\"0\" parent=\"-lJhI6550lHoW7ErUsEk-24\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"탄소원\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"-0.6487\" as=\"geometry\"><mxPoint as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-16\" connectable=\"0\" parent=\"-lJhI6550lHoW7ErUsEk-24\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"탄소원\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"-0.6487\" as=\"geometry\"><mxPoint x=\"100\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-25\" connectable=\"0\" parent=\"-lJhI6550lHoW7ErUsEk-24\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"탄소원\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"-0.6487\" as=\"geometry\"><mxPoint x=\"570\" y=\"-10\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-17\" parent=\"1\" style=\"rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Monosaccharides\" vertex=\"1\"><mxGeometry height=\"60\" width=\"120\" x=\"100\" y=\"300\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-19\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-30\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-32\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-20\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-30\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-31\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-30\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"토양\" vertex=\"1\"><mxGeometry height=\"80\" width=\"120\" x=\"-210\" y=\"610\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-22\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-31\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-31\" parent=\"1\" style=\"rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Organic P\" vertex=\"1\"><mxGeometry height=\"60\" width=\"90\" x=\"-50\" y=\"690\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-21\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-32\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;entryX=0;entryY=0.5;entryDx=0;entryDy=0;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-32\" parent=\"1\" style=\"rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Organic N\" vertex=\"1\"><mxGeometry height=\"60\" width=\"90\" x=\"-50\" y=\"620\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-23\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-33\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-3\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"-lJhI6550lHoW7ErUsEk-33\" parent=\"1\" style=\"rounded=1;whiteSpace=wrap;html=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Metal&lt;div&gt;(Fe, Zn, ...)&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"60\" width=\"90\" x=\"-50\" y=\"550\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-9\" edge=\"1\" parent=\"1\" source=\"pcEvqygfAMNBlRfcQZmS-1\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-9\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-1\" parent=\"1\" style=\"whiteSpace=wrap;html=1;aspect=fixed;rounded=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Forest fire\" vertex=\"1\"><mxGeometry height=\"60\" width=\"60\" x=\"314\" y=\"220\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-5\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-3\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.001;entryY=0.427;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"6gXJM_62xtqHws7h9IQq-1\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"570.03\" y=\"520.03\"/><mxPoint x=\"570.03\" y=\"184.2\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-6\" connectable=\"0\" parent=\"pcEvqygfAMNBlRfcQZmS-5\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"Colonization\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"0.5396\" y=\"2\" as=\"geometry\"><mxPoint as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-26\" connectable=\"0\" parent=\"pcEvqygfAMNBlRfcQZmS-5\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"Root&lt;div&gt;exudate&lt;/div&gt;\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"0.5396\" y=\"2\" as=\"geometry\"><mxPoint x=\"-155\" y=\"9\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-29\" connectable=\"0\" parent=\"pcEvqygfAMNBlRfcQZmS-5\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"Hartig net&lt;div&gt;transporter&lt;/div&gt;\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"0.5396\" y=\"2\" as=\"geometry\"><mxPoint x=\"-408\" y=\"-11\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-7\" edge=\"1\" parent=\"1\" source=\"6gXJM_62xtqHws7h9IQq-2\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=1.002;entryY=0.663;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"-lJhI6550lHoW7ErUsEk-9\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"660\" y=\"500\"/><mxPoint x=\"660\" y=\"343\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-8\" connectable=\"0\" parent=\"pcEvqygfAMNBlRfcQZmS-7\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"분해&lt;div&gt;RMLE-A&lt;/div&gt;&lt;div&gt;(biosurfactant)&lt;/div&gt;\" vertex=\"1\"><mxGeometry relative=\"1\" x=\"-0.0123\" y=\"2\" as=\"geometry\"><mxPoint x=\"17\" y=\"65\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-12\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-12\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;entryX=0.267;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;fontSize=13;labelBackgroundColor=none;strokeColor=#A8201A;fontColor=default;\" target=\"pcEvqygfAMNBlRfcQZmS-1\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-40\" edge=\"1\" parent=\"1\" source=\"-lJhI6550lHoW7ErUsEk-30\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\" target=\"-lJhI6550lHoW7ErUsEk-33\"><mxGeometry relative=\"1\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-43\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"흡수\" vertex=\"1\"><mxGeometry x=\"140\" y=\"500\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-46\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"N&lt;div&gt;P&lt;/div&gt;&lt;div&gt;Metal tolerance&lt;/div&gt;\" vertex=\"1\"><mxGeometry x=\"60\" y=\"250\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-47\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"생장 촉진&lt;div&gt;?&lt;/div&gt;\" vertex=\"1\"><mxGeometry x=\"240\" y=\"600\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-48\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"?\" vertex=\"1\"><mxGeometry x=\"310\" y=\"585\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-50\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"생장 조절\" vertex=\"1\"><mxGeometry x=\"-20\" y=\"320\" as=\"geometry\"><mxPoint x=\"-2\" y=\"-4\" as=\"offset\"/></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-58\" edge=\"1\" parent=\"1\" source=\"pcEvqygfAMNBlRfcQZmS-53\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\" target=\"pcEvqygfAMNBlRfcQZmS-55\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"810\" y=\"471.67\"/><mxPoint x=\"810\" y=\"180\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-53\" parent=\"1\" style=\"ellipse;whiteSpace=wrap;html=1;shapeInside=1;rounded=1;fontSize=13;strokeWidth=1;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"&lt;i&gt;Paenibacillus&lt;/i&gt;\" vertex=\"1\"><mxGeometry height=\"80\" width=\"120\" x=\"810\" y=\"460\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-56\" edge=\"1\" parent=\"1\" source=\"pcEvqygfAMNBlRfcQZmS-55\" style=\"edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#A8201A;fontColor=#143642;fillColor=#FAE5C7;\" target=\"pcEvqygfAMNBlRfcQZmS-53\"><mxGeometry relative=\"1\" as=\"geometry\"><Array as=\"points\"><mxPoint x=\"870\" y=\"160\"/></Array></mxGeometry></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-55\" parent=\"1\" style=\"whiteSpace=wrap;html=1;aspect=fixed;rounded=1;strokeWidth=1;fontSize=13;labelBackgroundColor=none;fillColor=#FAE5C7;strokeColor=#0F8B8D;fontColor=#143642;\" value=\"Pectin&lt;div&gt;(뿌리)&lt;/div&gt;\" vertex=\"1\"><mxGeometry height=\"80\" width=\"80\" x=\"620\" y=\"120\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-59\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"분해\" vertex=\"1\"><mxGeometry x=\"810\" y=\"320\" as=\"geometry\"/></mxCell><mxCell id=\"pcEvqygfAMNBlRfcQZmS-60\" connectable=\"0\" parent=\"1\" style=\"edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=13;rounded=1;\" value=\"탄소원\" vertex=\"1\"><mxGeometry x=\"870\" y=\"290\" as=\"geometry\"/></mxCell></root></mxGraphModel></diagram></mxfile>",
+  "pages": [
+    {
+      "id": "_pmXVGM3FxKsNd0S-Sk7",
+      "name": "페이지-1",
+      "cells": [
+        {
+          "id": "1",
+          "type": "layer"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-10",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-1",
+          "target": "-lJhI6550lHoW7ErUsEk-9"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-20",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-1",
+          "target": "-lJhI6550lHoW7ErUsEk-12"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-21",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-1",
+          "target": "-lJhI6550lHoW7ErUsEk-17"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-54",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-1"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-1",
+          "type": "node",
+          "parent": "1",
+          "label": "소나무"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-8",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-2",
+          "target": "6gXJM_62xtqHws7h9IQq-4"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-2",
+          "type": "node",
+          "parent": "1",
+          "label": "Paraburkholderia",
+          "html": "<i>Paraburkholderia</i>"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-6",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-3",
+          "target": "6gXJM_62xtqHws7h9IQq-4"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-28",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-3",
+          "target": "-lJhI6550lHoW7ErUsEk-14"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-2",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-3",
+          "target": "-lJhI6550lHoW7ErUsEk-12"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-3",
+          "type": "node",
+          "parent": "pcEvqygfAMNBlRfcQZmS-2",
+          "label": "분해"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-45",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-3",
+          "target": "6gXJM_62xtqHws7h9IQq-1"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-3",
+          "type": "node",
+          "parent": "1",
+          "label": "송이"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-18",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-4",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "6gXJM_62xtqHws7h9IQq-4",
+          "type": "node",
+          "parent": "1",
+          "label": "Mucoromycota"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-11",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-9",
+          "target": "6gXJM_62xtqHws7h9IQq-2"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-25",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-9",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-14",
+          "type": "node",
+          "parent": "-lJhI6550lHoW7ErUsEk-25",
+          "label": "생장 억제"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-9",
+          "type": "node",
+          "parent": "1",
+          "label": "Aromatic\ncompound",
+          "html": "Aromatic<div>compound</div>"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-22",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-12",
+          "target": "-lJhI6550lHoW7ErUsEk-9"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-23",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-12",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-12",
+          "type": "node",
+          "parent": "1",
+          "label": "Plant litter"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-49",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-14",
+          "target": "6gXJM_62xtqHws7h9IQq-1"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-14",
+          "type": "node",
+          "parent": "1",
+          "label": "Fairy\nchemicals",
+          "html": "Fairy<div>chemicals</div>"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-24",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-17",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-15",
+          "type": "node",
+          "parent": "-lJhI6550lHoW7ErUsEk-24",
+          "label": "탄소원"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-16",
+          "type": "node",
+          "parent": "-lJhI6550lHoW7ErUsEk-24",
+          "label": "탄소원"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-25",
+          "type": "node",
+          "parent": "-lJhI6550lHoW7ErUsEk-24",
+          "label": "탄소원"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-17",
+          "type": "node",
+          "parent": "1",
+          "label": "Monosaccharides"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-19",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-30",
+          "target": "-lJhI6550lHoW7ErUsEk-32"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-20",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-30",
+          "target": "-lJhI6550lHoW7ErUsEk-31"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-30",
+          "type": "node",
+          "parent": "1",
+          "label": "토양"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-22",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-31",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-31",
+          "type": "node",
+          "parent": "1",
+          "label": "Organic P"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-21",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-32",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-32",
+          "type": "node",
+          "parent": "1",
+          "label": "Organic N"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-23",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-33",
+          "target": "6gXJM_62xtqHws7h9IQq-3"
+        },
+        {
+          "id": "-lJhI6550lHoW7ErUsEk-33",
+          "type": "node",
+          "parent": "1",
+          "label": "Metal\n(Fe, Zn, ...)",
+          "html": "Metal<div>(Fe, Zn, ...)</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-9",
+          "type": "edge",
+          "parent": "1",
+          "source": "pcEvqygfAMNBlRfcQZmS-1",
+          "target": "-lJhI6550lHoW7ErUsEk-9"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-1",
+          "type": "node",
+          "parent": "1",
+          "label": "Forest fire"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-5",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-3",
+          "target": "6gXJM_62xtqHws7h9IQq-1"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-6",
+          "type": "node",
+          "parent": "pcEvqygfAMNBlRfcQZmS-5",
+          "label": "Colonization"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-26",
+          "type": "node",
+          "parent": "pcEvqygfAMNBlRfcQZmS-5",
+          "label": "Root\nexudate",
+          "html": "Root<div>exudate</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-29",
+          "type": "node",
+          "parent": "pcEvqygfAMNBlRfcQZmS-5",
+          "label": "Hartig net\ntransporter",
+          "html": "Hartig net<div>transporter</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-7",
+          "type": "edge",
+          "parent": "1",
+          "source": "6gXJM_62xtqHws7h9IQq-2",
+          "target": "-lJhI6550lHoW7ErUsEk-9"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-8",
+          "type": "node",
+          "parent": "pcEvqygfAMNBlRfcQZmS-7",
+          "label": "분해\nRMLE-A\n(biosurfactant)",
+          "html": "분해<div>RMLE-A</div><div>(biosurfactant)</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-12",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-12",
+          "target": "pcEvqygfAMNBlRfcQZmS-1"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-40",
+          "type": "edge",
+          "parent": "1",
+          "source": "-lJhI6550lHoW7ErUsEk-30",
+          "target": "-lJhI6550lHoW7ErUsEk-33"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-43",
+          "type": "node",
+          "parent": "1",
+          "label": "흡수"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-46",
+          "type": "node",
+          "parent": "1",
+          "label": "N\nP\nMetal tolerance",
+          "html": "N<div>P</div><div>Metal tolerance</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-47",
+          "type": "node",
+          "parent": "1",
+          "label": "생장 촉진\n?",
+          "html": "생장 촉진<div>?</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-48",
+          "type": "node",
+          "parent": "1",
+          "label": "?"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-50",
+          "type": "node",
+          "parent": "1",
+          "label": "생장 조절"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-58",
+          "type": "edge",
+          "parent": "1",
+          "source": "pcEvqygfAMNBlRfcQZmS-53",
+          "target": "pcEvqygfAMNBlRfcQZmS-55"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-53",
+          "type": "node",
+          "parent": "1",
+          "label": "Paenibacillus",
+          "html": "<i>Paenibacillus</i>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-56",
+          "type": "edge",
+          "parent": "1",
+          "source": "pcEvqygfAMNBlRfcQZmS-55",
+          "target": "pcEvqygfAMNBlRfcQZmS-53"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-55",
+          "type": "node",
+          "parent": "1",
+          "label": "Pectin\n(뿌리)",
+          "html": "Pectin<div>(뿌리)</div>"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-59",
+          "type": "node",
+          "parent": "1",
+          "label": "분해"
+        },
+        {
+          "id": "pcEvqygfAMNBlRfcQZmS-60",
+          "type": "node",
+          "parent": "1",
+          "label": "탄소원"
+        }
+      ]
+    }
+  ]
+}
