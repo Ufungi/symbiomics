@@ -1,0 +1,152 @@
+<mxfile host="app.diagrams.net" agent="draw.io">
+  <diagram id="matsutake-flow-final" name="실험 순서도">
+    <mxGraphModel dx="2793" dy="1622" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" parent="1" style="text;html=0;fontSize=24;fontStyle=1;align=center;verticalAlign=middle;" value="송이-균환 핵심 미생물 방향족 해독 가설: 12개월 실험 흐름" vertex="1">
+          <mxGeometry height="45" width="1160" x="220" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="p1h" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="0-2개월&#xa;기존 데이터 재분석 및 재료 준비" vertex="1">
+          <mxGeometry height="80" width="260" x="60" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="p1" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=left;verticalAlign=middle;spacingLeft=12;fillColor=#ffffff;strokeColor=#6c8ebf;" value="산림과학원 송이 감염 소나무 뿌리 대사체 재분석&#xa;→ 뿌리 특이 방향족 2종 확정/교체&#xa;→ dose-response 농도 범위 확정&#xa;소나무 무균 육묘 준비" vertex="1">
+          <mxGeometry height="100" width="520" x="355" y="95" as="geometry" />
+        </mxCell>
+        <mxCell id="p2h" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fillColor=#d5e8d4;strokeColor=#82b366;" value="2-5개월&#xa;배양계 검증" vertex="1">
+          <mxGeometry height="80" width="260" x="60" y="260" as="geometry" />
+        </mxCell>
+        <mxCell id="dose" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#82b366;" value="① 방향족 6종 dose-response&#xa;6종 × 5농도 + 매칭 대조&#xa;→ 송이 균사 억제 농도 확정" vertex="1">
+          <mxGeometry height="100" width="280" x="355" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="k8_Iswi9oBZgIHhWc4Sb-1" edge="1" parent="1" source="filtrate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;fontSize=15;" target="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="filtrate" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#82b366;" value="② Cell-free filtrate assay&#xa;무세균 동일 배지 / WT filtrate / 방향족 재첨가&#xa;→ 송이 균사 생장 + LC-MS" vertex="1">
+          <mxGeometry height="100" width="330" x="665" y="225" as="geometry" />
+        </mxCell>
+        <mxCell id="substrate" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#82b366;" value="③ litter 추출물·PyOM plate assay&#xa;껍질·갈변 솔잎: 물 추출물&#xa;PyOM: 45 µm 이하 분말 직접 혼합&#xa;무처리 / WT → 송이 균사 생장 + LC-MS" vertex="1">
+          <mxGeometry height="130" width="400" x="1025" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="pyom" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#fff2cc;strokeColor=#d6b656;" value="PyOM 제작&#xa;750°C, 30분, Ar&#xa;동일 batch를 plate와 in planta에 사용" vertex="1">
+          <mxGeometry height="85" width="270" x="1090" y="360" as="geometry" />
+        </mxCell>
+        <mxCell id="decision" parent="1" style="rhombus;whiteSpace=wrap;html=0;fontSize=15;fontStyle=1;align=center;verticalAlign=middle;fillColor=#ffe6cc;strokeColor=#d79b00;" value="방향족 감소와&#xa;송이 균사 생장 회복이&#xa;연동되는가?" vertex="1">
+          <mxGeometry height="110" width="250" x="690" y="370" as="geometry" />
+        </mxCell>
+        <mxCell id="p3h" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fillColor=#e1d5e7;strokeColor=#9673a6;" value="5-6개월&#xa;기질 예비실험 및 유전학 재료 구축" vertex="1">
+          <mxGeometry height="80" width="260" x="60" y="535" as="geometry" />
+        </mxCell>
+        <mxCell id="pilot" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#9673a6;" value="기질 예비실험&#xa;화강암 무기질 토양 + Modified Norkrans&#39; C&#xa;송이 균주 2종 비교 → 감염률 30-50% 조합 확정" vertex="1">
+          <mxGeometry height="105" width="430" x="355" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="genetics" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#9673a6;" value="유전학 재료 구축&#xa;pcaH 결손주(ΔpcaH) + 상보주 제작&#xa;※ 배양계 검증에서 Yes일 때만 착수" vertex="1">
+          <mxGeometry height="105" width="390" x="825" y="520" as="geometry" />
+        </mxCell>
+        <mxCell id="p4h" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fillColor=#f8cecc;strokeColor=#b85450;" value="6-10개월&#xa;핵심 in planta 본실험" vertex="1">
+          <mxGeometry height="80" width="260" x="60" y="700" as="geometry" />
+        </mxCell>
+        <mxCell id="rootaxis" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=left;verticalAlign=middle;spacingLeft=12;fillColor=#ffffff;strokeColor=#b85450;" value="뿌리 방향족 축 (6조건)&#xa;A1 무첨가·무세균&#xa;A2 무첨가·WT&#xa;A3 방향족 추가·무세균&#xa;A4 방향족 추가·WT&#xa;A5 방향족 추가·ΔpcaH&#xa;A6 방향족 추가·상보주" vertex="1">
+          <mxGeometry height="170" width="300" x="355" y="665" as="geometry" />
+        </mxCell>
+        <mxCell id="outputs" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#f5f5f5;strokeColor=#666666;" value="공통 평가&#xa;균근 감염률 · Hartig net · mantle&#xa;소나무 생장 · qPCR 정착량" vertex="1">
+          <mxGeometry height="110" width="290" x="1250" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="p5h" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=16;fontStyle=1;align=center;verticalAlign=middle;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="9-12개월&#xa;대사체 및 공간 국재화" vertex="1">
+          <mxGeometry height="80" width="260" x="60" y="900" as="geometry" />
+        </mxCell>
+        <mxCell id="metabolite" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#6c8ebf;" value="대사체 분석&#xa;근권·뿌리 UHPLC-Q-TOF MS/MS&#xa;방향족 + 예상 중간대사산물 표적 정량" vertex="1">
+          <mxGeometry height="110" width="390" x="355" y="885" as="geometry" />
+        </mxCell>
+        <mxCell id="cardfish" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#6c8ebf;" value="공간 국재화&#xa;CARD-FISH: 뿌리 표면·mantle·Hartig net 인접부·균사 표면&#xa;qPCR: root-associated fraction·rhizosphere·bulk soil" vertex="1">
+          <mxGeometry height="125" width="520" x="790" y="875" as="geometry" />
+        </mxCell>
+        <mxCell id="todo" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#f5f5f5;strokeColor=#666666;dashed=1;" value="후속 ToDo 전환&#xa;• 송이 균환 Mucoromycota-Paraburkholderia 공생 기작&#xa;• Paenibacillus의 pectin 분해 매개 송이 균근화 촉진 기작" vertex="1">
+          <mxGeometry height="110" width="370" x="1230" y="505" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="p1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="dose">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="dose" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="filtrate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="filtrate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="substrate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="substrate" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="decision">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1225" y="350.03" />
+              <mxPoint x="815" y="350.03" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;fontStyle=1;endArrow=block;endFill=1;fontSize=15;" target="pilot" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;fontStyle=1;endArrow=block;endFill=1;fontSize=15;" target="genetics" value="Yes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="decision" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;fontStyle=1;endArrow=block;endFill=1;dashed=1;fontSize=15;" target="todo" value="No">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1415" y="470" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="pilot" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="rootaxis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="570" y="650" />
+              <mxPoint x="505" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="genetics" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="rootaxis">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1020" y="650" />
+              <mxPoint x="505" y="650" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="rootaxis" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="outputs">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="820" y="745" />
+              <mxPoint x="820" y="745" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="litteraxis" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="outputs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="pyomaxis" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="outputs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e13" edge="1" parent="1" source="outputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="metabolite">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1395" y="850.03" />
+              <mxPoint x="550.03" y="850.03" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e14" edge="1" parent="1" source="outputs" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=0;endArrow=block;endFill=1;fontSize=15;" target="cardfish">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1395" y="850.03" />
+              <mxPoint x="1050.03" y="850.03" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pyomaxis" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#b85450;" value="PyOM 축 (2조건)&#xa;C1 PyOM·무세균&#xa;C2 PyOM·WT" vertex="1">
+          <mxGeometry height="110" width="245" x="970" y="690" as="geometry" />
+        </mxCell>
+        <mxCell id="litteraxis" parent="1" style="rounded=1;whiteSpace=wrap;html=0;fontSize=15;align=center;verticalAlign=middle;fillColor=#ffffff;strokeColor=#b85450;" value="litter 축 (2조건)&#xa;B1 litter·무세균&#xa;B2 litter·WT" vertex="1">
+          <mxGeometry height="110" width="245" x="690" y="690" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
