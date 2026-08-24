@@ -1,0 +1,3 @@
+genome_id	fasta	taxon
+GenomeA	tests/data/mini.fasta	fungi
+GenomeB	tests/data/mini.fasta	fungi

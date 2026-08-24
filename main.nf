@@ -17,6 +17,8 @@ include { GENOME_PREP  } from './subworkflows/local/genome_prep'
 include { INPUT_CHECK_WF } from './subworkflows/local/input_check'
 include { HAPLOTYPE_PAIRING } from './subworkflows/local/haplotype_pairing'
 include { INSPECT_VARIATION_FILE } from './modules/local/variation'
+include { MULTI_GENOME_MAPPING } from './subworkflows/local/multi_genome_mapping'
+include { MULTIQC } from './modules/local/quantify'
 
 def helpMessage() {
     log.info """
@@ -48,7 +50,13 @@ def helpMessage() {
       --dry_run_strategy     resolve the execution plan and stop. Do this before
                              launching anything that will run for days.
 
-    Profiles: singularity, docker, conda, gpu, local64, test, test_fungus
+    Multi-genome symbiont mapping (-entry symbiont_mapping):
+      --input                RNA-seq samplesheet (as above)
+      --mapping_genomes      TSV: genome_id, fasta, taxon -- 2+ candidate
+                             genomes (e.g. host + symbiont) to score the same
+                             reads against. See assets/mapping_genomes.example.tsv
+
+    Profiles: singularity, docker, conda, gpu, local64, test, test_fungus, test_mapping
     """.stripIndent()
 }
 
@@ -159,6 +167,93 @@ workflow variation {
         params.resequencing_accession ?: ''
     )
     INSPECT_VARIATION_FILE.out.vcf.view { "VCF: ${it}" }
+}
+
+/*
+ * -entry symbiont_mapping -- map ONE set of transcriptome reads against
+ * SEVERAL candidate genomes (e.g. host + one or more symbiont genomes, or
+ * several candidate symbiont species of unknown identity) and compare
+ * per-genome mapping rates. This is what lets a mixed or ambiguously-sourced
+ * RNA-seq sample be assigned to the genome it actually came from, rather
+ * than committing to one genome before running anything. See
+ * docs/symbiont_mapping.md.
+ */
+workflow symbiont_mapping {
+    if( !params.input ) {
+        error "Missing required parameter: --input <RNA-seq samplesheet>"
+    }
+    if( !params.mapping_genomes ) {
+        error "Missing required parameter: --mapping_genomes <tsv: genome_id, fasta, taxon> " +
+              "-- see assets/mapping_genomes.example.tsv"
+    }
+
+    genomes_file = file(params.mapping_genomes, checkIfExists: true)
+    rows = genomes_file.readLines()
+        .findAll { it && !it.startsWith('#') && !it.startsWith('genome_id') }
+    if( rows.size() < 2 ) {
+        error "--mapping_genomes needs at least 2 genomes to compare against " +
+              "(found ${rows.size()} in ${genomes_file}) -- a single genome has " +
+              "nothing to be compared to; use the default entry point instead."
+    }
+
+    // Parsed synchronously, not inside a channel `.map` -- the table is a
+    // param known before the pipeline starts (like --genome_hb in `pairing`),
+    // so there is nothing gained by deferring it into the dataflow graph, and
+    // duplicate-id tracking is far simpler as a plain Groovy loop than as
+    // mutable state captured by a reactive closure.
+    def seen_ids = [] as Set
+    def genome_rows = rows.collect { line ->
+        def f = line.split('\t')
+        if( f.size() < 2 ) {
+            error "--mapping_genomes: malformed row (need at least genome_id, fasta): '${line}'"
+        }
+        def gid = f[0]
+        if( !seen_ids.add(gid) ) {
+            error "--mapping_genomes: duplicate genome_id '${gid}' -- ids must be unique"
+        }
+        def fasta = file(f[1], checkIfExists: true)
+        [ [ id: gid, taxon: (f.size() > 2 && f[2] != '-') ? f[2] : 'auto',
+            large_index: fasta.size() > params.size_threshold_medium ], fasta ]
+    }
+    ch_genomes = Channel.fromList(genome_rows)
+
+    INPUT_CHECK_WF(
+        file(params.input, checkIfExists: true), params.raw_dir,
+        params.strandedness, 'symbiont_mapping', params.sample
+    )
+
+    // Pre-aligned (BAM) rows are already committed to one genome and cannot
+    // be scored against the others, so INPUT_CHECK_WF.out.reads silently
+    // excludes them (see subworkflows/local/input_check). Silent is wrong
+    // here -- say what got dropped rather than letting a sample vanish from
+    // the comparison with no trace.
+    INPUT_CHECK_WF.out.prealigned
+        .map { meta, _bam -> meta.id }
+        .collect()
+        .subscribe { ids ->
+            if( ids ) {
+                log.warn "-entry symbiont_mapping: skipping ${ids.size()} pre-aligned " +
+                          "sample(s) from --input (${ids.join(', ')}) -- a BAM is already " +
+                          "aligned to one genome and cannot be compared across --mapping_genomes."
+            }
+        }
+
+    MULTI_GENOME_MAPPING(INPUT_CHECK_WF.out.reads, ch_genomes)
+
+    MULTI_GENOME_MAPPING.out.matrix.view      { "mapping matrix: ${it}" }
+    MULTI_GENOME_MAPPING.out.best_genome.view { "best-genome calls: ${it}" }
+
+    ch_versions = INPUT_CHECK_WF.out.versions
+        .mix(MULTI_GENOME_MAPPING.out.versions)
+        .unique()
+        .collectFile(name: 'versions.yml', storeDir: "${params.tracedir}", sort: true)
+
+    if( params.run_multiqc == null || params.run_multiqc ) {
+        MULTIQC(
+            MULTI_GENOME_MAPPING.out.multiqc.mix(ch_versions).collect().ifEmpty([]),
+            file("${projectDir}/assets/multiqc_config.yml")
+        )
+    }
 }
 
 workflow.onComplete {

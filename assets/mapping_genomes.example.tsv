@@ -1,0 +1,8 @@
+# symbiomics multi-genome mapping table (-entry symbiont_mapping).
+# One row = one candidate genome to score the SAME --input reads against.
+# At least 2 rows are required -- a single genome has nothing to compare to.
+# `taxon` is informational only here (auto|fungi|plant|animal|other); it is
+# not used to pick tools the way --taxon does for the main entry point.
+genome_id	fasta	taxon
+Pinde	/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.genome.fasta	plant
+Tmat	/data/snyoo/Transcriptome/Trima/ASM2607553_masked_nuc.fasta	fungi

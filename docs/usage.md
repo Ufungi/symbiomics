@@ -133,9 +133,13 @@ results/
 ├── 35_strandedness/    per-sample calls with the evidence behind them
 ├── 40_align/           *.sorted.bam (+ .csi/.bai), summaries, samtools stats
 ├── 45_assemble/        per-sample and merged StringTie GTF
+├── 60_symbiont_mapping/  -entry symbiont_mapping only: per-genome BAMs, mapping_matrix.tsv, best_genome.tsv
 ├── 95_quantify/        counts_featurecounts.tsv, counts_htseq.tsv, per-sample QC
 └── 99_report/          multiqc_report.html
 ```
+
+`60_symbiont_mapping/` only appears for `-entry symbiont_mapping` runs — see
+`docs/symbiont_mapping.md`.
 
 ### Publishing large BAM sets
 
@@ -162,6 +166,7 @@ first large BAM is written.
 | `local64` | 64-core / 480 GB host with no scheduler |
 | `test` | 75 kb smoke test |
 | `test_fungus` | *T. matsutake*, 161 Mb |
+| `test_mapping` | `-entry symbiont_mapping` smoke test (same tiny genome offered twice) |
 
 Combine them: `-profile test,singularity`.
 

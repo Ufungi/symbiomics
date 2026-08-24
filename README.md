@@ -50,6 +50,12 @@ haplotype-resolved 침엽수 게놈, 2,006개 contig, 최장 contig 2.008 Gb). �
 *   **주석 없는 strandedness 추론** — 게놈에서 직접 스플라이스 접합부 모티프
     (`GT..AG` / `CT..AC`)를 읽습니다. 파이프라인의 이 시점에는 Salmon이나
     RSeQC 방식 추론을 돌릴 전사체가 아직 없기 때문입니다.
+*   **하나의 전사체를 여러 게놈에 매핑** — `-entry symbiont_mapping`은 같은
+    RNA-seq 리드를 host와 symbiont 등 후보 게놈 여러 개에 각각 정렬해
+    샘플별 매핑률을 비교하고, 가장 잘 맞는 게놈을 판정합니다(2위와의 격차가
+    좁으면 `ambiguous`로 표시). 게놈 하나를 미리 골라 정렬하는 다른 모든
+    entry point와 달리, 이 entry point는 판단 자체를 자동화합니다.
+    `docs/symbiont_mapping.md` 참고.
 *   **우연이 아니라 설계로 haplotype을 고려함** — haplotype-resolved diploid
     조립체는 모든 카운터가 전제하는 "read 하나 = 위치 하나" 가정을 깨뜨립니다.
     `docs/haplotypes.md`가 그 함정을 명시하고, 파이프라인은 이를 우회하는
@@ -150,6 +156,7 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 | `genome.fasta` | mRNA-seq arm, 구조 주석 | 참조 게놈. 소프트마스킹 여부는 무관 — 필요하면 파이프라인이 마스킹하고, 소문자가 전혀 없는 `--premasked` 주장은 신뢰하지 않고 거부합니다. |
 | `proteome.fasta` | `-entry functional` | 예측된 단백질 서열. 이 경로에는 게놈도 samplesheet도 필요 없습니다. |
 | `genomes.tsv` | 다중 게놈 배치 | 프로젝트당 한 줄: fasta, taxon, masker, 프로젝트별 오버라이드. `assets/genomes.example.tsv` 참고. |
+| `mapping_genomes.tsv` | `-entry symbiont_mapping` | 같은 전사체를 매핑할 후보 게놈 2개 이상, 한 줄에 하나: `genome_id`, `fasta`, `taxon`. `assets/mapping_genomes.example.tsv` 참고. |
 | `reference_proteomes.tsv` | product-name 사다리 | 기능주석 product 사다리가 소비하는 가중치·라벨이 붙은 참조 프로테옴(예: Swiss-Prot, 근연종). `assets/reference_proteomes.example.tsv` 참고. |
 
 ---
@@ -180,6 +187,14 @@ scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --outdir results_functional
 ```
 
+**같은 전사체를 host/symbiont 등 여러 후보 게놈에 매핑해 비교:**
+
+```bash
+scripts/symbiomics run . -entry symbiont_mapping -profile singularity,local64 \
+    --input samplesheet.tsv --mapping_genomes mapping_genomes.tsv \
+    --outdir results_mapping
+```
+
 **며칠짜리 실행을 시작하기 전에 실행 계획 검토:**
 
 ```bash
@@ -189,7 +204,8 @@ scripts/symbiomics run . -entry strategy \
 
 더 보기: `docs/usage.md`(파라미터, 출력 구조), `docs/decisions.md`(정책
 엔진이 어떻게 판단하는지), `docs/haplotypes.md`(diploid/haplotype-resolved
-게놈), `docs/functional_annotation.md`.
+게놈), `docs/functional_annotation.md`, `docs/symbiont_mapping.md`(여러
+게놈에 대한 전사체 매핑 비교).
 
 ---
 
@@ -203,6 +219,7 @@ scripts/symbiomics run . -entry strategy \
 | `RNASEQ_ASSEMBLE` | StringTie 샘플별 조립 + 병합 | `assemble` |
 | `QUANTIFY` | featureCounts / HTSeq / Salmon, 병합된 매트릭스 | `quantify` |
 | `FUNCTIONAL` | DIAMOND-vs-Swiss-Prot / eggNOG-mapper / dbCAN v3(HMMER+DIAMOND+eCAMI) — Phase A, 배포됨; InterProScan / KofamScan / funannotate2 — Phase B, 아직 미배선 | `-entry functional` |
+| `MULTI_GENOME_MAPPING` | 같은 전사체를 후보 게놈 N개에 각각 정렬해 샘플별 매핑률 비교, best-genome 판정 | `-entry symbiont_mapping`, 독립 실행 |
 | `HAPLOTYPE_PAIRING` | minimap2 + SyRI: HA↔HB phased VCF와 allele-pairing 테이블 | `-entry pairing`, 독립 실행(그 출력이 아래 두 행에 공급됨) |
 | `QUANTIFY` (Salmon, diploid 모드) | 합산 + haplotype별 allele 매트릭스 | `--quant_engine salmon --transcript_fasta HA.CDS.fa,HB.CDS.fa --haplotype_pairs <pairing 출력>` |
 | `ALLELE_SPECIFIC_EXPRESSION` | WASP로 필터링한 HISAT2 read → phASER Gene AE | `--run_ase true --ase_phased_vcf <pairing 출력>` |
@@ -256,6 +273,18 @@ haplotype pairing과 ASE 워크플로우는 `-stub-run` 검증 및 synthetic
 구조 주석(repeat, BRAKER, Helixer, consensus)은 의도적으로 뒤로 미뤘습니다
 — 이 파이프라인의 참조 타깃에는 이미 좋은 외부 주석이 존재하므로, 기능주석과
 정량을 먼저 우선했습니다.
+
+**`-entry symbiont_mapping`** — 같은 전사체 리드를 후보 게놈 여러 개에 각각
+정렬해 샘플별 매핑률을 비교하고 best-genome을 판정하는 독립 entry point.
+host(*P. densiflora*)와 symbiont(*T. matsutake*)처럼 혼합되었거나 출처가
+불확실한 샘플을 사전에 게놈 하나로 확정하지 않고 다룰 수 있습니다.
+`bin/summarize_multi_genome_mapping.py`는 단위 테스트로 검증되었습니다.
+**아직 검증되지 않음**: 이 세션에는 Nextflow 실행 환경이 없어
+`tests/run_tests.sh`에 추가한 `-entry symbiont_mapping -stub-run` 자체를
+실행하지 못했고, 실제 HISAT2 매핑도 확인하지 않았습니다 — 코드는 기존
+DSL2 관례를 그대로 따라 작성했지만, 실제로 `scripts/symbiomics run . -entry
+symbiont_mapping -profile test_mapping -stub-run`을 돌려 배선을 확인하기
+전에는 미검증 상태로 취급하세요. `docs/symbiont_mapping.md` 참고.
 
 ---
 

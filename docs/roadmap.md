@@ -15,11 +15,18 @@ research subject is mycorrhizal symbiosis — *Pinus densiflora* (host) and
 meant as the umbrella name for that whole research direction, not just this
 one pipeline.
 
-**Scope honesty**: today, this pipeline still only does exactly what it did
-under the old name — eukaryotic (fungal/plant) genome annotation and RNA
-quantification, one organism's genome at a time. Simultaneous
+**Scope honesty**: today, this pipeline still does mostly what it did under
+the old name — eukaryotic (fungal/plant) genome annotation and RNA
+quantification, one organism's genome at a time for structural/functional
+annotation. The one exception is `-entry symbiont_mapping`: it maps a single
+transcriptome against several candidate genomes at once (host + symbiont, or
+several candidate symbionts) and compares mapping rates, which is a first,
+narrow piece of the actual "map a mixed-organism sample without committing
+to one genome up front" problem the name points at. It does not do
+deconvolution or identification beyond that comparison -- see
+`docs/symbiont_mapping.md`'s "What this deliberately is not". Simultaneous
 fungi+bacteria community analysis and metabolomics — the rest of what
-"Symbiomics" implies — have no design and no code yet. They belong to the
+"Symbiomics" implies — still have no design and no code. They belong to the
 umbrella, not to this repo's current milestones. See "Beyond this pipeline"
 at the bottom.
 
@@ -109,6 +116,34 @@ assemblies (a multi-hour-to-day computation), and the WASP mapping scripts
 end-to-end (they are not packaged on bioconda/PyPI — confirmed this session —
 and need a container built before route B is real-data-ready; tracked as an
 open gap in `docs/allele_specific_expression.md`, not silently assumed done).
+
+## v0.2 addendum — `-entry symbiont_mapping`
+
+Added after v0.2: a standalone entry point that maps ONE set of
+transcriptome reads against SEVERAL candidate genomes (host + symbiont, or
+several candidate symbiont species of unknown identity) and compares
+per-sample HISAT2 mapping rates, calling the best-matching genome per sample
+(and flagging it `ambiguous` when the top two are too close). Every other
+entry point commits to one genome before aligning anything; this is the
+first piece of code that instead lets the data pick.
+
+New: `modules/local/multi_genome_map.nf` (`HISAT2_BUILD_MULTI`,
+`HISAT2_ALIGN_MULTI`, `SUMMARIZE_MULTI_GENOME_MAPPING`),
+`subworkflows/local/multi_genome_mapping`, `bin/summarize_multi_genome_mapping.py`,
+`assets/mapping_genomes.example.tsv`, `docs/symbiont_mapping.md`,
+`conf/test_mapping.config` (`-profile test_mapping`).
+
+**Verification honesty**: `bin/summarize_multi_genome_mapping.py` is
+unit-tested against synthetic HISAT2 summaries
+(`tests/test_summarize_multi_genome_mapping.py`). The Nextflow side was
+written in a session with no Nextflow runtime available (network policy
+blocked `get.nextflow.io`; the `nextflow` PyPI wrapper failed to build), so
+the `-entry symbiont_mapping -stub-run` check added to `tests/run_tests.sh`
+has never actually been executed, and no real alignment has been run either.
+Code was hand-reviewed against this pipeline's existing DSL2 conventions
+(channel shapes, container/publishDir selector strings, the collision rule
+documented in `conf/containers.config`) but is **unverified** until that
+stub run -- and then a real run -- actually happens.
 
 ## v0.2.5 — `--organism` preset system
 

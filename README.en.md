@@ -52,6 +52,13 @@ same command runs on both; the pipeline picks different tools underneath.
     (`GT..AG` / `CT..AC`) directly out of the genome, because at this point in
     the pipeline there is no transcriptome yet to run Salmon- or RSeQC-style
     inference against.
+*   **One transcriptome mapped against several genomes** — `-entry
+    symbiont_mapping` aligns the same RNA-seq reads against several candidate
+    genomes (host and symbiont, or several candidate symbiont species) and
+    compares per-sample mapping rates, calling the best-matching genome per
+    sample (flagged `ambiguous` when the runner-up is too close). Unlike every
+    other entry point, which commits to one genome before aligning anything,
+    this one automates that call. See `docs/symbiont_mapping.md`.
 *   **Haplotype-aware by design, not by accident** — a haplotype-resolved
     diploid assembly breaks the one-read-one-locus assumption every counter is
     built on. `docs/haplotypes.md` names the trap; the pipeline implements the
@@ -152,6 +159,7 @@ lab already has on disk. See `docs/functional_annotation.md`.
 | `genome.fasta` | mRNA-seq arm, structural annotation | Reference genome. Soft-masked or not — the pipeline masks it if needed and refuses to trust a `--premasked` claim with no lowercase in it. |
 | `proteome.fasta` | `-entry functional` | Predicted protein sequences. No genome or samplesheet required for this path. |
 | `genomes.tsv` | multi-genome batches | One row per project: fasta, taxon, masker, per-project overrides. See `assets/genomes.example.tsv`. |
+| `mapping_genomes.tsv` | `-entry symbiont_mapping` | 2+ candidate genomes to map the same transcriptome against, one row each: `genome_id`, `fasta`, `taxon`. See `assets/mapping_genomes.example.tsv`. |
 | `reference_proteomes.tsv` | product-name ladder | Weighted, labelled reference proteomes (e.g. Swiss-Prot, a close relative) consumed by the functional-annotation product ladder. See `assets/reference_proteomes.example.tsv`. |
 
 ---
@@ -183,6 +191,14 @@ scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --outdir results_functional
 ```
 
+**Map the same transcriptome against several candidate genomes (host, symbiont, ...) and compare:**
+
+```bash
+scripts/symbiomics run . -entry symbiont_mapping -profile singularity,local64 \
+    --input samplesheet.tsv --mapping_genomes mapping_genomes.tsv \
+    --outdir results_mapping
+```
+
 **Review the execution plan before committing to a multi-day run:**
 
 ```bash
@@ -192,7 +208,8 @@ scripts/symbiomics run . -entry strategy \
 
 More: `docs/usage.md` (parameters, output layout), `docs/decisions.md` (how
 the policy engine chooses), `docs/haplotypes.md` (diploid/haplotype-resolved
-genomes), `docs/functional_annotation.md`.
+genomes), `docs/functional_annotation.md`, `docs/symbiont_mapping.md`
+(mapping one transcriptome against several genomes).
 
 ---
 
@@ -206,6 +223,7 @@ genomes), `docs/functional_annotation.md`.
 | `RNASEQ_ASSEMBLE` | StringTie per-sample assembly + merge | `assemble` |
 | `QUANTIFY` | featureCounts / HTSeq / Salmon, merged matrices | `quantify` |
 | `FUNCTIONAL` | DIAMOND-vs-Swiss-Prot / eggNOG-mapper / dbCAN v3 (HMMER+DIAMOND+eCAMI) — Phase A, shipped; InterProScan / KofamScan / funannotate2 — Phase B, not yet wired | `-entry functional` |
+| `MULTI_GENOME_MAPPING` | align the same transcriptome against N candidate genomes, compare per-sample mapping rates, call the best genome | `-entry symbiont_mapping`, standalone |
 | `HAPLOTYPE_PAIRING` | minimap2 + SyRI: HA↔HB phased VCF and allele-pairing table | `-entry pairing`, standalone (its output feeds the two rows below) |
 | `QUANTIFY` (Salmon, diploid mode) | summed + per-haplotype allele matrices | `--quant_engine salmon --transcript_fasta HA.CDS.fa,HB.CDS.fa --haplotype_pairs <pairing output>` |
 | `ALLELE_SPECIFIC_EXPRESSION` | WASP-filtered HISAT2 reads → phASER Gene AE | `--run_ase true --ase_phased_vcf <pairing output>` |
@@ -262,6 +280,16 @@ Structural annotation (repeats, BRAKER, Helixer, consensus) is deliberately
 later — a good external annotation already exists for this pipeline's
 reference target, so functional annotation and quantification were
 prioritized first.
+
+**`-entry symbiont_mapping`** — a standalone entry point that aligns the same
+transcriptome against several candidate genomes and calls the best-matching
+one per sample, for host/symbiont-mixed or ambiguously-sourced samples that
+no other entry point can handle without committing to one genome first.
+`bin/summarize_multi_genome_mapping.py` is unit-tested. **Not yet verified**:
+this was built in a session with no Nextflow runtime available, so neither
+the added `-entry symbiont_mapping -stub-run` check nor a real alignment has
+actually been run — treat the Nextflow side as unverified until that stub
+run (and then a real run) has been done. See `docs/symbiont_mapping.md`.
 
 ---
 
