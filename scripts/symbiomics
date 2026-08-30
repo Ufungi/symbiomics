@@ -34,7 +34,7 @@ fi
 
 if [[ ! -f "$SYMBIOMICS_CONDA_SH" ]]; then
     echo "ERROR: conda profile not found: $SYMBIOMICS_CONDA_SH" >&2
-    echo "       Fix: run ./scripts/setup.sh (auto-detects conda and writes conf/host.sh)," >&2
+    echo "       Fix: run ./setup.sh (auto-detects conda and writes conf/host.sh)," >&2
     echo "       or set SYMBIOMICS_CONDA_SH to your conda.sh explicitly." >&2
     exit 1
 fi

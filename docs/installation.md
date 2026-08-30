@@ -10,7 +10,7 @@ symbiomics를 처음부터 실행 가능한 상태까지 갖추는 단계별 안
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
-./scripts/setup.sh          # conda 자동 탐지 -> nextflow 환경 구축 -> 검증
+./setup.sh          # conda 자동 탐지 -> nextflow 환경 구축 -> 검증
 ./scripts/symbiomics preflight   # 실행 환경 점검
 ```
 
@@ -45,10 +45,10 @@ conda --version   # 확인
 `setup.sh`의 역할이며, 저장소에는 그 외에 아무것도 미리 만들 필요가 없습니다.**
 
 ```bash
-./scripts/setup.sh              # 최초: nextflow 환경 생성 (envs/runner.yml 기반)
-./scripts/setup.sh --update     # envs/runner.yml이 바뀐 뒤 동기화
-./scripts/setup.sh --check      # 설치 없이 현재 상태만 점검
-./scripts/setup.sh --pull-images # (선택) singularity 이미지 미리 당겨두기
+./setup.sh              # 최초: nextflow 환경 생성 (envs/runner.yml 기반)
+./setup.sh --update     # envs/runner.yml이 바뀐 뒤 동기화
+./setup.sh --check      # 설치 없이 현재 상태만 점검
+./setup.sh --pull-images # (선택) singularity 이미지 미리 당겨두기
 ```
 
 `setup.sh`가 하는 일:
@@ -131,7 +131,7 @@ scripts/symbiomics run . -entry strategy \
 
 - `setup.sh`가 conda를 못 찾음 → conda 설치 후 PATH에 `conda`가 있는 셸에서 재실행,
   또는 `CONDA_EXE` 지정.
-- `scripts/symbiomics`가 conda 프로파일을 못 찾음 → `./scripts/setup.sh`를
+- `scripts/symbiomics`가 conda 프로파일을 못 찾음 → `./setup.sh`를
   먼저 실행해 `conf/host.sh`를 생성하거나, `SYMBIOMICS_CONDA_SH`를 직접 지정.
 - `Cannot find Java or it's a wrong version` → `scripts/symbiomics`가
   `nextflow` 환경의 JDK를 사용하도록 되어 있으니, 환경이 올바른지

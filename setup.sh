@@ -11,15 +11,15 @@
 # Java 17-24 JDK (the scripts/symbiomics launcher resolves both). Nothing else
 # in the repo creates that env -- that is exactly what this script is for.
 #
-#   ./scripts/setup.sh               create the runner env if missing (gap-fill)
-#   ./scripts/setup.sh --update      sync the runner env to envs/runner.yml
-#   ./scripts/setup.sh --pull-images also pre-pull container images (singularity)
-#   ./scripts/setup.sh --check       only verify an existing setup, never install
+#   ./setup.sh                     create the runner env if missing (gap-fill)
+#   ./setup.sh --update            sync the runner env to envs/runner.yml
+#   ./setup.sh --pull-images       also pre-pull container images (singularity)
+#   ./setup.sh --check             only verify an existing setup, never install
 #
 # Exit codes: 0 = all good, 1 = hard failure (conda missing / env broken).
 set -uo pipefail
 
-REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER_YML="${REPO_DIR}/envs/runner.yml"
 HOST_CONF="${REPO_DIR}/conf/host.sh"
 
@@ -115,7 +115,7 @@ if env_exists; then
     fi
 else
     if [[ "$DO_CHECK" == true ]]; then
-        echo "[FAIL] env '$NF_ENV' does not exist (run ./scripts/setup.sh without --check to create it)" >&2
+        echo "[FAIL] env '$NF_ENV' does not exist (run ./setup.sh without --check to create it)" >&2
         exit 1
     fi
     echo "[runner] creating env '$NF_ENV' from $RUNNER_YML"
@@ -145,7 +145,7 @@ fi
 if [[ "$DO_CHECK" != true ]] && [[ "$CONDA_SH" != "/home/genome/anaconda3/etc/profile.d/conda.sh" ]]; then
     mkdir -p "$(dirname "$HOST_CONF")"
     {
-        echo "# Written by scripts/setup.sh -- do not edit by hand."
+        echo "# Written by setup.sh -- do not edit by hand."
         echo "# Tells scripts/symbiomics where conda lives on THIS host."
         echo "SYMBIOMICS_CONDA_SH=\"$CONDA_SH\""
     } > "$HOST_CONF"

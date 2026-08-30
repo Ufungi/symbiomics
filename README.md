@@ -110,7 +110,7 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
-./scripts/setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증
+./setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증
 scripts/symbiomics preflight  # 실행 환경 점검
 ```
 
@@ -124,9 +124,9 @@ scripts/symbiomics preflight  # 실행 환경 점검
 `setup.sh`의 역할**입니다(단 한 번만 하면 됩니다):
 
 ```bash
-./scripts/setup.sh              # 최초: envs/runner.yml로 nextflow 환경 생성
-./scripts/setup.sh --update     # envs/runner.yml이 바뀐 뒤 재동기화
-./scripts/setup.sh --check      # 설치 없이 현재 상태만 점검
+./setup.sh              # 최초: envs/runner.yml로 nextflow 환경 생성
+./setup.sh --update     # envs/runner.yml이 바뀐 뒤 재동기화
+./setup.sh --check      # 설치 없이 현재 상태만 점검
 ```
 
 개별 도구 conda 환경(`envs/*.yml`)은 `-profile conda`에서 Nextflow가
