@@ -78,4 +78,61 @@ if [[ $# -eq 0 ]]; then
     set -- run "$REPO_DIR" --help
 fi
 
+# ---------------------------------------------------------------------------
+# Config file support: `symbiomics run -c config.yaml` (or --config).
+# The config is parsed into Nextflow params (`--key value`); the CLI args
+# that come after -c are appended last so they take precedence (last wins).
+# ---------------------------------------------------------------------------
+CONFIG_PATH=""
+declare -a CLI_ARGS=()
+while (( $# > 0 )); do
+    case "$1" in
+        -c|--config)
+            if [[ $# -lt 2 ]]; then
+                echo "ERROR: -c/--config requires a path argument" >&2
+                exit 1
+            fi
+            CONFIG_PATH="$2"
+            shift 2
+            ;;
+        --config=*)
+            CONFIG_PATH="${1#*=}"
+            shift
+            ;;
+        *)
+            CLI_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+if [[ -n "$CONFIG_PATH" ]]; then
+    if [[ ! -f "$CONFIG_PATH" ]]; then
+        echo "ERROR: config file not found: $CONFIG_PATH" >&2
+        exit 1
+    fi
+    # profile the CLI already sets wins over the config.
+    has_cli_profile=0
+    for a in "${CLI_ARGS[@]}"; do
+        [[ "$a" == "-profile" || "$a" == "-profile="* ]] && has_cli_profile=1
+    done
+
+    # shellcheck disable=SC2207
+    mapfile -t CFG_LINES < <("$SCRIPT_DIR/load_config.py" "$CONFIG_PATH" --keep-profile || exit 1)
+    declare -a CFG_ARGS=()
+    for kv in "${CFG_LINES[@]}"; do
+        key="${kv%%=*}"
+        val="${kv#*=}"
+        if [[ "$key" == "profile" ]]; then
+            [[ "$has_cli_profile" -eq 0 && -n "$val" ]] && CFG_ARGS+=("-profile" "$val")
+        else
+            CFG_ARGS+=("--$key" "$val")
+        fi
+    done
+
+    set -- "${CFG_ARGS[@]}" "${CLI_ARGS[@]}"
+else
+    set -- "${CLI_ARGS[@]}"
+fi
+
 exec nextflow "$@"

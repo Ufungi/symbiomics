@@ -15,8 +15,9 @@
 알려줍니다.
 
 ```bash
-scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --outdir results
+./setup.sh                          # conda 자동 탐지 -> nextflow 환경 구축
+cp config.example.yaml config.yaml  # 입력 파일 경로/세부 설정 편집
+symbiomics run -c config.yaml       # 파이프라인 전체 실행
 ```
 
 성격이 전혀 다른 두 타깃에 대해 구축·검증했습니다: *Tricholoma matsutake*
@@ -110,8 +111,10 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
-./setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증
-scripts/symbiomics preflight  # 실행 환경 점검
+./setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증 -> PATH 등록
+# 새 셸을 열거나 source ~/.bashrc를 한 뒤:
+cp config.example.yaml config.yaml   # 경로/세부 설정 편집
+symbiomics run -c config.yaml        # 전체 파이프라인 실행
 ```
 
 전체 설치 매뉴얼(conda 설치, 런타임/프로파일 선택, DB 프로비저닝, 첫 실행,
@@ -134,25 +137,29 @@ scripts/symbiomics preflight  # 실행 환경 점검
 
 ### 2. 환경 점검
 
+`setup.sh`가 런처를 PATH에 등록하므로(새 셸 또는 `source ~/.bashrc` 후) `symbiomics`를
+어디서든 한 단어로 쓸 수 있습니다. 직접 부르려면 `scripts/symbiomics ...`를 쓰세요.
+
 ```bash
-scripts/symbiomics preflight
+symbiomics preflight
 ```
 
 Java 버전, Nextflow, Singularity/Docker, GPU, 디스크 공간, 데이터베이스
 프로비저닝을 확인하며 — 실패마다 정확한 해결 명령을 출력합니다.
-`scripts/symbiomics`이 `nextflow`를 직접 부르는 대신 지원되는 진입점입니다:
-Nextflow conda 환경에 번들된 JDK로 `JAVA_CMD`를 지정하는데, Nextflow는
-Java 17–24가 필요하지만 많은 호스트의 기본값은 Java 11이기 때문입니다.
+`symbiomics`(즉 `scripts/symbiomics`)가 `nextflow`를 직접 부르는 대신 지원되는
+진입점입니다: Nextflow conda 환경에 번들된 JDK로 `JAVA_CMD`를 지정하는데,
+Nextflow는 Java 17–24가 필요하지만 많은 호스트의 기본값은 Java 11이기
+때문입니다.
 
 ```bash
 which nextflow    # `conda activate nextflow` 이후에만 resolve 됨 — 또는
-                   # 그냥 scripts/symbiomics을 쓰면 자동으로 처리됩니다
+                   # 그냥 symbiomics을 쓰면 자동으로 처리됩니다
 ```
 
 ### 3. (선택) 기능주석용 데이터베이스 프로비저닝
 
 ```bash
-scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
+symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ```
 
 mRNA-seq arm에는 필요하지 않습니다. `-entry functional`의 Phase B
@@ -176,10 +183,20 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 
 ## 사용법
 
-**전체 실행 — 정렬, 조립, 카운트:**
+**가장 간단한 방법** — 반복 설정을 `config.yaml`에 담아 한 번에 실행합니다
+(PlaceTax의 `config.yaml` 방식과 동일). 각 키는 Nextflow 파라미터에 매핑되고,
+`profile` 키는 `-profile`이 되며, CLI 인자가 config보다 우선합니다:
 
 ```bash
-scripts/symbiomics run . -profile singularity,local64 \
+cp config.example.yaml config.yaml   # 경로/taxon/outdir 등을 여기서 편집
+symbiomics run -c config.yaml        # 전체 실행 (정렬, 조립, 카운트)
+symbiomics run -c config.yaml --genome other.fasta   # 게놈만 바꿔 재실행
+```
+
+**전체 실행 — 플래그로 직접** (정렬, 조립, 카운트):
+
+```bash
+symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta \
     --taxon plant --outdir results
 ```
@@ -187,7 +204,7 @@ scripts/symbiomics run . -profile singularity,local64 \
 **정량만, HISAT2 대신 Salmon** (BAM 생성 없음, decoy-aware 편향 보정):
 
 ```bash
-scripts/symbiomics run . -profile singularity,local64 \
+symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --quant_engine salmon \
     --transcript_fasta HA.CDS.fa --outdir results
 ```
@@ -195,7 +212,7 @@ scripts/symbiomics run . -profile singularity,local64 \
 **기능주석만 — 구조 주석 없음, 게놈 없음:**
 
 ```bash
-scripts/symbiomics run . -entry functional -profile singularity,local64 \
+symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
     --outdir results_functional
 ```
@@ -203,7 +220,7 @@ scripts/symbiomics run . -entry functional -profile singularity,local64 \
 **며칠짜리 실행을 시작하기 전에 실행 계획 검토:**
 
 ```bash
-scripts/symbiomics run . -entry strategy \
+symbiomics run . -entry strategy \
     --genome genome.fasta --taxon plant --clade gymnosperm
 ```
 

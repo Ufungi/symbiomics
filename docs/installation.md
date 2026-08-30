@@ -10,9 +10,15 @@ symbiomics를 처음부터 실행 가능한 상태까지 갖추는 단계별 안
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
-./setup.sh          # conda 자동 탐지 -> nextflow 환경 구축 -> 검증
-./scripts/symbiomics preflight   # 실행 환경 점검
+./setup.sh          # conda 자동 탐지 -> nextflow 환경 구축 -> 검증 -> PATH 등록
+# 새 셸을 열고(또는 source ~/.bashrc) 준비가 끝났으면:
+cp config.example.yaml config.yaml   # 입력 파일 경로/세부 설정을 여기서 편집
+symbiomics run -c config.yaml        # 파이프라인 전체 실행
 ```
+
+`setup.sh`가 끝나면 런처가 PATH에 등록되어, `scripts/symbiomics` 대신
+`symbiomics`를 어디서든 한 단어로 부를 수 있습니다. 직접 부르고 싶다면
+`scripts/symbiomics ...`를 그대로 써도 됩니다.
 
 ## 1. 사전 요구사항
 
@@ -87,10 +93,51 @@ scripts/symbiomics run . -profile singularity,local64 \
 `conf/local64.config`는 실험실 서버(64코어/503GB) 기준이며, 다른 호스트는
 자체 `.config` 또는 `-profile standard,conda` 등을 사용하세요.
 
+## 4.5 config.yaml로 실행 (권장)
+
+매 실행마다 플래그를 나열하는 대신, 반복 설정을 `config.yaml`에 담아 한
+번에 실행합니다 (PlaceTax의 `config.yaml` 방식과 동일):
+
+```bash
+cp config.example.yaml config.yaml   # 주석 달린 템플릿을 복사해 편집
+```
+
+`config.yaml`의 각 키는 Nextflow 파라미터(`nextflow.config`)에 매핑되며,
+`profile` 키는 `-profile` 플래그가 됩니다. 경로는 저장소 루트 기준으로
+해석되며, 파이프라인이 모르는 키는 무시됩니다.
+
+```yaml
+# config.yaml
+input: samplesheet.tsv       # 게놈 루트 기준
+genome: genome.fasta
+taxon: plant
+outdir: results
+profile: "singularity,local64"
+```
+
+그리고 한 줄로 실행:
+
+```bash
+symbiomics run -c config.yaml
+```
+
+명령줄에 직접 준 인자(플래그)가 config보다 우선합니다. 예를 들어 다음은
+게놈만 바꿔 다시 실행합니다:
+
+```bash
+symbiomics run -c config.yaml --genome other.fasta
+```
+
+`-entry`/`-profile` 같은 Nextflow 플래그도 그대로 함께 쓸 수 있습니다:
+
+```bash
+symbiomics run -c config.yaml -entry strategy --clade gymnosperm
+```
+
 ## 5. 환경 점검
 
 ```bash
-scripts/symbiomics preflight
+symbiomics preflight
 ```
 
 Java, Nextflow, 컨테이너 런타임, GPU, 디스크, `ulimit`, 로케일, 데이터베이스
@@ -104,7 +151,7 @@ Java, Nextflow, 컨테이너 런타임, GPU, 디스크, `ulimit`, 로케일, 데
 dbCAN v3)는 필요 없습니다.
 
 ```bash
-scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
+symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ```
 
 `db_dir`의 기본값은 `SYMBIOMICS_DB_DIR`(기본 `/data/db/eukannot`)입니다.
@@ -115,15 +162,17 @@ scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ```bash
 # 입력 파일 준비 (assets/samplesheet.example.tsv 참고)
 cp assets/samplesheet.example.tsv samplesheet.tsv
-# 전체 실행
-scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --taxon plant --outdir results
+# 전체 실행 -- config.yaml 경로
+symbiomics run -c config.yaml
+# 또는 플래그로 직접:
+# symbiomics run . -profile singularity,local64 \
+#     --input samplesheet.tsv --genome genome.fasta --taxon plant --outdir results
 ```
 
 며칠 걸리는 실행을 시작하기 전에 계획부터 검토하세요.
 
 ```bash
-scripts/symbiomics run . -entry strategy \
+symbiomics run . -entry strategy \
     --genome genome.fasta --taxon plant --clade gymnosperm
 ```
 
@@ -131,6 +180,8 @@ scripts/symbiomics run . -entry strategy \
 
 - `setup.sh`가 conda를 못 찾음 → conda 설치 후 PATH에 `conda`가 있는 셸에서 재실행,
   또는 `CONDA_EXE` 지정.
+- `symbiomics: command not found` → `setup.sh` 후 새 셸을 열지 않았거나
+  `source ~/.bashrc`를 안 했기 때문. 직접 `scripts/symbiomics ...`로 부르면 됩니다.
 - `scripts/symbiomics`가 conda 프로파일을 못 찾음 → `./setup.sh`를
   먼저 실행해 `conf/host.sh`를 생성하거나, `SYMBIOMICS_CONDA_SH`를 직접 지정.
 - `Cannot find Java or it's a wrong version` → `scripts/symbiomics`가

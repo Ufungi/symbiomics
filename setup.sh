@@ -154,6 +154,37 @@ elif [[ "$DO_CHECK" == true && -f "$HOST_CONF" ]]; then
     echo "[host] override present: $(cat "$HOST_CONF" | head -1)"
 fi
 
+# ------------------------------------------- register launcher on PATH
+BASH_RC="${HOME}/.bashrc"
+BIN_DIR="${REPO_DIR}/scripts"
+export_line="export PATH=\"${BIN_DIR}:\$PATH\""
+register_path() {
+    if command -v symbiomics >/dev/null 2>&1 && [[ "$(command -v symbiomics)" == "$BIN_DIR/symbiomics" ]]; then
+        ok "symbiomics already on PATH ($(command -v symbiomics))"
+        return
+    fi
+    if [[ "$DO_CHECK" == true ]]; then
+        if grep -qF "export PATH=\"${BIN_DIR}:" "$BASH_RC" 2>/dev/null; then
+            ok "symbiomics on PATH (via $BASH_RC)"
+        else
+            warn "symbiomics not on PATH yet -- run ./setup.sh (without --check) to add it"
+        fi
+        return
+    fi
+    if [[ -f "$BASH_RC" ]] && grep -qF "export PATH=\"${BIN_DIR}:" "$BASH_RC"; then
+        ok "PATH entry already present in $BASH_RC"
+        return
+    fi
+    {
+        echo ""
+        echo "# symbiomics launcher on PATH (added by setup.sh)"
+        echo "$export_line"
+    } >> "$BASH_RC"
+    ok "added symbiomics launcher to PATH ($BASH_RC)"
+    echo "       open a new shell (or: source $BASH_RC) then run: symbiomics --help"
+}
+register_path
+
 # ------------------------------------------------ optional: pull images
 if [[ "$DO_PULL" == true ]]; then
     if command -v singularity >/dev/null 2>&1 || command -v apptainer >/dev/null 2>&1; then
@@ -178,9 +209,10 @@ if (( FAILED )); then
 fi
 
 echo "== Next steps =="
-echo "  1. scripts/symbiomics preflight            # environmental health check"
+echo "  0. open a new shell (or: source \"$BASH_RC\"), then:"
+echo "     cp config.example.yaml config.yaml   # edit paths/taxon/outdir"
+echo "     symbiomics run -c config.yaml        # run the whole pipeline"
+echo "  1. symbiomics preflight                 # environmental health check"
 echo "  2. (optional) download functional-annotation DBs:"
-echo "       scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot"
-echo "  3. scripts/symbiomics run . -profile singularity,local64 --input samplesheet.tsv \\"
-echo "       --genome genome.fasta --taxon plant --outdir results"
+echo "       symbiomics run . -entry download_dbs --db_dir /data/db/eukannot"
 echo "  See docs/installation.md for the full manual."
