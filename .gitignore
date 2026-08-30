@@ -6,6 +6,9 @@ results*/
 __pycache__/
 *.pyc
 .DS_Store
+# conf/host.sh is written by scripts/setup.sh with this machine's conda.sh path.
+# It is host-specific and must never be committed.
+conf/host.sh
 # db_versions.lock.yml is per-project and SHOULD be committed with the project,
 # but never from inside the pipeline repo itself.
 assets/db_versions.lock.yml

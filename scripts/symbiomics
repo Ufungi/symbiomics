@@ -10,14 +10,32 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
+# conda.sh location, in priority order:
+#   1. SYMBIOMICS_CONDA_SH (explicit, from env or conf/host.sh)
+#   2. a conda found on PATH (portable fallback)
+#   3. the historical lab-box default (last resort)
+HOST_CONF="$(dirname "$SCRIPT_DIR")/conf/host.sh"
+if [[ -z "${SYMBIOMICS_CONDA_SH:-}" && -f "$HOST_CONF" ]]; then
+    # shellcheck disable=SC1090
+    source "$HOST_CONF"
+fi
+if [[ -z "${SYMBIOMICS_CONDA_SH:-}" ]]; then
+    CONDA_BIN="$(command -v conda || true)"
+    if [[ -n "$CONDA_BIN" ]]; then
+        CONDA_BASE="$( "$CONDA_BIN" info --base 2>/dev/null || true )"
+        if [[ -n "$CONDA_BASE" && -f "$CONDA_BASE/etc/profile.d/conda.sh" ]]; then
+            SYMBIOMICS_CONDA_SH="$CONDA_BASE/etc/profile.d/conda.sh"
+        fi
+    fi
+fi
 : "${SYMBIOMICS_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
 : "${SYMBIOMICS_NF_ENV:=nextflow}"
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 
 if [[ ! -f "$SYMBIOMICS_CONDA_SH" ]]; then
     echo "ERROR: conda profile not found: $SYMBIOMICS_CONDA_SH" >&2
-    echo "       Set SYMBIOMICS_CONDA_SH to your conda.sh, or put 'nextflow' on PATH" >&2
-    echo "       with a Java 17-24 runtime and call nextflow directly." >&2
+    echo "       Fix: run ./scripts/setup.sh (auto-detects conda and writes conf/host.sh)," >&2
+    echo "       or set SYMBIOMICS_CONDA_SH to your conda.sh explicitly." >&2
     exit 1
 fi
 

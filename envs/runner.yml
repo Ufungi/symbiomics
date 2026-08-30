@@ -1,0 +1,13 @@
+name: nextflow
+# The single conda env that boots Nextflow itself (via scripts/symbiomics).
+# It must ship Nextflow (>= 24.10) AND a Java 17-24 JDK, because Nextflow >= 24
+# refuses to start on the Java 11 that is the default on many hosts.
+#
+# scripts/setup.sh creates/updates this env from this file. Do NOT rename it
+# unless you also change SYMBIOMICS_NF_ENV and scripts/setup.sh.
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - nextflow=24.10.4
+  - openjdk=23

@@ -105,12 +105,32 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 
 ## 설치
 
-### 1. 레포지토리 클론
+**빠른 시작** (conda가 설치되어 있다면 한 명령으로 끝납니다):
 
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
+./scripts/setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증
+scripts/symbiomics preflight  # 실행 환경 점검
 ```
+
+전체 설치 매뉴얼(conda 설치, 런타임/프로파일 선택, DB 프로비저닝, 첫 실행,
+문제 해결): [`docs/installation.md`](docs/installation.md).
+
+### 1. Nextflow 실행 환경 구축
+
+`scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–24 JDK를 담은
+`nextflow` conda 환경을 자동으로 해석·사용합니다. **그 환경을 만드는 것은
+`setup.sh`의 역할**입니다(단 한 번만 하면 됩니다):
+
+```bash
+./scripts/setup.sh              # 최초: envs/runner.yml로 nextflow 환경 생성
+./scripts/setup.sh --update     # envs/runner.yml이 바뀐 뒤 재동기화
+./scripts/setup.sh --check      # 설치 없이 현재 상태만 점검
+```
+
+개별 도구 conda 환경(`envs/*.yml`)은 `-profile conda`에서 Nextflow가
+실행 시 자동으로 만듭니다 — 수동 `conda env create` 불필요.
 
 ### 2. 환경 점검
 
