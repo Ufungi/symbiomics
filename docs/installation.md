@@ -45,7 +45,7 @@ conda --version   # 확인
 
 ## 3. Nextflow 실행 환경 구축 (`setup.sh`)
 
-`scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–24 JDK를 담은
+`scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–21 JDK를 담은
 `symbiomics` conda 환경을 요구합니다. (많은 호스트의 기본 Java는 11이라
 순수 `nextflow` 바이너리가 기동을 거부합니다.) **이 환경을 만드는 것이
 `setup.sh`의 역할이며, 저장소에는 그 외에 아무것도 미리 만들 필요가 없습니다.**
@@ -63,8 +63,8 @@ conda --version   # 확인
    `conf/host.sh`에 기록합니다 — 런처(`scripts/symbiomics`)가 이 파일을 읽어
    더 이상 서버 전용 기본값(`/home/genome/...`)에 의존하지 않습니다.
 2. `envs/runner.yml`에서 `symbiomics` 환경을 생성/갱신합니다
-   (`nextflow=24.10.4`, `openjdk=23`).
-3. 환경 안의 Java 버전(17–24)과 nextflow 존재를 **검증**하고, 실패 시
+   (`nextflow=24.10.4`, `openjdk=21`).
+3. 환경 안의 Java 버전(17–21)과 nextflow 존재를 **검증**하고, 실패 시
    [FAIL] 줄을 출력하고 종료 코드 1로 실패합니다.
 
 환경 이름은 프로젝트 스코프 기본값 `symbiomics`이며 `SYMBIOMICS_NF_ENV`로

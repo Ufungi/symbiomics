@@ -97,7 +97,7 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 | | 요구사항 |
 |---|---|
 | OS | Linux |
-| 오케스트레이터 | [Nextflow](https://www.nextflow.io/) ≥ 24.10 (Java 17–24 필요) |
+| 오케스트레이터 | [Nextflow](https://www.nextflow.io/) ≥ 24.10 (Java 17–21 필요) |
 | 런타임 | [Singularity](https://sylabs.io/singularity/) 또는 Docker(권장), 또는 Conda(부분 지원 — `conf/conda.config` 참고) |
 | 저장공간 | 게놈 크기에 따라 다름; work 디렉터리에 게놈 크기의 3배 이상 확보 |
 | GPU | 선택 — 이후 마일스톤 트랙(Helixer, TMbed)에서만 사용 |
@@ -122,7 +122,7 @@ symbiomics run -c config.yaml        # 전체 파이프라인 실행
 
 ### 1. Nextflow 실행 환경 구축
 
-`scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–24 JDK를 담은
+`scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–21 JDK를 담은
 `symbiomics` conda 환경을 자동으로 해석·사용합니다. **그 환경을 만드는 것은
 `setup.sh`의 역할**입니다(단 한 번만 하면 됩니다):
 
@@ -148,11 +148,11 @@ Java 버전, Nextflow, Singularity/Docker, GPU, 디스크 공간, 데이터베�
 프로비저닝을 확인하며 — 실패마다 정확한 해결 명령을 출력합니다.
 `symbiomics`(즉 `scripts/symbiomics`)가 `nextflow`를 직접 부르는 대신 지원되는
 진입점입니다: 프로젝트 전용 conda 환경(`symbiomics`)에 번들된 JDK로 `JAVA_CMD`를
-지정하는데, Nextflow는 Java 17–24가 필요하지만 많은 호스트의 기본값은 Java 11이기
+지정하는데, Nextflow는 Java 17–21가 필요하지만 많은 호스트의 기본값은 Java 11이기
 때문입니다.
 
 ```bash
-which nextflow    # `conda activate symbiomics` 이후에만 resolve 됨 — 또는
+which nextflow    # `conda activate nextflow` 이후에만 resolve 됨 — 또는
                    # 그냥 symbiomics을 쓰면 자동으로 처리됩니다
 ```
 

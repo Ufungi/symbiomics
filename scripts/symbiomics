@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # symbiomics launcher.
 #
-# Nextflow >= 24 requires Java 17-24. The system JVM on many of our hosts is
-# Java 11, which makes the bare `nextflow` binary refuse to start. The conda
+# Nextflow >= 24 requires Java 17-21 (24.10.x tops out at 21). The system JVM on
+# many of our hosts is Java 11, which makes the bare `nextflow` binary refuse to start. The conda
 # env that ships Nextflow also ships its own JDK, so we point JAVA_CMD at it.
 # This is the only supported entry point -- see docs/troubleshooting.md.
 set -euo pipefail

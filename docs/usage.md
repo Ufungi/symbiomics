@@ -12,7 +12,7 @@ scripts/symbiomics run . -profile singularity,local64 \
 ```
 
 `scripts/symbiomics` is the supported entry point. Calling `nextflow` directly
-works only if your `java` is already 17–24; the launcher exists because many
+works only if your `java` is already 17–21; the launcher exists because many
 hosts default to Java 11, and it points `JAVA_CMD` at the JDK inside the
 Nextflow conda env.
 

@@ -98,7 +98,7 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 | | requirement |
 |---|---|
 | OS | Linux |
-| Orchestrator | [Nextflow](https://www.nextflow.io/) ≥ 24.10 (needs Java 17–24) |
+| Orchestrator | [Nextflow](https://www.nextflow.io/) ≥ 24.10 (needs Java 17–21) |
 | Runtime | [Singularity](https://sylabs.io/singularity/) or Docker (recommended), or Conda (partial coverage — see `conf/conda.config`) |
 | Storage | genome-dependent; budget ≥ 3× genome size for the work directory |
 | GPU | optional — only used by later-milestone tracks (Helixer, TMbed) |
@@ -123,12 +123,12 @@ scripts/symbiomics preflight
 Verifies Java version, Nextflow, Singularity/Docker, GPU, disk space, and
 database provisioning — each failure prints the exact fix. `scripts/symbiomics`
 is the supported entry point rather than calling `nextflow` directly: it
-points `JAVA_CMD` at the JDK bundled with the project-scoped conda environment
-(`symbiomics`, created by `./setup.sh`), because Nextflow needs Java 17–24 and
+points `JAVA_CMD` at the JDK bundled with the nextflow runner environment
+(`nextflow`, created by `./setup.sh`), because Nextflow needs Java 17–21 and
 many hosts default to Java 11.
 
 ```bash
-which nextflow    # should resolve once `conda activate symbiomics` — or just
+which nextflow    # should resolve once `conda activate nextflow` — or just
                    # use scripts/symbiomics, which does this for you
 ```
 

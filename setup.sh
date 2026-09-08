@@ -8,7 +8,7 @@
 #                                   recipe and are skipped -- see conf/conda.config)
 #
 # Either way you need a project-scoped conda env (default name: "symbiomics")
-# that ships Nextflow + a Java 17-24 JDK (the scripts/symbiomics launcher
+# that ships Nextflow + a Java 17-21 JDK (the scripts/symbiomics launcher
 # resolves both). Nothing else in the repo creates that env -- that is exactly
 # what this script is for. The name is configurable via SYMBIOMICS_NF_ENV, so
 # multiple symbiomics installs never share or tangle an env.
@@ -139,10 +139,10 @@ echo "== Verification =="
 
 JAVA_OUT="$( conda run -n "$NF_ENV" bash -c 'command -v java && java -version 2>&1 | head -1' 2>/dev/null || true )"
 JAVA_VER="$( printf '%s' "$JAVA_OUT" | grep -oE 'version "[0-9]+' | tr -dc '0-9' )"
-if [[ "$JAVA_VER" =~ ^[0-9]+$ ]] && (( JAVA_VER >= 17 && JAVA_VER <= 24 )); then
+if [[ "$JAVA_VER" =~ ^[0-9]+$ ]] && (( JAVA_VER >= 17 && JAVA_VER <= 21 )); then
     ok "java $JAVA_VER in env '$NF_ENV'"
 else
-    fail "no java 17..24 in env '$NF_ENV' (found: ${JAVA_VER:-none})"
+    fail "no java 17..21 in env '$NF_ENV' (found: ${JAVA_VER:-none})"
 fi
 
 NFV="$( conda run -n "$NF_ENV" nextflow -v 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true )"

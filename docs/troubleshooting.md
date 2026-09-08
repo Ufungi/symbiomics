@@ -4,17 +4,17 @@ Errors listed roughly in the order you are likely to hit them.
 
 ## `Cannot find Java or it's a wrong version`
 
-Nextflow needs Java 17–24. Many hosts default to Java 11.
+Nextflow needs Java 17–21. Many hosts default to Java 11.
 
 ```
 NOTE: Nextflow is trying to use the Java VM defined by the following environment variables...
 ```
 
 **Fix:** use `scripts/symbiomics`, which points `JAVA_CMD` at the JDK bundled
-with the `symbiomics` conda env. If you must call `nextflow` directly:
+with the `nextflow` conda env. If you must call `nextflow` directly:
 
 ```bash
-conda activate symbiomics
+conda activate nextflow
 export JAVA_HOME="$CONDA_PREFIX/lib/jvm"
 export JAVA_CMD="$JAVA_HOME/bin/java"
 ```

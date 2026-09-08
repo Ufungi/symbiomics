@@ -22,10 +22,10 @@ if [[ -z "$JAVA_BIN" ]]; then
     fix "run ./setup.sh (creates env '$SYMBIOMICS_NF_ENV' from envs/runner.yml)"
 else
     JV=$("$JAVA_BIN" -version 2>&1 | head -1 | sed -E 's/.*version "([0-9]+).*/\1/')
-    if [[ "$JV" =~ ^[0-9]+$ ]] && (( JV >= 17 && JV <= 24 )); then
+    if [[ "$JV" =~ ^[0-9]+$ ]] && (( JV >= 17 && JV <= 21 )); then
         ok "java $JV via $JAVA_BIN"
     else
-        fail "java $JV via $JAVA_BIN -- Nextflow needs 17..24"
+        fail "java $JV via $JAVA_BIN -- Nextflow needs 17..21"
         fix "use scripts/symbiomics (sets JAVA_CMD to the conda env JDK)"
     fi
 fi
