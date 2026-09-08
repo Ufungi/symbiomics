@@ -5,6 +5,7 @@ set -uo pipefail
 
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 DB_DIR="${1:-$SYMBIOMICS_DB_DIR}"
+: "${SYMBIOMICS_NF_ENV:=symbiomics}"
 
 FAILED=0
 ok()   { printf '[ ok ] %s\n' "$*"; }
@@ -18,7 +19,7 @@ echo "=== symbiomics preflight ==="
 JAVA_BIN="${JAVA_CMD:-$(command -v java || true)}"
 if [[ -z "$JAVA_BIN" ]]; then
     fail "no java found"
-    fix "conda create -n nextflow -c conda-forge -c bioconda nextflow openjdk=23"
+    fix "run ./setup.sh (creates env '$SYMBIOMICS_NF_ENV' from envs/runner.yml)"
 else
     JV=$("$JAVA_BIN" -version 2>&1 | head -1 | sed -E 's/.*version "([0-9]+).*/\1/')
     if [[ "$JV" =~ ^[0-9]+$ ]] && (( JV >= 17 && JV <= 24 )); then
@@ -35,7 +36,7 @@ if command -v nextflow >/dev/null 2>&1; then
     ok "nextflow ${NFV:-unknown}"
 else
     fail "nextflow not on PATH"
-    fix "conda activate nextflow   (or use scripts/symbiomics)"
+    fix "conda activate '$SYMBIOMICS_NF_ENV'   (or use scripts/symbiomics)"
 fi
 
 # --------------------------------------------------------- Containers

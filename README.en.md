@@ -123,11 +123,12 @@ scripts/symbiomics preflight
 Verifies Java version, Nextflow, Singularity/Docker, GPU, disk space, and
 database provisioning — each failure prints the exact fix. `scripts/symbiomics`
 is the supported entry point rather than calling `nextflow` directly: it
-points `JAVA_CMD` at the JDK bundled with the Nextflow conda environment,
-because Nextflow needs Java 17–24 and many hosts default to Java 11.
+points `JAVA_CMD` at the JDK bundled with the project-scoped conda environment
+(`symbiomics`, created by `./setup.sh`), because Nextflow needs Java 17–24 and
+many hosts default to Java 11.
 
 ```bash
-which nextflow    # should resolve once `conda activate nextflow` — or just
+which nextflow    # should resolve once `conda activate symbiomics` — or just
                    # use scripts/symbiomics, which does this for you
 ```
 

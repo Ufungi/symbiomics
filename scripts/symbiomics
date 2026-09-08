@@ -29,7 +29,7 @@ if [[ -z "${SYMBIOMICS_CONDA_SH:-}" ]]; then
     fi
 fi
 : "${SYMBIOMICS_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
-: "${SYMBIOMICS_NF_ENV:=nextflow}"
+: "${SYMBIOMICS_NF_ENV:=symbiomics}"
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 
 if [[ ! -f "$SYMBIOMICS_CONDA_SH" ]]; then
@@ -44,7 +44,7 @@ source "$SYMBIOMICS_CONDA_SH"
 
 if ! conda activate "$SYMBIOMICS_NF_ENV" 2>/dev/null; then
     echo "ERROR: conda env '$SYMBIOMICS_NF_ENV' not found." >&2
-    echo "       fix: conda create -n nextflow -c bioconda -c conda-forge nextflow openjdk=23" >&2
+    echo "       fix: run ./setup.sh (creates env '$SYMBIOMICS_NF_ENV' from envs/runner.yml)" >&2
     exit 1
 fi
 

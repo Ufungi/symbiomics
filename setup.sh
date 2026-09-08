@@ -7,9 +7,11 @@
 #                                   Nextflow at runtime; some tools have no conda
 #                                   recipe and are skipped -- see conf/conda.config)
 #
-# Either way you need a conda with a "nextflow" env that ships Nextflow + a
-# Java 17-24 JDK (the scripts/symbiomics launcher resolves both). Nothing else
-# in the repo creates that env -- that is exactly what this script is for.
+# Either way you need a project-scoped conda env (default name: "symbiomics")
+# that ships Nextflow + a Java 17-24 JDK (the scripts/symbiomics launcher
+# resolves both). Nothing else in the repo creates that env -- that is exactly
+# what this script is for. The name is configurable via SYMBIOMICS_NF_ENV, so
+# multiple symbiomics installs never share or tangle an env.
 #
 #   ./setup.sh                     create the runner env if missing (gap-fill)
 #   ./setup.sh --update            sync the runner env to envs/runner.yml
@@ -23,7 +25,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER_YML="${REPO_DIR}/envs/runner.yml"
 HOST_CONF="${REPO_DIR}/conf/host.sh"
 
-NF_ENV="${SYMBIOMICS_NF_ENV:-nextflow}"
+NF_ENV="${SYMBIOMICS_NF_ENV:-symbiomics}"
 
 DO_UPDATE=false
 DO_PULL=false
@@ -120,6 +122,15 @@ else
     fi
     echo "[runner] creating env '$NF_ENV' from $RUNNER_YML"
     conda env create -n "$NF_ENV" -f "$RUNNER_YML"
+fi
+
+# ------------------------------------------------------- isolation notice
+# An env named `nextflow` from an earlier setup (or from another tool) is not
+# used by this project anymore. Say so instead of letting it sit silently and
+# confuse later debugging.
+if [[ "$NF_ENV" != "nextflow" ]] && conda env list 2>/dev/null | awk '$1=="nextflow"{found=1} END{exit !found}'; then
+    warn "stale 'nextflow' env exists but is not used by this project (managing '$NF_ENV');"
+    warn "      remove it if nothing else uses it:  conda env remove -n nextflow"
 fi
 
 # ------------------------------------------------------------- verify env

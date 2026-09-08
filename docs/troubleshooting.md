@@ -10,11 +10,11 @@ Nextflow needs Java 17–24. Many hosts default to Java 11.
 NOTE: Nextflow is trying to use the Java VM defined by the following environment variables...
 ```
 
-**Fix:** use `scripts/symbiomics`, which points `JAVA_CMD` at the JDK bundled with
-the Nextflow conda env. If you must call `nextflow` directly:
+**Fix:** use `scripts/symbiomics`, which points `JAVA_CMD` at the JDK bundled
+with the `symbiomics` conda env. If you must call `nextflow` directly:
 
 ```bash
-conda activate nextflow
+conda activate symbiomics
 export JAVA_HOME="$CONDA_PREFIX/lib/jvm"
 export JAVA_CMD="$JAVA_HOME/bin/java"
 ```
