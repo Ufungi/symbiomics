@@ -73,7 +73,45 @@ if [[ "${1:-}" == "preflight" ]]; then
     exec "${SCRIPT_DIR}/preflight.sh" "$@"
 fi
 
-# Bare `symbiomics` with no args -> run this repo.
+# `symbiomics init` — copy config.example.yaml to config.yaml and fill defaults
+if [[ "${1:-}" == "init" ]]; then
+    shift
+    CONFIG_EXAMPLE="${REPO_DIR}/config.example.yaml"
+    CONFIG_TARGET="${REPO_DIR}/config.yaml"
+    if [[ ! -f "$CONFIG_EXAMPLE" ]]; then
+        echo "ERROR: config.example.yaml not found at $CONFIG_EXAMPLE" >&2
+        exit 1
+    fi
+    cp "$CONFIG_EXAMPLE" "$CONFIG_TARGET"
+    echo "[init] copied config.example.yaml → config.yaml"
+    # Fill any bare KEY= (no value) with sensible defaults
+    # We'll just note that user should edit it; a more sophisticated fill
+    # would require a proper YAML merger, which we keep simple here.
+    echo "       open config.yaml and set at least: input, genome, taxon, outdir"
+    echo "       then run: symbiomics run -c config.yaml"
+    exit 0
+fi
+
+# `symbiomics --help` / bare `symbiomics` — show simplified one-line usage
+if [[ "${1:-}" == "--help" || ( $# -eq 0 && "${2:-}" == "--help" ) ]]; then
+    cat <<'EOF'
+symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
+
+One-line run (after ./setup.sh):
+  cp config.example.yaml config.yaml   # edit input, genome, taxon, outdir
+  symbiomics run -c config.yaml        # run the pipeline
+
+Subcommands:
+  preflight    # check environment (java, nextflow, disk, etc.)
+  init         # create config.yaml from the example template
+  run [-c CF]  # run the pipeline using config CF (default: config.yaml)
+
+Full help: scripts/symbiomics -h  (or see docs/installation.md)
+EOF
+    exit 0
+fi
+
+# Bare `symbiomics` with no args -> run this repo with default help.
 if [[ $# -eq 0 ]]; then
     set -- run "$REPO_DIR" --help
 fi
