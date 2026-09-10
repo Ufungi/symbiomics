@@ -1,18 +1,12 @@
-# symbiomics RNA-seq samplesheet (tab-separated).
+# symbiomics RNA-seq samplesheet (tab-separated: sample_id<TAB>layout<TAB>...).
 #
-# Required : sample_id, and either fastq_1 or bam
-# Optional : everything else. '-' means "not set".
-#
-# layout       SE | PE | interleaved | auto   (default auto: inferred, see docs)
-# strandedness auto | unstranded | forward | reverse  (default: --strandedness)
-# read_type    short | isoseq | ont_cdna | ont_drna
-# use_for      any subset of braker,stringtie,count -- or 'all'
-# fastq_1/2    may be a comma-separated list of technical replicates
-#              (semicolon-separated if the file is .csv)
-#
-# Relative paths are resolved against --raw_dir.
+# Required: sample_id, and either fastq_1 or bam.  '-' means "not set" (never blank).
+# layout:   PE | SE | auto  (auto = infer from the reads, best for beginners)
+# fastq_1/2 relative paths resolve against --raw_dir; absolute paths are safest.
+#   fastq_1 may be a comma-separated list of technical replicates.
+# use_for:  all (default) | any subset of braker,stringtie,count
 sample_id	layout	fastq_1	fastq_2	strandedness	condition	replicate	read_type	bam	genome_id	use_for
-SRR8356879	SE	SRR8356879.fastq.gz	-	auto	fruitbody	1	short	-	Tmat	all
-MyPE01	-	MyPE01_R1.fq.gz	MyPE01_R2.fq.gz	auto	mycelium	1	short	-	Tmat	all
-MyPE02	-	A_R1.fq.gz,B_R1.fq.gz	A_R2.fq.gz,B_R2.fq.gz	forward	mycelium	2	short	-	Tmat	all
-Prealign	-	-	-	reverse	needle	1	short	/path/Prealign.sorted.bam	Pinde	stringtie,count
+MyPE01	PE	MyPE01_R1.fq.gz	MyPE01_R2.fq.gz	auto	mycelium	1	short	-	Tmat	all
+MyPE02	PE	MyPE02_R1.fq.gz	MyPE02_R2.fq.gz	auto	mycelium	2	short	-	Tmat	all
+MySE01	SE	MySE01.fastq.gz	-	auto	fruitbody	1	short	-	Tmat	all
+Prealign	-	-	-	auto	needle	1	short	/path/Prealign.sorted.bam	Pinde	stringtie,count
