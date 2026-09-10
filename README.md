@@ -188,7 +188,7 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 `profile` 키는 `-profile`이 되며, CLI 인자가 config보다 우선합니다:
 
 ```bash
-cp config.example.yaml config.yaml   # 경로/taxon/outdir 등을 여기서 편집
+cp config.example.yaml config.yaml   # project/input/genome/taxon 등을 여기서 편집
 symbiomics run -c config.yaml        # 전체 실행 (정렬, 조립, 카운트)
 symbiomics run -c config.yaml --genome other.fasta   # 게놈만 바꿔 재실행
 ```

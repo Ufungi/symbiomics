@@ -3,15 +3,15 @@
 #   cp config.example.yaml config.yaml
 #   symbiomics run -c config.yaml
 #
-# Any key here is mapped to the matching Nextflow parameter (nextflow.config).
+# Every key maps to the matching Nextflow parameter (nextflow.config).
+# `project` is symbiomics-only: output goes to output/<project>/.
 # File paths are resolved relative to this repo root unless absolute.
-# Keys the pipeline does not know are ignored (so you can leave notes in here).
+# Unknown keys are ignored (so you can leave notes in here).
 
-# --- Required inputs ---------------------------------------------------------
+project: plant
 input: samplesheet.tsv        # RNA-seq samplesheet (sample_id, fastq_1/2 or bam)
 genome: genome.fasta          # reference genome FASTA
 taxon: plant                  # auto|fungi|plant|animal|other
-outdir: results
 
 # --- Runtime -----------------------------------------------------------------
 profile: "singularity,local64"   # singularity|docker|conda, plus a host executor

@@ -14,6 +14,8 @@ Semantics:
   * repo-relative file paths are resolved to absolute paths so the pipeline
     works regardless of the launch directory.
   * unknown keys are silently ignored (never leak a bogus --param).
+  * `project` (not a Nextflow param) maps to `outdir=output/<project>`
+    PlaceTax-style; an explicit `outdir` in the config wins over `project`.
 
 Exit codes: 0 on success, 1 if the config cannot be read/parsed.
 """
@@ -107,6 +109,10 @@ def main():
             if not value:
                 value = ''
             cfg[m.group(1)] = _scalar(value)
+    # Not a Nextflow param: outdir=output/<project>, explicit outdir wins.
+    if "outdir" not in cfg and cfg.get("project"):
+        cfg["outdir"] = os.path.join("output", cfg["project"])
+
     if not cfg:
         print("ERROR: no config entries parsed from %s" % config_path, file=sys.stderr)
         return 1

@@ -221,7 +221,7 @@ fi
 
 echo "== Next steps =="
 echo "  0. open a new shell (or: source \"$BASH_RC\"), then:"
-echo "     cp config.example.yaml config.yaml   # edit paths/taxon/outdir"
+echo "     cp config.example.yaml config.yaml   # edit project/input/genome/taxon"
 echo "     symbiomics run -c config.yaml        # run the whole pipeline"
 echo "  1. symbiomics preflight                 # environmental health check"
 echo "  2. (optional) download functional-annotation DBs:"

@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# symbiomics launcher.
+# symbiomics launcher — pipeline-ordered subcommands, config-driven run.
 #
-# Nextflow >= 24 requires Java 17-21 (24.10.x tops out at 21). The system JVM on
-# many of our hosts is Java 11, which makes the bare `nextflow` binary refuse to start. The conda
-# env that ships Nextflow also ships its own JDK, so we point JAVA_CMD at it.
-# This is the only supported entry point -- see docs/troubleshooting.md.
+# Nextflow >= 24 requires Java 17-21 (24.10.x tops out at 21). The system JVM
+# on many hosts is Java 11, which makes the bare `nextflow` binary refuse to
+# start. The conda env that ships Nextflow also ships its own JDK, so we point
+# JAVA_CMD at it. This is the only supported entry point.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -14,7 +14,7 @@ REPO_DIR="$(dirname "$SCRIPT_DIR")"
 #   1. SYMBIOMICS_CONDA_SH (explicit, from env or conf/host.sh)
 #   2. a conda found on PATH (portable fallback)
 #   3. the historical lab-box default (last resort)
-HOST_CONF="$(dirname "$SCRIPT_DIR")/conf/host.sh"
+HOST_CONF="$REPO_DIR/conf/host.sh"
 if [[ -z "${SYMBIOMICS_CONDA_SH:-}" && -f "$HOST_CONF" ]]; then
     # shellcheck disable=SC1090
     source "$HOST_CONF"
@@ -29,22 +29,67 @@ if [[ -z "${SYMBIOMICS_CONDA_SH:-}" ]]; then
     fi
 fi
 : "${SYMBIOMICS_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
-: "${SYMBIOMICS_NF_ENV:=symbiomics}"
+: "${SYMBIOMICS_NF_ENV:=nextflow}"
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 
+CMD="${1:-}"
+
+# init / --help / bare symbiomics — no conda needed.
+# `symbiomics init` copies config.example.yaml → config.yaml (PlaceTax-style start).
+if [[ "$CMD" == "init" ]]; then
+    CONFIG_EXAMPLE="${REPO_DIR}/config.example.yaml"
+    CONFIG_TARGET="${REPO_DIR}/config.yaml"
+    if [[ ! -f "$CONFIG_EXAMPLE" ]]; then
+        echo "ERROR: config.example.yaml not found at $CONFIG_EXAMPLE" >&2
+        exit 1
+    fi
+    cp "$CONFIG_EXAMPLE" "$CONFIG_TARGET"
+    echo "[init] copied config.example.yaml -> config.yaml"
+    echo "       open config.yaml and set at least: project, input, genome, taxon"
+    echo "       then run: symbiomics run"
+    exit 0
+fi
+
+if [[ "$CMD" == "--help" || $# -eq 0 ]]; then
+    cat <<'HELP'
+symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
+
+PlaceTax-style one-line run (after ./setup.sh):
+  symbiomics init              # create config.yaml from the template
+  # edit config.yaml: project, input, genome, taxon (4 keys)
+  symbiomics run               # run the pipeline (config.yaml by default)
+
+Subcommands (pipeline order):
+  init         create config.yaml from config.example.yaml
+  preflight    check environment (java, nextflow, singularity, disk, db)
+  download-db  provision functional-annotation databases (functional entry)
+  strategy     show the full execution plan and stop (dry-run)
+  run          run the whole mRNA-seq pipeline
+  functional   functional annotation only (proteome input)
+
+Examples:
+  symbiomics run -c config.yaml
+  symbiomics run . --genome other.fasta          # override one param
+
+Full help: see docs/installation.md
+HELP
+    exit 0
+fi
+
+# Everything below needs the nextflow conda env.
 if [[ ! -f "$SYMBIOMICS_CONDA_SH" ]]; then
     echo "ERROR: conda profile not found: $SYMBIOMICS_CONDA_SH" >&2
     echo "       Fix: run ./setup.sh (auto-detects conda and writes conf/host.sh)," >&2
     echo "       or set SYMBIOMICS_CONDA_SH to your conda.sh explicitly." >&2
     exit 1
 fi
-
 # shellcheck disable=SC1090
 source "$SYMBIOMICS_CONDA_SH"
 
 if ! conda activate "$SYMBIOMICS_NF_ENV" 2>/dev/null; then
     echo "ERROR: conda env '$SYMBIOMICS_NF_ENV' not found." >&2
     echo "       fix: run ./setup.sh (creates env '$SYMBIOMICS_NF_ENV' from envs/runner.yml)" >&2
+    echo "       or:  conda create -n nextflow -c bioconda -c conda-forge nextflow openjdk=21" >&2
     exit 1
 fi
 
@@ -66,55 +111,30 @@ export LC_ALL="${LC_ALL:-C}"
 
 mkdir -p "$NXF_WORK" "$NXF_SINGULARITY_CACHEDIR" 2>/dev/null || true
 
-# `symbiomics preflight` is a shortcut for the shell-level checks; everything
-# else is passed straight through to nextflow.
-if [[ "${1:-}" == "preflight" ]]; then
-    shift
-    exec "${SCRIPT_DIR}/preflight.sh" "$@"
-fi
-
-# `symbiomics init` — copy config.example.yaml to config.yaml and fill defaults
-if [[ "${1:-}" == "init" ]]; then
-    shift
-    CONFIG_EXAMPLE="${REPO_DIR}/config.example.yaml"
-    CONFIG_TARGET="${REPO_DIR}/config.yaml"
-    if [[ ! -f "$CONFIG_EXAMPLE" ]]; then
-        echo "ERROR: config.example.yaml not found at $CONFIG_EXAMPLE" >&2
+# Subcommand dispatch (pipeline order).
+ENTRY=""
+case "$CMD" in
+    preflight)
+        shift
+        exec "${SCRIPT_DIR}/preflight.sh" "$@"
+        ;;
+    download-db)
+        ENTRY="download_dbs"
+        shift
+        ;;
+    strategy|functional)
+        ENTRY="$CMD"
+        shift
+        ;;
+    run)
+        shift
+        ;;
+    *)
+        echo "ERROR: unknown subcommand '$CMD'" >&2
+        echo "       try: symbiomics --help" >&2
         exit 1
-    fi
-    cp "$CONFIG_EXAMPLE" "$CONFIG_TARGET"
-    echo "[init] copied config.example.yaml → config.yaml"
-    # Fill any bare KEY= (no value) with sensible defaults
-    # We'll just note that user should edit it; a more sophisticated fill
-    # would require a proper YAML merger, which we keep simple here.
-    echo "       open config.yaml and set at least: input, genome, taxon, outdir"
-    echo "       then run: symbiomics run -c config.yaml"
-    exit 0
-fi
-
-# `symbiomics --help` / bare `symbiomics` — show simplified one-line usage
-if [[ "${1:-}" == "--help" || ( $# -eq 0 && "${2:-}" == "--help" ) ]]; then
-    cat <<'EOF'
-symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
-
-One-line run (after ./setup.sh):
-  cp config.example.yaml config.yaml   # edit input, genome, taxon, outdir
-  symbiomics run -c config.yaml        # run the pipeline
-
-Subcommands:
-  preflight    # check environment (java, nextflow, disk, etc.)
-  init         # create config.yaml from the example template
-  run [-c CF]  # run the pipeline using config CF (default: config.yaml)
-
-Full help: scripts/symbiomics -h  (or see docs/installation.md)
-EOF
-    exit 0
-fi
-
-# Bare `symbiomics` with no args -> run this repo with default help.
-if [[ $# -eq 0 ]]; then
-    set -- run "$REPO_DIR" --help
-fi
+        ;;
+esac
 
 # ---------------------------------------------------------------------------
 # Config file support: `symbiomics run -c config.yaml` (or --config).
@@ -144,6 +164,11 @@ while (( $# > 0 )); do
     esac
 done
 
+# Default to the repo's config.yaml if one exists (created by `symbiomics init`).
+if [[ -z "$CONFIG_PATH" && -f "$REPO_DIR/config.yaml" ]]; then
+    CONFIG_PATH="$REPO_DIR/config.yaml"
+fi
+
 if [[ -n "$CONFIG_PATH" ]]; then
     if [[ ! -f "$CONFIG_PATH" ]]; then
         echo "ERROR: config file not found: $CONFIG_PATH" >&2
@@ -168,9 +193,18 @@ if [[ -n "$CONFIG_PATH" ]]; then
         fi
     done
 
+    # Config args first, CLI args last -> CLI wins (last arg wins in Nextflow).
     set -- "${CFG_ARGS[@]}" "${CLI_ARGS[@]}"
 else
     set -- "${CLI_ARGS[@]}"
 fi
 
-exec nextflow "$@"
+# Pipeline path = first positional arg, default to this repo.
+if (( $# == 0 )) || [[ "$1" == -* ]]; then
+    set -- "$REPO_DIR" "$@"
+fi
+
+if [[ -n "$ENTRY" ]]; then
+    exec nextflow run "$@" -entry "$ENTRY"
+fi
+exec nextflow run "$@"

@@ -114,10 +114,10 @@ cp config.example.yaml config.yaml   # 주석 달린 템플릿을 복사해 편�
 
 ```yaml
 # config.yaml
+project: plant               # output -> output/<project>/
 input: samplesheet.tsv       # 게놈 루트 기준
 genome: genome.fasta
 taxon: plant
-outdir: results
 profile: "singularity,local64"
 ```
 
