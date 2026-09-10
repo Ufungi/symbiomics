@@ -111,7 +111,7 @@ genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.
 ```bash
 git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
-./setup.sh          # conda 탐지 -> symbiomics 실행 환경 구축 -> 검증 -> PATH 등록
+./setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증 -> PATH 등록
 # 새 셸을 열거나 source ~/.bashrc를 한 뒤:
 cp config.example.yaml config.yaml   # 경로/세부 설정 편집
 symbiomics run -c config.yaml        # 전체 파이프라인 실행
@@ -123,11 +123,11 @@ symbiomics run -c config.yaml        # 전체 파이프라인 실행
 ### 1. Nextflow 실행 환경 구축
 
 `scripts/symbiomics` 런처는 Nextflow(≥ 24.10)와 Java 17–21 JDK를 담은
-`symbiomics` conda 환경을 자동으로 해석·사용합니다. **그 환경을 만드는 것은
+`nextflow` conda 환경을 자동으로 해석·사용합니다. **그 환경을 만드는 것은
 `setup.sh`의 역할**입니다(단 한 번만 하면 됩니다):
 
 ```bash
-./setup.sh              # 최초: envs/runner.yml로 symbiomics 환경 생성
+./setup.sh              # 최초: envs/runner.yml로 nextflow 환경 생성
 ./setup.sh --update     # envs/runner.yml이 바뀐 뒤 재동기화
 ./setup.sh --check      # 설치 없이 현재 상태만 점검
 ```
@@ -147,7 +147,7 @@ symbiomics preflight
 Java 버전, Nextflow, Singularity/Docker, GPU, 디스크 공간, 데이터베이스
 프로비저닝을 확인하며 — 실패마다 정확한 해결 명령을 출력합니다.
 `symbiomics`(즉 `scripts/symbiomics`)가 `nextflow`를 직접 부르는 대신 지원되는
-진입점입니다: 프로젝트 전용 conda 환경(`symbiomics`)에 번들된 JDK로 `JAVA_CMD`를
+진입점입니다: 프로젝트 전용 conda 환경(`nextflow`)에 번들된 JDK로 `JAVA_CMD`를
 지정하는데, Nextflow는 Java 17–21가 필요하지만 많은 호스트의 기본값은 Java 11이기
 때문입니다.
 

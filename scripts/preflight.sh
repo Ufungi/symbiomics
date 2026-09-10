@@ -5,7 +5,7 @@ set -uo pipefail
 
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 DB_DIR="${1:-$SYMBIOMICS_DB_DIR}"
-: "${SYMBIOMICS_NF_ENV:=symbiomics}"
+: "${SYMBIOMICS_NF_ENV:=nextflow}"
 
 FAILED=0
 ok()   { printf '[ ok ] %s\n' "$*"; }

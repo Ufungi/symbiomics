@@ -7,7 +7,8 @@
 #                                   Nextflow at runtime; some tools have no conda
 #                                   recipe and are skipped -- see conf/conda.config)
 #
-# Either way you need a project-scoped conda env (default name: "symbiomics")
+# Either way you need a conda env (default name: "nextflow", matching
+# envs/runner.yml and the scripts/symbiomics launcher)
 # that ships Nextflow + a Java 17-21 JDK (the scripts/symbiomics launcher
 # resolves both). Nothing else in the repo creates that env -- that is exactly
 # what this script is for. The name is configurable via SYMBIOMICS_NF_ENV, so
@@ -25,7 +26,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER_YML="${REPO_DIR}/envs/runner.yml"
 HOST_CONF="${REPO_DIR}/conf/host.sh"
 
-NF_ENV="${SYMBIOMICS_NF_ENV:-symbiomics}"
+NF_ENV="${SYMBIOMICS_NF_ENV:-nextflow}"
 
 DO_UPDATE=false
 DO_PULL=false
@@ -125,12 +126,12 @@ else
 fi
 
 # ------------------------------------------------------- isolation notice
-# An env named `nextflow` from an earlier setup (or from another tool) is not
-# used by this project anymore. Say so instead of letting it sit silently and
-# confuse later debugging.
-if [[ "$NF_ENV" != "nextflow" ]] && conda env list 2>/dev/null | awk '$1=="nextflow"{found=1} END{exit !found}'; then
-    warn "stale 'nextflow' env exists but is not used by this project (managing '$NF_ENV');"
-    warn "      remove it if nothing else uses it:  conda env remove -n nextflow"
+# A `symbiomics` env from an earlier setup (the old project-scoped default) is
+# not used by this project anymore. Say so instead of letting it sit silently
+# and confuse later debugging.
+if [[ "$NF_ENV" != "symbiomics" ]] && conda env list 2>/dev/null | awk '$1=="symbiomics"{found=1} END{exit !found}'; then
+    warn "stale 'symbiomics' env exists but is not used by this project (managing '$NF_ENV');"
+    warn "      remove it if nothing else uses it:  conda env remove -n symbiomics"
 fi
 
 # ------------------------------------------------------------- verify env
