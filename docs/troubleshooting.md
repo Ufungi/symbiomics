@@ -28,13 +28,13 @@ Failed to publish file: /data/db/.../mini.fasta.fai; to: /data/snyoo/.../10_geno
 ```
 
 Hardlinks cannot cross filesystems, and the launcher puts the work directory on
-`/data/db` while `--outdir` is usually elsewhere.
+`/data/db` while the project output (`output/<project>/`) is usually elsewhere.
 
 **Fix:** either keep the default `--publish_mode copy`, or put the work dir on
 the same filesystem as the output:
 
 ```bash
-NXF_WORK=/path/to/results/work scripts/symbiomics run . ... --publish_mode link
+NXF_WORK=/path/to/work scripts/symbiomics run . ... --publish_mode link
 ```
 
 The pipeline now checks this at startup and refuses up front rather than failing

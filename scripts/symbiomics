@@ -69,7 +69,7 @@ Subcommands (pipeline order):
 
 Examples:
   symbiomics run -c config.yaml
-  symbiomics run . --genome other.fasta          # override one param
+  symbiomics run . --project plant --input samplesheet.tsv   # -> output/plant
 
 Full help: see docs/installation.md
 HELP
@@ -155,6 +155,19 @@ while (( $# > 0 )); do
             ;;
         --config=*)
             CONFIG_PATH="${1#*=}"
+            shift
+            ;;
+        --project)
+            if [[ $# -lt 2 ]]; then
+                echo "ERROR: --project requires a name argument" >&2
+                exit 1
+            fi
+            # PlaceTax-style: --project NAME == --outdir $REPO_DIR/output/NAME
+            CLI_ARGS+=("--outdir" "$REPO_DIR/output/$2")
+            shift 2
+            ;;
+        --project=*)
+            CLI_ARGS+=("--outdir" "$REPO_DIR/output/${1#*=}")
             shift
             ;;
         *)

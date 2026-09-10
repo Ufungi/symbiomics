@@ -20,7 +20,7 @@ step both routes depend on.
 scripts/symbiomics run . -entry pairing -profile singularity,local64 \
     --genome HA.genome.fasta --genome_hb HB.genome.fasta \
     --gff3_ha HA.gff3 --gff3_hb HB.gff3 \
-    --minimap_preset asm10
+    --minimap_preset asm10 --project Pinde_pairing
 ```
 
 ```
@@ -92,8 +92,8 @@ remains available regardless.
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome HA.genome.fasta --hisat2_index HA.genome \
-    --run_ase true --ase_phased_vcf results_pairing/70_haplotype_pairing/ha_hb.phased.vcf \
-    --gff3_ha HA.gff3 --outdir results
+    --run_ase true --ase_phased_vcf output/Pinde_pairing/70_haplotype_pairing/ha_hb.phased.vcf \
+    --gff3_ha HA.gff3 --project Pinde_HA
 ```
 
 Runs downstream of the **existing, unmodified HA-only HISAT2 BAM** — this is

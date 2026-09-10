@@ -25,7 +25,7 @@ echo "=============================================================="
 echo "  workflow: -stub-run (every process wired and declaring outputs)"
 echo "=============================================================="
 NXF_WORK="${NXF_WORK:-/tmp/symbiomics_stub_work_$$}" \
-    scripts/symbiomics run . -profile test -stub-run --outdir "/tmp/symbiomics_stub_out_$$" \
+    scripts/symbiomics run . -profile test -stub-run --project "symbiomics_stub_$$" \
     > /tmp/symbiomics_stub_$$.log 2>&1
 if grep -q "symbiomics completed" /tmp/symbiomics_stub_$$.log; then
     echo "  ok   stub run completed"
@@ -34,7 +34,7 @@ else
     tail -30 /tmp/symbiomics_stub_$$.log
     FAILED=1
 fi
-rm -rf "/tmp/symbiomics_stub_work_$$" "/tmp/symbiomics_stub_out_$$" "/tmp/symbiomics_stub_$$.log"
+rm -rf "/tmp/symbiomics_stub_work_$$" "$REPO_DIR/output/symbiomics_stub_$$" "/tmp/symbiomics_stub_$$.log"
 
 echo
 if (( FAILED )); then
@@ -44,4 +44,4 @@ fi
 echo "all checks passed"
 echo
 echo "Next, with containers and real data:"
-echo "  scripts/symbiomics run . -profile test,singularity --outdir results_test"
+echo "  scripts/symbiomics run . -profile test,singularity --project results_test"

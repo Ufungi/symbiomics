@@ -40,7 +40,7 @@ scripts/symbiomics run . -profile singularity,local64 \
     --hisat2_index /path/P.densiflora_v1.0_HA.genome \
     --quant_gff P.densiflora_v1.0_HA.gff3 \
     --genome_size_class huge --taxon plant --clade gymnosperm \
-    --input samplesheet.tsv --outdir results
+    --input samplesheet.tsv --project Pinde_HA
 ```
 
 **What you accept:** reads carrying an HB-specific allele align slightly worse,

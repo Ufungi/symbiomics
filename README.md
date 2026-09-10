@@ -198,7 +198,7 @@ symbiomics run -c config.yaml --genome other.fasta   # 게놈만 바꿔 재실�
 ```bash
 symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta \
-    --taxon plant --outdir results
+    --taxon plant --project plant
 ```
 
 **정량만, HISAT2 대신 Salmon** (BAM 생성 없음, decoy-aware 편향 보정):
@@ -206,7 +206,7 @@ symbiomics run . -profile singularity,local64 \
 ```bash
 symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --quant_engine salmon \
-    --transcript_fasta HA.CDS.fa --outdir results
+    --transcript_fasta HA.CDS.fa --project plant
 ```
 
 **기능주석만 — 구조 주석 없음, 게놈 없음:**
@@ -214,7 +214,7 @@ symbiomics run . -profile singularity,local64 \
 ```bash
 symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
-    --outdir results_functional
+    --project Pinde_HA
 ```
 
 **며칠짜리 실행을 시작하기 전에 실행 계획 검토:**

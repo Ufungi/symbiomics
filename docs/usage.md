@@ -8,7 +8,7 @@ scripts/symbiomics preflight                       # check the environment first
 scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv \
     --genome genome.fasta \
-    --outdir results
+    --project plant
 ```
 
 `scripts/symbiomics` is the supported entry point. Calling `nextflow` directly
@@ -73,8 +73,8 @@ against `--raw_dir`. Header aliases are accepted (`sample`, `R1`, `read1`, `fq1`
 some of them are gene-prediction evidence" without maintaining two sheets.
 
 A resolved copy is always written to
-`results/00_pipeline_info/samplesheet.resolved.tsv`. That file is the record of
-what actually ran and can be fed straight back in as `--input`.
+`output/<project>/00_pipeline_info/samplesheet.resolved.tsv`. That file is the
+record of what actually ran and can be fed straight back in as `--input`.
 
 ### SE/PE detection
 
@@ -125,8 +125,11 @@ warns loudly: mixing them in one differential-expression analysis is not valid.
 
 ## Output
 
+`project` (in `config.yaml`) or `--project NAME` (CLI) decides the output
+directory: everything lands in `output/<project>/`.
+
 ```
-results/
+output/<project>/
 ├── 00_pipeline_info/   strategy.yml, samplesheet.resolved.tsv, versions.yml, traces
 ├── 10_genome/          .fai, genome stats
 ├── 30_reads/           fastqc, trimming reports
@@ -140,12 +143,12 @@ results/
 ### Publishing large BAM sets
 
 `--publish_mode copy` is the default. `link` (hardlink) avoids duplicating the
-BAMs but only works when the Nextflow work directory and `--outdir` are on the
-**same filesystem**; the launcher puts work on `/data/db` by default, so set it
-explicitly first:
+BAMs but only works when the Nextflow work directory and the project output
+(`output/<project>/`) are on the **same filesystem**; the launcher puts work on
+`/data/db` by default, so set it explicitly first:
 
 ```bash
-NXF_WORK=/path/to/results/work scripts/symbiomics run . ... --publish_mode link
+NXF_WORK=/path/to/work scripts/symbiomics run . ... --publish_mode link
 ```
 
 The pipeline checks this at startup and refuses rather than failing after the

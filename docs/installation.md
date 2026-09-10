@@ -92,7 +92,7 @@ symbiomics의 개별 도구 conda 환경(`envs/*.yml` 22개)은 **Nextflow가 �
 
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --taxon plant --outdir results
+    --input samplesheet.tsv --genome genome.fasta --taxon plant --project plant
 ```
 
 `conf/local64.config`는 실험실 서버(64코어/503GB) 기준이며, 다른 호스트는
@@ -171,7 +171,7 @@ cp assets/samplesheet.example.tsv samplesheet.tsv
 symbiomics run -c config.yaml
 # 또는 플래그로 직접:
 # symbiomics run . -profile singularity,local64 \
-#     --input samplesheet.tsv --genome genome.fasta --taxon plant --outdir results
+#     --input samplesheet.tsv --genome genome.fasta --taxon plant --project plant
 ```
 
 며칠 걸리는 실행을 시작하기 전에 계획부터 검토하세요.

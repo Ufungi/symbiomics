@@ -9,7 +9,7 @@ and zero functional annotation.
 ```bash
 scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
-    --outdir results_functional_HA
+    --project Pinde_HA
 ```
 
 ## Branching
@@ -142,7 +142,7 @@ Each haplotype is a separate protein FASTA, so run it twice:
 for hap in HA HB; do
     scripts/symbiomics run . -entry functional -profile singularity,local64 \
         --proteome ${hap}.PEP.fa --genome_id Pinde_${hap} --taxon plant \
-        --outdir results_functional_${hap}
+        --project Pinde_${hap}
 done
 ```
 

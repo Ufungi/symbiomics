@@ -16,7 +16,7 @@ tells you why — before spending a single core-hour.
 
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --outdir results
+    --input samplesheet.tsv --genome genome.fasta --project plant
 ```
 
 Built and verified against two very different targets: *Tricholoma matsutake*
@@ -164,7 +164,7 @@ lab already has on disk. See `docs/functional_annotation.md`.
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome genome.fasta \
-    --taxon plant --outdir results
+    --taxon plant --project plant
 ```
 
 **Quantification only, with Salmon instead of HISAT2** (no BAM produced,
@@ -173,7 +173,7 @@ decoy-aware bias correction):
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --quant_engine salmon \
-    --transcript_fasta HA.CDS.fa --outdir results
+    --transcript_fasta HA.CDS.fa --project plant
 ```
 
 **Functional annotation only — no structural annotation, no genome:**
@@ -181,7 +181,7 @@ scripts/symbiomics run . -profile singularity,local64 \
 ```bash
 scripts/symbiomics run . -entry functional -profile singularity,local64 \
     --proteome HA.PEP.fa --genome_id Pinde_HA --taxon plant \
-    --outdir results_functional
+    --project Pinde_HA
 ```
 
 **Review the execution plan before committing to a multi-day run:**

@@ -1,7 +1,7 @@
 work/
 .nextflow/
 .nextflow.log*
-results*/
+output/
 *.sif
 __pycache__/
 *.pyc
@@ -12,5 +12,3 @@ conf/host.sh
 # db_versions.lock.yml is per-project and SHOULD be committed with the project,
 # but never from inside the pipeline repo itself.
 assets/db_versions.lock.yml
-results_test*/
-results_stub*/
