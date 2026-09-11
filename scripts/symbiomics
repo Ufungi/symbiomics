@@ -92,13 +92,37 @@ if [[ "$CMD" == "init" ]]; then
         cp "$REPO_DIR/assets/genomes.example.tsv" "${PROJ_DIR}/input/genomes.tsv"
         cp "$REPO_DIR/assets/reference_proteomes.example.tsv" "${PROJ_DIR}/input/reference_proteomes.tsv"
         cat > "${PROJ_DIR}/config.yaml" <<EOF
-project: ${PROJ}
-input: input/samplesheet.tsv
-genome: input/genome.fasta
-taxon: auto
+# symbiomics project configuration (project/${PROJ}/)
+#
+# Quick flow:
+#   1. edit input/samplesheet.tsv   (required) — sample_id + fastq_1/2 or bam,
+#      '-' means "not set" (never blank); layout/strandedness can be 'auto'
+#   2. put your reference genome FASTA into input/genome.fasta
+#   3. run: symbiomics run --project ${PROJ}
+#   all results land in output/  (layout: see docs/usage.md)
+#
+# Paths in this file are relative to THIS directory (project/${PROJ}/),
+# so the project is self-contained and portable.
+# Unknown keys are ignored (you can keep notes in here).
+
+project: ${PROJ}                   # project name; output goes to output/
+input: input/samplesheet.tsv       # RNA-seq samplesheet (edit this first)
+genome: input/genome.fasta         # reference genome FASTA (drop the file in input/)
+taxon: auto                        # auto|fungi|plant|animal|other
+                                   #   auto = clade guessed from the genome
 
 # --- Runtime -----------------------------------------------------------------
-profile: "singularity,local64"
+profile: "singularity,local64"     # singularity|docker|conda + a host executor
+                                   # (conf/local64.config is the lab box)
+
+# --- Optional, example values you can uncomment/adjust -----------------------
+# counter: featurecounts           # featurecounts|htseq|both|none
+# quant_engine: hisat2             # hisat2|salmon
+# steps: all                       # all|align|assemble|quantify|...
+# run_ase: false                   # WASP + phASER allele-specific expression
+# on_missing_tool: skip            # skip|fail
+# time_budget: null                # per heavy track, e.g. "240.h"
+# genome_id: null                  # auto <- genome basename
 EOF
         echo "[init] created project/${PROJ}/"
         echo "       input/samplesheet.tsv, input/genomes.tsv, input/reference_proteomes.tsv"

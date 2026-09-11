@@ -112,7 +112,8 @@ symbiomics run --project matsutake   # project/matsutake/config.yaml 자동 사�
 
 `project/<name>/input/`에는 시작 파일이 복사되어 있습니다:
 `samplesheet.tsv`, `genomes.tsv`, `reference_proteomes.tsv` — 필요한 것만
-편집하면 됩니다.
+편집하면 됩니다. 생성된 `config.yaml`도 키마다 주석과 옵션 예시가 붙어
+있어, 주석만 읽어도 시작 방법을 알 수 있습니다.
 
 수동 설정을 원하면 템플릿을 복사해 쓰는 방법도 그대로 유효합니다:
 
