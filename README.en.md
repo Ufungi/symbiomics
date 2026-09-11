@@ -15,8 +15,10 @@ genome annotation. It reads the genome first, decides how to handle it, and
 tells you why — before spending a single core-hour.
 
 ```bash
-scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --project plant
+./setup.sh                          # conda auto-detect -> nextflow env build
+symbiomics init -p matsutake        # scaffold project/matsutake/ (input/, output/, config.yaml)
+# edit project/matsutake/input/samplesheet.tsv, drop genome.fasta into input/
+symbiomics run --project matsutake  # run the whole pipeline (results -> project/matsutake/output/)
 ```
 
 Built and verified against two very different targets: *Tricholoma matsutake*

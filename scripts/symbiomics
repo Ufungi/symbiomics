@@ -35,8 +35,80 @@ fi
 CMD="${1:-}"
 
 # init / --help / bare symbiomics — no conda needed.
-# `symbiomics init` copies config.example.yaml → config.yaml (PlaceTax-style start).
+# `symbiomics init` copies config.example.yaml -> config.yaml (PlaceTax-style start);
+# `symbiomics init -p <name>` scaffolds project/<name>/ with starter files.
 if [[ "$CMD" == "init" ]]; then
+    shift
+    PROJ=""
+    while (( $# > 0 )); do
+        case "$1" in
+            -p|--project)
+                if [[ $# -lt 2 ]]; then
+                    echo "ERROR: init -p/--project requires a project name" >&2
+                    exit 1
+                fi
+                PROJ="$2"
+                shift 2
+                ;;
+            --project=*)
+                PROJ="${1#*=}"
+                shift
+                ;;
+            -h|--help)
+                echo "Usage: symbiomics init [-p <project-name>]" >&2
+                echo "  (no args)  copy config.example.yaml -> config.yaml" >&2
+                echo "  -p NAME    scaffold project/NAME/ (input/, output/, config.yaml)" >&2
+                exit 0
+                ;;
+            *)
+                echo "ERROR: unknown init option '$1'" >&2
+                exit 1
+                ;;
+        esac
+    done
+
+    if [[ -n "$PROJ" ]]; then
+        # Scaffold a new project: project/<name>/input (starter files) + output.
+        if [[ ! "$PROJ" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+            echo "ERROR: invalid project name '$PROJ'" >&2
+            echo "       use letters, digits, '.', '_', '-' (no slashes or spaces)" >&2
+            exit 1
+        fi
+        PROJ_DIR="${REPO_DIR}/project/${PROJ}"
+        if [[ -e "$PROJ_DIR" ]]; then
+            echo "ERROR: project already exists: $PROJ_DIR" >&2
+            echo "       pick a different name or remove it first" >&2
+            exit 1
+        fi
+        mkdir -p "${PROJ_DIR}/input" "${PROJ_DIR}/output"
+        for tpl in samplesheet.example.tsv genomes.example.tsv reference_proteomes.example.tsv; do
+            src="${REPO_DIR}/assets/${tpl}"
+            if [[ ! -f "$src" ]]; then
+                echo "ERROR: template not found: $src" >&2
+                exit 1
+            fi
+        done
+        cp "$REPO_DIR/assets/samplesheet.example.tsv" "${PROJ_DIR}/input/samplesheet.tsv"
+        cp "$REPO_DIR/assets/genomes.example.tsv" "${PROJ_DIR}/input/genomes.tsv"
+        cp "$REPO_DIR/assets/reference_proteomes.example.tsv" "${PROJ_DIR}/input/reference_proteomes.tsv"
+        cat > "${PROJ_DIR}/config.yaml" <<EOF
+project: ${PROJ}
+input: input/samplesheet.tsv
+genome: input/genome.fasta
+taxon: auto
+
+# --- Runtime -----------------------------------------------------------------
+profile: "singularity,local64"
+EOF
+        echo "[init] created project/${PROJ}/"
+        echo "       input/samplesheet.tsv, input/genomes.tsv, input/reference_proteomes.tsv"
+        echo "       input/genome.fasta   <- put your reference genome FASTA here"
+        echo "       output/              <- all results land here"
+        echo "       config.yaml (project: ${PROJ})"
+        echo "       then run: symbiomics run --project ${PROJ}"
+        exit 0
+    fi
+
     CONFIG_EXAMPLE="${REPO_DIR}/config.example.yaml"
     CONFIG_TARGET="${REPO_DIR}/config.yaml"
     if [[ ! -f "$CONFIG_EXAMPLE" ]]; then
@@ -54,22 +126,32 @@ if [[ "$CMD" == "--help" || $# -eq 0 ]]; then
     cat <<'HELP'
 symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
 
-PlaceTax-style one-line run (after ./setup.sh):
-  symbiomics init              # create config.yaml from the template
-  # edit config.yaml: project, input, genome, taxon (4 keys)
-  symbiomics run               # run the pipeline (config.yaml by default)
+Start a project (after ./setup.sh):
+  symbiomics init -p <name>        # scaffold project/<name>/ (starter files + config)
+  # edit project/<name>/input/samplesheet.tsv, put your genome.fasta in input/
+  symbiomics run --project <name>  # run; results go to project/<name>/output/
 
 Subcommands (pipeline order):
-  init         create config.yaml from config.example.yaml
+  init         scaffold a project: init -p <name> (or plain init -> config.yaml)
   preflight    check environment (java, nextflow, singularity, disk, db)
   download-db  provision functional-annotation databases (functional entry)
   strategy     show the full execution plan and stop (dry-run)
   run          run the whole mRNA-seq pipeline
   functional   functional annotation only (proteome input)
 
+Starter files (init -p <name> copies these into project/<name>/input/):
+  samplesheet.tsv           RNA-seq samplesheet (sample_id, fastq_1/2 or bam) [required]
+  genomes.tsv               multi-genome batch table, one row per genome      [optional]
+  reference_proteomes.tsv   weighted reference proteomes for product naming   [optional]
+  config.yaml               run config: project/input/genome/taxon/profile
+
+Output:
+  project/<name>/output/     all results land here (structure: docs/usage.md)
+
 Examples:
-  symbiomics run -c config.yaml
-  symbiomics run . --project plant --input samplesheet.tsv   # -> output/plant
+  symbiomics init -p matsutake
+  symbiomics run --project matsutake
+  symbiomics run -c config.yaml --genome other.fasta    # override one param
 
 Full help: see docs/installation.md
 HELP
@@ -162,12 +244,21 @@ while (( $# > 0 )); do
                 echo "ERROR: --project requires a name argument" >&2
                 exit 1
             fi
-            # PlaceTax-style: --project NAME == --outdir $REPO_DIR/output/NAME
-            CLI_ARGS+=("--outdir" "$REPO_DIR/output/$2")
+            # PlaceTax-style: --project NAME == --outdir $REPO_DIR/project/NAME/output.
+            # init -p scaffolds project/NAME/; its config.yaml is auto-loaded
+            # here unless an explicit -c/--config was already given.
+            if [[ -z "$CONFIG_PATH" && -f "$REPO_DIR/project/$2/config.yaml" ]]; then
+                CONFIG_PATH="$REPO_DIR/project/$2/config.yaml"
+            fi
+            CLI_ARGS+=("--outdir" "$REPO_DIR/project/$2/output")
             shift 2
             ;;
         --project=*)
-            CLI_ARGS+=("--outdir" "$REPO_DIR/output/${1#*=}")
+            _proj="${1#*=}"
+            if [[ -z "$CONFIG_PATH" && -f "$REPO_DIR/project/$_proj/config.yaml" ]]; then
+                CONFIG_PATH="$REPO_DIR/project/$_proj/config.yaml"
+            fi
+            CLI_ARGS+=("--outdir" "$REPO_DIR/project/$_proj/output")
             shift
             ;;
         *)

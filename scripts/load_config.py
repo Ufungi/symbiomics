@@ -11,11 +11,13 @@ prints one `KEY=VALUE` per line.
 
 Semantics:
   * non-scalar values appear now as empty (they are not used by this subset).
-  * repo-relative file paths are resolved to absolute paths so the pipeline
-    works regardless of the launch directory.
+  * relative file paths resolve against the directory of this config file
+    itself, so a project config under project/<name>/ is self-contained;
+    absolute paths pass through unchanged.
   * unknown keys are silently ignored (never leak a bogus --param).
-  * `project` (not a Nextflow param) maps to `outdir=output/<project>`
-    PlaceTax-style; an explicit `outdir` in the config wins over `project`.
+  * `project` (not a Nextflow param) maps to
+    outdir=project/<project>/output PlaceTax-style; an explicit `outdir` in
+    the config wins over `project`.
 
 Exit codes: 0 on success, 1 if the config cannot be read/parsed.
 """
@@ -93,6 +95,8 @@ def main():
     config_path = sys.argv[1]
     keep_profile = len(sys.argv) > 2 and sys.argv[2] == "--keep-profile"
 
+    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
     cfg = {}
     with open(config_path, encoding="utf-8") as fh:
         for lineno, line in enumerate(fh, 1):
@@ -109,21 +113,21 @@ def main():
             if not value:
                 value = ''
             cfg[m.group(1)] = _scalar(value)
-    # Not a Nextflow param: outdir=output/<project>, explicit outdir wins.
+    # Not a Nextflow param: outdir=project/<project>/output, explicit outdir wins.
     if "outdir" not in cfg and cfg.get("project"):
-        cfg["outdir"] = os.path.join("output", cfg["project"])
+        cfg["outdir"] = os.path.join(repo_root, "project", cfg["project"], "output")
 
     if not cfg:
         print("ERROR: no config entries parsed from %s" % config_path, file=sys.stderr)
         return 1
 
-    repo_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    config_dir = os.path.dirname(os.path.abspath(config_path))
     for key, value in cfg.items():
         if key not in KNOWN and key not in RESERVED:
             continue
         if key == "profile" and not keep_profile:
             continue
-        print("%s=%s" % (key, _render(value, repo_root)))
+        print("%s=%s" % (key, _render(value, config_dir)))
     return 0
 
 

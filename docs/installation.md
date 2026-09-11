@@ -12,8 +12,8 @@ git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
 ./setup.sh          # conda 자동 탐지 -> nextflow 환경 구축 -> 검증 -> PATH 등록
 # 새 셸을 열고(또는 source ~/.bashrc) 준비가 끝났으면:
-cp config.example.yaml config.yaml   # 입력 파일 경로/세부 설정을 여기서 편집
-symbiomics run -c config.yaml        # 파이프라인 전체 실행
+symbiomics init -p matsutake         # project/matsutake/ 생성 (input/, output/, config.yaml)
+symbiomics run --project matsutake   # 파이프라인 전체 실행
 ```
 
 `setup.sh`가 끝나면 런처가 PATH에 등록되어, `scripts/symbiomics` 대신
@@ -98,24 +98,37 @@ scripts/symbiomics run . -profile singularity,local64 \
 `conf/local64.config`는 실험실 서버(64코어/503GB) 기준이며, 다른 호스트는
 자체 `.config` 또는 `-profile standard,conda` 등을 사용하세요.
 
-## 4.5 config.yaml로 실행 (권장)
+## 4.5 프로젝트 시작: init -p (권장)
 
-매 실행마다 플래그를 나열하는 대신, 반복 설정을 `config.yaml`에 담아 한
-번에 실행합니다 (PlaceTax의 `config.yaml` 방식과 동일):
+매 실행마다 플래그를 나열하는 대신, 프로젝트 단위로 시작합니다.
+`init -p <name>`이 `project/<name>/` 아래 시작 파일(input/)과
+결과 폴더(output/), 설정(config.yaml)을 한 번에 만듭니다:
+
+```bash
+symbiomics init -p matsutake   # project/matsutake/{input,output,config.yaml}
+# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+symbiomics run --project matsutake   # project/matsutake/config.yaml 자동 사용
+```
+
+`project/<name>/input/`에는 시작 파일이 복사되어 있습니다:
+`samplesheet.tsv`, `genomes.tsv`, `reference_proteomes.tsv` — 필요한 것만
+편집하면 됩니다.
+
+수동 설정을 원하면 템플릿을 복사해 쓰는 방법도 그대로 유효합니다:
 
 ```bash
 cp config.example.yaml config.yaml   # 주석 달린 템플릿을 복사해 편집
 ```
 
 `config.yaml`의 각 키는 Nextflow 파라미터(`nextflow.config`)에 매핑되며,
-`profile` 키는 `-profile` 플래그가 됩니다. 경로는 저장소 루트 기준으로
-해석되며, 파이프라인이 모르는 키는 무시됩니다.
+`profile` 키는 `-profile` 플래그가 됩니다. 파일 경로는 **이 config 파일이
+있는 디렉터리** 기준으로 해석되며, 파이프라인이 모르는 키는 무시됩니다.
 
 ```yaml
 # config.yaml
-project: plant               # output -> output/<project>/
-input: samplesheet.tsv       # 게놈 루트 기준
-genome: genome.fasta
+project: plant               # output -> project/<project>/output/
+input: input/samplesheet.tsv       # config 파일 기준 경로
+genome: input/genome.fasta
 taxon: plant
 profile: "singularity,local64"
 ```
@@ -123,20 +136,20 @@ profile: "singularity,local64"
 그리고 한 줄로 실행:
 
 ```bash
-symbiomics run -c config.yaml
+symbiomics run --project plant
 ```
 
 명령줄에 직접 준 인자(플래그)가 config보다 우선합니다. 예를 들어 다음은
 게놈만 바꿔 다시 실행합니다:
 
 ```bash
-symbiomics run -c config.yaml --genome other.fasta
+symbiomics run --project plant --genome other.fasta
 ```
 
 `-entry`/`-profile` 같은 Nextflow 플래그도 그대로 함께 쓸 수 있습니다:
 
 ```bash
-symbiomics run -c config.yaml -entry strategy --clade gymnosperm
+symbiomics run --project plant -entry strategy --clade gymnosperm
 ```
 
 ## 5. 환경 점검

@@ -34,7 +34,7 @@ else
     tail -30 /tmp/symbiomics_stub_$$.log
     FAILED=1
 fi
-rm -rf "/tmp/symbiomics_stub_work_$$" "$REPO_DIR/output/symbiomics_stub_$$" "/tmp/symbiomics_stub_$$.log"
+rm -rf "/tmp/symbiomics_stub_work_$$" "$REPO_DIR/project/symbiomics_stub_$$" "/tmp/symbiomics_stub_$$.log"
 
 echo
 if (( FAILED )); then

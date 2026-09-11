@@ -1,7 +1,7 @@
 work/
 .nextflow/
 .nextflow.log*
-output/
+project/
 *.sif
 __pycache__/
 *.pyc

@@ -16,8 +16,9 @@
 
 ```bash
 ./setup.sh                          # conda 자동 탐지 -> nextflow 환경 구축
-cp config.example.yaml config.yaml  # 입력 파일 경로/세부 설정 편집
-symbiomics run -c config.yaml       # 파이프라인 전체 실행
+symbiomics init -p matsutake        # project/matsutake/ 생성 (input/, output/, config.yaml)
+# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+symbiomics run --project matsutake  # 파이프라인 전체 실행
 ```
 
 성격이 전혀 다른 두 타깃에 대해 구축·검증했습니다: *Tricholoma matsutake*
@@ -113,8 +114,8 @@ git clone https://github.com/Ufungi/symbiomics.git
 cd symbiomics
 ./setup.sh          # conda 탐지 -> nextflow 실행 환경 구축 -> 검증 -> PATH 등록
 # 새 셸을 열거나 source ~/.bashrc를 한 뒤:
-cp config.example.yaml config.yaml   # 경로/세부 설정 편집
-symbiomics run -c config.yaml        # 전체 파이프라인 실행
+symbiomics init -p matsutake         # project/matsutake/ 생성 (input/, output/, config.yaml)
+symbiomics run --project matsutake   # 전체 파이프라인 실행
 ```
 
 전체 설치 매뉴얼(conda 설치, 런타임/프로파일 선택, DB 프로비저닝, 첫 실행,
@@ -183,14 +184,16 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 
 ## 사용법
 
-**가장 간단한 방법** — 반복 설정을 `config.yaml`에 담아 한 번에 실행합니다
-(PlaceTax의 `config.yaml` 방식과 동일). 각 키는 Nextflow 파라미터에 매핑되고,
-`profile` 키는 `-profile`이 되며, CLI 인자가 config보다 우선합니다:
+**가장 간단한 방법** — 프로젝트 단위로 시작합니다. `init -p <name>`이
+`project/<name>/` 아래 시작 파일(input/)과 결과 폴더(output/), 설정을 만들고,
+각 키는 Nextflow 파라미터에 매핑되며, `profile` 키는 `-profile`이 되고,
+CLI 인자가 config보다 우선합니다:
 
 ```bash
-cp config.example.yaml config.yaml   # project/input/genome/taxon 등을 여기서 편집
-symbiomics run -c config.yaml        # 전체 실행 (정렬, 조립, 카운트)
-symbiomics run -c config.yaml --genome other.fasta   # 게놈만 바꿔 재실행
+symbiomics init -p matsutake          # project/matsutake/{input,output,config.yaml}
+# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+symbiomics run --project matsutake    # 전체 실행 (정렬, 조립, 카운트)
+symbiomics run --project matsutake --genome other.fasta   # 게놈만 바꿔 재실행
 ```
 
 **전체 실행 — 플래그로 직접** (정렬, 조립, 카운트):

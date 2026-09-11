@@ -141,7 +141,7 @@ parameter for either tool.
 - Put `NXF_WORK` on the large filesystem. The launcher defaults to
   `/data/db/eukannot/work`; budget at least 3× genome size.
 - `--publish_mode link` needs the work dir and the project output
-  (`output/<project>/`) on one filesystem.
+  (`project/<project>/output/`) on one filesystem.
 - Expect `GENOME_STATS` to take tens of minutes: it streams 21.7 Gb once.
   Composition (N%, softmask%) is measured on a 200 Mb prefix by default;
   length accounting is always exact.

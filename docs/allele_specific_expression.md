@@ -92,7 +92,7 @@ remains available regardless.
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
     --input samplesheet.tsv --genome HA.genome.fasta --hisat2_index HA.genome \
-    --run_ase true --ase_phased_vcf output/Pinde_pairing/70_haplotype_pairing/ha_hb.phased.vcf \
+    --run_ase true --ase_phased_vcf project/Pinde_pairing/output/70_haplotype_pairing/ha_hb.phased.vcf \
     --gff3_ha HA.gff3 --project Pinde_HA
 ```
 

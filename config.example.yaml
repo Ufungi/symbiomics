@@ -4,8 +4,8 @@
 #   symbiomics run -c config.yaml
 #
 # Every key maps to the matching Nextflow parameter (nextflow.config).
-# `project` is symbiomics-only: output goes to output/<project>/.
-# File paths are resolved relative to this repo root unless absolute.
+# `project` is symbiomics-only: output goes to project/<project>/output/.
+# File paths are resolved relative to this config file (not the repo root).
 # Unknown keys are ignored (so you can leave notes in here).
 
 project: plant
