@@ -1,4 +1,4 @@
-# symbiomics RNA-seq 샘플시트 (탭으로 구분된 TSV 파일입니다)
+﻿# symbiomics RNA-seq 샘플시트 (탭으로 구분된 TSV 파일입니다)
 #
 # ▶ 필요한 최소 열은 딱 2개:
 #   sample_id   샘플 이름 (영문/숫자/._- , 공백 금지, 중복 금지)

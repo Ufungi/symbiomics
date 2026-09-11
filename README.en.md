@@ -1,4 +1,4 @@
-<p align="center">
+﻿<p align="center">
   <img src="https://img.shields.io/badge/platform-Linux-blue?logo=linux&logoColor=white" alt="Platform">
   <img src="https://img.shields.io/badge/nextflow-%E2%89%A524.10-23aa62?logo=nextflow&logoColor=white" alt="Nextflow">
   <img src="https://img.shields.io/badge/run%20with-singularity%20%7C%20docker%20%7C%20conda-blue?logo=singularity&logoColor=white" alt="Containers">
