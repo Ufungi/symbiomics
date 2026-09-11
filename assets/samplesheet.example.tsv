@@ -1,28 +1,27 @@
-﻿# symbiomics RNA-seq 샘플시트 (탭으로 구분된 TSV 파일입니다)
+﻿﻿# symbiomics RNA-seq samplesheet (tab-separated TSV)
 #
-# ▶ 필요한 최소 열은 딱 2개:
-#   sample_id   샘플 이름 (영문/숫자/._- , 공백 금지, 중복 금지)
-#   fastq_1     read 파일 경로 (PE라면 R1 파일)
-# 나머지는 전부 자동: layout(SE/PE), fastq_2(mate), strandedness, use_for=all ...
-# 상대 경로는 config의 raw_dir 기준, 절대 경로가 가장 안전합니다.
+# Required columns (minimum):
+#   sample_id   unique sample name (letters/digits/._- only, no spaces, no duplicates)
+#   fastq_1     path to read file (or R1 of a pair)
+# All other columns are optional and have sensible defaults.
+# Relative paths resolve against config key raw_dir; absolute paths are safest.
 #
-# ▶ PE(paired-end) read는 자동으로 mate를 찾습니다:
-#   MySample_R1.fastq.gz → MySample_R2.fastq.gz (파일 이름 규칙 기반)
-#   이름 규칙이 _R1/_R2가 아니라면 fastq_2 열을 직접 채우세요.
+# Paired-end reads are auto-detected from filename (e.g. _R1/_R2).
+# If your naming differs, add fastq_2 explicitly.
 #
-# ▶ 이미 정렬된 BAM을 쓴다면 fastq_1 대신 bam 열에 경로를 넣으세요.
+# Use bam column for pre-aligned coordinate-sorted BAM (mutually exclusive with fastq_1).
 #
-# ▶ 옵션 열들 (쓸 때만 추가):
-#   fastq_2       mate 파일 (없으면 '-' / 자동 추론)
-#   layout        auto | SE | PE | interleaved   (기본 auto)
-#   strandedness  auto | forward | reverse | unstranded  (기본 auto)
-#   read_type     short | isoseq | ont_cdna | ont_drna   (기본 short = 일루미나 short-read)
-#   condition     실험 그룹 (예: control, treated) — DE 분석용 메타데이터
-#   replicate     생물학적 반복 번호 (기본 1)
-#   use_for       all | braker,stringtie,count  (기본 all; 샘플별로 어느 단계에 쓸지)
-#   bam           정렬된 BAM 경로 (fastq_1과 동시에 불가)
-#   genome_id     유전체 id (여러 유전체 배치일 때만; 기본 = config의 genome)
-#   '-' 는 "없음"을 뜻합니다 (빈 칸 금지).
+# Optional columns (add only when needed):
+#   fastq_2       mate file (use '-' for auto-detect)
+#   layout        auto | SE | PE | interleaved   (default: auto)
+#   strandedness  auto | forward | reverse | unstranded  (default: auto)
+#   read_type     short | isoseq | ont_cdna | ont_drna   (default: short = Illumina short-read)
+#   condition     experimental group (e.g. control, treated) for downstream DE
+#   replicate     biological replicate number (default: 1)
+#   use_for       all | braker,stringtie,count  (default: all)
+#   bam           pre-aligned coordinate-sorted BAM path (mutually exclusive with fastq_1)
+#   genome_id     target genome id (batch mode only; default = config genome)
+# '-' means "not set" (never leave blank).
 sample_id	fastq_1
 MySample1	/path/to/MySample1_R1.fastq.gz
 MySample2	/path/to/MySample2_R1.fastq.gz
