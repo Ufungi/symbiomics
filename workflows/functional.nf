@@ -22,6 +22,9 @@ workflow FUNCTIONAL {
     if( !params.proteome ) {
         error "Missing required parameter: --proteome <protein.fasta>"
     }
+    if( params.reference_proteomes ) {
+        log.warn "[symbiomics] --reference_proteomes is declared but NOT wired yet; ignoring."
+    }
     proteome_file = file(params.proteome, checkIfExists: true)
 
     def taxon = params.taxon ?: 'other'

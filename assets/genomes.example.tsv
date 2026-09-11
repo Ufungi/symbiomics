@@ -1,7 +1,22 @@
-# symbiomics multi-genome batch table.
-# One row = one annotation project. `extra` is a ';'-separated key=value list of
-# parameter overrides, validated against the schema -- an unknown key is a hard
-# error, so a typo cannot silently no-op.
+# symbiomics 다중 유전체 배치 테이블 — 예약됨 (현재 파이프라인에서 아직 읽히지 않음)
+#
+# ▶ 지금은 이 파일이 필요 없습니다: 단일 유전체 실행은 config의
+#   genome: 키만 사용합니다. (--genomes / genomes.tsv는 아직 배선되지 않았습니다)
+#
+# ▶ 이 표는 '한 줄 = 한 유전체 프로젝트' 배치 모드가 구현될 때의 스키마입니다:
+#   genome_id   유전체 id (samplesheet의 genome_id 열과 일치해야 함)
+#   fasta       reference fasta 경로
+#   species     학명
+#   taxid       NCBI taxonomy id
+#   taxon       auto|fungi|plant|animal|other
+#   busco_lineage  BUSCO lineage (예: basidiomycota_odb12)
+#   premasked   true|false (소프트마스킹 여부)
+#   masker      auto|red|windowmasker|dust|none
+#   proteins    단백질 FASTA 경로
+#   reference_gff 참조 GFF 경로
+#   rnaseq_sheet 해당 유전체의 RNA-seq samplesheet
+#   locus_tag   유전자 locus tag 접두사
+#   extra       세미콜론으로 구분된 key=value 오버라이드 (예: genome_size_class=huge;clade=gymnosperm)
 genome_id	fasta	species	taxid	taxon	busco_lineage	premasked	masker	proteins	reference_gff	rnaseq_sheet	locus_tag	extra
 Tmat	/data/snyoo/Transcriptome/Trima/ASM2607553_masked_nuc.fasta	Tricholoma_matsutake	40145	fungi	basidiomycota_odb12	true	auto	odb12:Fungi	-	samples_tmat.tsv	TMAT	-
 Pinde	/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.genome.fasta	Pinus_densiflora	3350	plant	embryophyta_odb12	false	red	odb12:Viridiplantae	/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.gff3	samples_pinde.tsv	PDEN	hisat2_index=/data/snyoo/Transcriptome/Pinde/in/P.densiflora_v1.0_HA.genome;genome_size_class=huge;clade=gymnosperm

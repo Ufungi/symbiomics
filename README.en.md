@@ -151,11 +151,11 @@ lab already has on disk. See `docs/functional_annotation.md`.
 
 | File | Required for | Description |
 |---|---|---|
-| `samplesheet.tsv` | mRNA-seq arm | One row per sample: `sample_id`, `fastq_1`/`fastq_2` or `bam`, optional `layout`/`strandedness`/`use_for`. SE/PE is auto-detected. See `assets/samplesheet.example.tsv`. |
+| `samplesheet.tsv` | mRNA-seq arm | One row per sample: `sample_id`, `fastq_1`/`fastq_2` or `bam` (all other columns optional/auto). SE/PE is auto-detected. See `assets/samplesheet.example.tsv`. |
 | `genome.fasta` | mRNA-seq arm, structural annotation | Reference genome. Soft-masked or not — the pipeline masks it if needed and refuses to trust a `--premasked` claim with no lowercase in it. |
 | `proteome.fasta` | `-entry functional` | Predicted protein sequences. No genome or samplesheet required for this path. |
-| `genomes.tsv` | multi-genome batches | One row per project: fasta, taxon, masker, per-project overrides. See `assets/genomes.example.tsv`. |
-| `reference_proteomes.tsv` | product-name ladder | Weighted, labelled reference proteomes (e.g. Swiss-Prot, a close relative) consumed by the functional-annotation product ladder. See `assets/reference_proteomes.example.tsv`. |
+| `genomes.tsv` | multi-genome batches (reserved) | Currently NOT read by the pipeline. Single-genome runs use the config `genome:` key. `assets/genomes.example.tsv` is a future schema reference. |
+| `reference_proteomes.tsv` | product-name ladder (reserved) | Currently NOT read by the pipeline. Will be used when functional-annotation Phase B is wired. `assets/reference_proteomes.example.tsv` is a schema reference. |
 
 ---
 

@@ -174,11 +174,11 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 
 | 파일 | 필요한 경우 | 설명 |
 |---|---|---|
-| `samplesheet.tsv` | mRNA-seq arm | 샘플당 한 줄: `sample_id`, `fastq_1`/`fastq_2` 또는 `bam`, 선택적으로 `layout`/`strandedness`/`use_for`. SE/PE는 자동 감지됩니다. `assets/samplesheet.example.tsv` 참고. |
+| `samplesheet.tsv` | mRNA-seq arm | 샘플당 한 줄: `sample_id`, `fastq_1`/`fastq_2` 또는 `bam` (나머지 열은 전부 선택/자동). SE/PE는 자동 감지됩니다. `assets/samplesheet.example.tsv` 참고. |
 | `genome.fasta` | mRNA-seq arm, 구조 주석 | 참조 게놈. 소프트마스킹 여부는 무관 — 필요하면 파이프라인이 마스킹하고, 소문자가 전혀 없는 `--premasked` 주장은 신뢰하지 않고 거부합니다. |
 | `proteome.fasta` | `-entry functional` | 예측된 단백질 서열. 이 경로에는 게놈도 samplesheet도 필요 없습니다. |
-| `genomes.tsv` | 다중 게놈 배치 | 프로젝트당 한 줄: fasta, taxon, masker, 프로젝트별 오버라이드. `assets/genomes.example.tsv` 참고. |
-| `reference_proteomes.tsv` | product-name 사다리 | 기능주석 product 사다리가 소비하는 가중치·라벨이 붙은 참조 프로테옴(예: Swiss-Prot, 근연종). `assets/reference_proteomes.example.tsv` 참고. |
+| `genomes.tsv` | 다중 게놈 배치 (예약) | 현재 파이프라인에서 읽히지 않음. 단일 유전체 실행은 config의 `genome:` 키만 사용합니다. `assets/genomes.example.tsv`는 향후 스키마 참조용. |
+| `reference_proteomes.tsv` | product-name 사다리 (예약) | 현재 파이프라인에서 읽히지 않음. 기능주석 Phase B 배선 시 사용 예정. `assets/reference_proteomes.example.tsv`는 스키마 참조용. |
 
 ---
 

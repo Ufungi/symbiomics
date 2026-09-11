@@ -73,6 +73,13 @@ workflow {
               "Use --dry_run_strategy to resolve a plan without one, or " +
               "-entry functional --proteome for protein-only functional annotation."
     }
+    // Reserved params that are declared but not yet wired — warn instead of silent no-op.
+    if( params.genomes ) {
+        log.warn "[symbiomics] --genomes (multi-genome batch table) is declared but NOT wired yet; ignoring. Single-genome runs use --genome / config genome:."
+    }
+    if( params.reference_proteomes ) {
+        log.warn "[symbiomics] --reference_proteomes is declared but NOT wired yet; ignoring."
+    }
     SYMBIOMICS()
 }
 
