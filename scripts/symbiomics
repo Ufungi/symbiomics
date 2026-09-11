@@ -28,7 +28,7 @@ if [[ -z "${SYMBIOMICS_CONDA_SH:-}" ]]; then
         fi
     fi
 fi
-: "${SYMBIOMICS_CONDA_SH:=/home/genome/anaconda3/etc/profile.d/conda.sh}"
+: "${SYMBIOMICS_CONDA_SH:=}"
 : "${SYMBIOMICS_NF_ENV:=nextflow}"
 : "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
 
@@ -146,7 +146,7 @@ EOF
     exit 0
 fi
 
-if [[ "$CMD" == "--help" || $# -eq 0 ]]; then
+if [[ "$CMD" == "--help" || "$CMD" == "-h" || $# -eq 0 ]]; then
     cat <<'HELP'
 symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
 
