@@ -1,4 +1,4 @@
-﻿﻿# symbiomics RNA-seq samplesheet (tab-separated TSV)
+﻿# symbiomics RNA-seq samplesheet (tab-separated TSV)
 #
 # Required columns (minimum):
 #   sample_id   unique sample name (letters/digits/._- only, no spaces, no duplicates)
@@ -22,7 +22,17 @@
 #   bam           pre-aligned coordinate-sorted BAM path (mutually exclusive with fastq_1)
 #   genome_id     target genome id (batch mode only; default = config genome)
 # '-' means "not set" (never leave blank).
+#
+# Example: minimal columns only (recommended for simplicity)
 sample_id	fastq_1
-MySample1	/path/to/MySample1_R1.fastq.gz
-MySample2	/path/to/MySample2_R1.fastq.gz
-MySample3	/path/to/MySample3.fastq.gz
+Ctrl_1	/path/to/Ctrl_1_R1.fastq.gz
+Ctrl_2	/path/to/Ctrl_2_R1.fastq.gz
+Trt_1	/path/to/Trt_1_R1.fastq.gz
+Trt_2	/path/to/Trt_2_R1.fastq.gz
+#
+# Example: with common optional columns (condition, replicate)
+# sample_id	fastq_1	condition	replicate
+# Ctrl_1	/path/to/Ctrl_1_R1.fastq.gz	control	1
+# Ctrl_2	/path/to/Ctrl_2_R1.fastq.gz	control	2
+# Trt_1	/path/to/Trt_1_R1.fastq.gz	treated	1
+# Trt_2	/path/to/Trt_2_R1.fastq.gz	treated	2
