@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-"""Parse an symbiomics samplesheet, infer SE/PE layout, validate, and emit a
+"""Parse a symbiomics samplesheet, infer SE/PE layout, validate, and emit a
 fully-resolved TSV plus a JSON channel description.
 
 The resolved TSV is the reproducible record of what the pipeline actually ran
 with, and can be fed straight back in as --input.
+
+The input sheet is CSV by default; a `.tsv` extension is also accepted and uses
+tab separators. In either case, `#` comments and blank lines are skipped and a
+leading UTF-8 BOM is tolerated.
 
 Layout resolution ladder (first match wins), per the design:
   R1 explicit `layout` column always wins, but is cross-checked -- a sheet that
@@ -86,11 +90,12 @@ def read_rows(path: str):
     """Yield (line_number, [fields]) skipping comments and blank lines.
 
     The separator is taken from the extension, and the technical-replicate
-    separator follows it: ',' for TSV, ';' for CSV.
+    separator follows it: ';' for CSV, ',' for TSV.
     """
     sep = "," if path.lower().endswith(".csv") else "\t"
     rep_sep = ";" if sep == "," else ","
-    with open(path, newline="") as fh:
+    # utf-8-sig (not utf-8) so a leading BOM never contaminates the first header cell.
+    with open(path, newline="", encoding="utf-8-sig") as fh:
         for lineno, raw in enumerate(fh, start=1):
             line = raw.rstrip("\r\n")
             if not line.strip() or line.lstrip().startswith("#"):
@@ -421,7 +426,8 @@ def main() -> int:
         use_for = record.get("use_for", "").strip().lower()
         if use_for in NULLS:
             use_for = "all"
-        use_set = {u.strip() for u in use_for.split(",") if u.strip()}
+        # lists arrive ','-separated in TSV, ';'-separated in CSV (',' is the column delim)
+        use_set = {u.strip() for u in re.split(r"[,;]", use_for) if u.strip()}
         bad = use_set - VALID_USE_FOR
         if bad:
             die(

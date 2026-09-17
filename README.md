@@ -17,7 +17,7 @@
 ```bash
 ./setup.sh                          # conda 자동 탐지 -> symbiomics 환경 구축
 symbiomics init -p matsutake        # project/matsutake/ 생성 (input/, output/, config.yaml)
-# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+# project/matsutake/input/samplesheet.csv 편집, genome.fasta를 input/에 추가
 symbiomics run --project matsutake  # 파이프라인 전체 실행
 ```
 
@@ -64,7 +64,7 @@ haplotype-resolved 침엽수 게놈, 2,006개 contig, 최장 contig 2.008 Gb). �
 ## 파이프라인 개요
 
 ```
-samplesheet.tsv ──► INPUT_CHECK (SE/PE 자동 감지) ────────────────────┐
+samplesheet.csv ──► INPUT_CHECK (SE/PE 자동 감지) ────────────────────┐
                                                                        │
 genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.yml ────┤
                                                                        │
@@ -174,11 +174,11 @@ Swiss-Prot + eggNOG-mapper + dbCAN v3)는 이 서버에 이미 있는 데이터�
 
 | 파일 | 필요한 경우 | 설명 |
 |---|---|---|
-| `samplesheet.tsv` | mRNA-seq arm | 샘플당 한 줄: `sample_id`, `fastq_1`/`fastq_2` 또는 `bam` (나머지 열은 전부 선택/자동). SE/PE는 자동 감지됩니다. `assets/samplesheet.example.tsv` 참고. |
+| `samplesheet.csv` | mRNA-seq arm | 샘플당 한 줄: `sample_id`, `fastq_1`/`fastq_2` 또는 `bam` (나머지 열은 전부 선택/자동). SE/PE는 자동 감지됩니다. `assets/samplesheet.example.csv` 참고. |
 | `genome.fasta` | mRNA-seq arm, 구조 주석 | 참조 게놈. 소프트마스킹 여부는 무관 — 필요하면 파이프라인이 마스킹하고, 소문자가 전혀 없는 `--premasked` 주장은 신뢰하지 않고 거부합니다. |
 | `proteome.fasta` | `-entry functional` | 예측된 단백질 서열. 이 경로에는 게놈도 samplesheet도 필요 없습니다. |
-| `genomes.tsv` | 다중 게놈 배치 (예약) | 현재 파이프라인에서 읽히지 않음. 단일 유전체 실행은 config의 `genome:` 키만 사용합니다. `assets/genomes.example.tsv`는 향후 스키마 참조용. |
-| `reference_proteomes.tsv` | product-name 사다리 (예약) | 현재 파이프라인에서 읽히지 않음. 기능주석 Phase B 배선 시 사용 예정. `assets/reference_proteomes.example.tsv`는 스키마 참조용. |
+| `genomes.csv` | 다중 게놈 배치 (예약) | 현재 파이프라인에서 읽히지 않음. `init -p`가 복사하지 않으며(미배선), 단일 유전체 실행은 config의 `genome:` 키만 사용합니다. `assets/genomes.example.csv`는 향후 스키마 참조용. |
+| `reference_proteomes.csv` | product-name 사다리 (예약) | 현재 파이프라인에서 읽히지 않음. `init -p`가 복사하지 않으며(미배선), 기능주석 Phase B 배선 시 사용 예정. `assets/reference_proteomes.example.csv`는 스키마 참조용. |
 
 ---
 
@@ -191,7 +191,7 @@ CLI 인자가 config보다 우선합니다:
 
 ```bash
 symbiomics init -p matsutake          # project/matsutake/{input,output,config.yaml}
-# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+# project/matsutake/input/samplesheet.csv 편집, genome.fasta를 input/에 추가
 symbiomics run --project matsutake    # 전체 실행 (정렬, 조립, 카운트)
 symbiomics run --project matsutake --genome other.fasta   # 게놈만 바꿔 재실행
 ```
@@ -200,7 +200,7 @@ symbiomics run --project matsutake --genome other.fasta   # 게놈만 바꿔 재
 
 ```bash
 symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta \
+    --input samplesheet.csv --genome genome.fasta \
     --taxon plant --project plant
 ```
 
@@ -208,7 +208,7 @@ symbiomics run . -profile singularity,local64 \
 
 ```bash
 symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --quant_engine salmon \
+    --input samplesheet.csv --quant_engine salmon \
     --transcript_fasta HA.CDS.fa --project plant
 ```
 

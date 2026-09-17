@@ -6,7 +6,7 @@
 scripts/symbiomics preflight                       # check the environment first
 
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv \
+    --input samplesheet.csv \
     --genome genome.fasta \
     --project plant
 ```
@@ -36,7 +36,7 @@ scripts/symbiomics run . -profile singularity,local64 ... -resume
 ```bash
 --steps align,assemble          # only these stages
 --skip_steps quantify           # everything except this
---sample SRR8356879             # one row of the samplesheet
+--sample MySE01               # one row of the samplesheet
 --test_mode --test_reads 200000 # same code paths, less data
 ```
 
@@ -45,22 +45,23 @@ same decisions — only the data volume. That is the point of it.
 
 ## The samplesheet
 
-TSV by default; `.csv` is detected by extension. Only `sample_id` plus one of
+CSV by default; the template (`assets/samplesheet.example.csv`) opens directly
+in Excel — a `#` comment block at the top explains each column, followed by one
+example row per layout (SE / PE / pre-aligned BAM). Only `sample_id` plus one of
 `fastq_1` / `bam` is required.
 
-```tsv
-sample_id	layout	fastq_1	fastq_2	strandedness	condition	replicate	read_type	bam	genome_id	use_for
-SRR8356879	SE	SRR8356879.fastq.gz	-	auto	fruitbody	1	short	-	Tmat	all
-MyPE01	-	MyPE01_R1.fq.gz	MyPE01_R2.fq.gz	auto	mycelium	1	short	-	Tmat	all
-MyPE02	-	A_R1.fq.gz,B_R1.fq.gz	A_R2.fq.gz,B_R2.fq.gz	forward	mycelium	2	short	-	Tmat	all
-Prealign	-	-	-	reverse	needle	1	short	/x/P.sorted.bam	Pinde	stringtie,count
+```csv
+sample_id,fastq_1,fastq_2,strandedness,bam
+MySE01,/raw/MySE01.fastq.gz,-,auto,-
+MyPE01,/raw/MyPE01_R1.fastq.gz,/raw/MyPE01_R2.fastq.gz,auto,-
+MyBAM,-,-,reverse,/aligned/P.sorted.bam
 ```
 
 | column | values | default |
 |---|---|---|
 | `sample_id` | `[A-Za-z][A-Za-z0-9._-]{0,63}`, unique | required |
 | `layout` | `SE`, `PE`, `interleaved`, `auto`, `-` | `auto` |
-| `fastq_1` / `fastq_2` | path, or comma list of technical replicates (`;` in CSV) | required / `-` |
+| `fastq_1` / `fastq_2` | path, or `;`-separated list of technical replicates | required / `-` |
 | `strandedness` | `auto`, `unstranded`, `forward`, `reverse` | `--strandedness` |
 | `read_type` | `short`, `isoseq`, `ont_cdna`, `ont_drna` | `short` |
 | `bam` | path to a coordinate-sorted, indexed BAM | `-` |

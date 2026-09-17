@@ -1,0 +1,3 @@
+# L1 Salmon smoke-test samplesheet. Exercises the salmon quantification path.
+sample_id,layout,fastq_1,fastq_2
+txSample,PE,/data/snyoo/symbiomics/tests/data/salmon_test_R1.fastq.gz,/data/snyoo/symbiomics/tests/data/salmon_test_R2.fastq.gz

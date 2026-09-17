@@ -1,0 +1,19 @@
+﻿# Named reference proteomes with per-row roles and weights -- RESERVED (not yet wired)
+#
+# This file is NOT used by the current pipeline.
+# Functional annotation Phase B (product-name ladder) will consume it when implemented.
+#
+# Required columns: ref_id, protein_fasta
+# All other columns are optional and have sensible defaults.
+#
+# ref_id          identifier
+# species         species name
+# taxid           NCBI taxonomy id
+# protein_fasta   protein fasta path
+# gff3            gff3 path (optional)
+# weight          AHRD blast-db weight
+# use_for         which stages consume this row (semicolon list: ahrd;upimapi)
+ref_id,species,taxid,protein_fasta,gff3,weight,use_for
+sprot,UniProtKB/Swiss-Prot,-,${db_dir}/Swiss-prot/uniprot_sprot.fasta,-,100,ahrd;upimapi
+piab,Picea_abies,3329,${db_dir}/refs/Pabies1.0.faa,-,50,ahrd;galba;orthofinder
+pita,Pinus_taeda,3352,${db_dir}/refs/Ptaeda2.0.faa,-,50,ahrd;galba;orthofinder

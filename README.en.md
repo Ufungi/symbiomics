@@ -17,7 +17,7 @@ tells you why — before spending a single core-hour.
 ```bash
 ./setup.sh                          # conda auto-detect -> nextflow env build
 symbiomics init -p matsutake        # scaffold project/matsutake/ (input/, output/, config.yaml)
-# edit project/matsutake/input/samplesheet.tsv, drop genome.fasta into input/
+# edit project/matsutake/input/samplesheet.csv, drop genome.fasta into input/
 symbiomics run --project matsutake  # run the whole pipeline (results -> project/matsutake/output/)
 ```
 
@@ -66,7 +66,7 @@ same command runs on both; the pipeline picks different tools underneath.
 ## Pipeline overview
 
 ```
-samplesheet.tsv ──► INPUT_CHECK (SE/PE auto-detect) ─────────────────┐
+samplesheet.csv ──► INPUT_CHECK (SE/PE auto-detect) ─────────────────┐
                                                                        │
 genome.fasta ──► GENOME_PREP ──► DECIDE_STRATEGY ──► strategy.yml ────┤
                                                                        │
@@ -151,11 +151,11 @@ lab already has on disk. See `docs/functional_annotation.md`.
 
 | File | Required for | Description |
 |---|---|---|
-| `samplesheet.tsv` | mRNA-seq arm | One row per sample: `sample_id`, `fastq_1`/`fastq_2` or `bam` (all other columns optional/auto). SE/PE is auto-detected. See `assets/samplesheet.example.tsv`. |
+| `samplesheet.csv` | mRNA-seq arm | One row per sample: `sample_id`, `fastq_1`/`fastq_2` or `bam` (all other columns optional/auto). SE/PE is auto-detected. See `assets/samplesheet.example.csv`. |
 | `genome.fasta` | mRNA-seq arm, structural annotation | Reference genome. Soft-masked or not — the pipeline masks it if needed and refuses to trust a `--premasked` claim with no lowercase in it. |
 | `proteome.fasta` | `-entry functional` | Predicted protein sequences. No genome or samplesheet required for this path. |
-| `genomes.tsv` | multi-genome batches (reserved) | Currently NOT read by the pipeline. Single-genome runs use the config `genome:` key. `assets/genomes.example.tsv` is a future schema reference. |
-| `reference_proteomes.tsv` | product-name ladder (reserved) | Currently NOT read by the pipeline. Will be used when functional-annotation Phase B is wired. `assets/reference_proteomes.example.tsv` is a schema reference. |
+| `genomes.csv` | multi-genome batches (reserved) | Currently NOT read by the pipeline — `init -p` does not copy it (not wired yet). Single-genome runs use the config `genome:` key. `assets/genomes.example.csv` is a future schema reference. |
+| `reference_proteomes.csv` | product-name ladder (reserved) | Currently NOT read by the pipeline — `init -p` does not copy it (not wired yet). Will be used when functional-annotation Phase B is wired. `assets/reference_proteomes.example.csv` is a schema reference. |
 
 ---
 
@@ -165,7 +165,7 @@ lab already has on disk. See `docs/functional_annotation.md`.
 
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta \
+    --input samplesheet.csv --genome genome.fasta \
     --taxon plant --project plant
 ```
 
@@ -174,7 +174,7 @@ decoy-aware bias correction):
 
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --quant_engine salmon \
+    --input samplesheet.csv --quant_engine salmon \
     --transcript_fasta HA.CDS.fa --project plant
 ```
 

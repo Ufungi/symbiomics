@@ -92,7 +92,7 @@ symbiomics의 개별 도구 conda 환경(`envs/*.yml` 22개)은 **Nextflow가 �
 
 ```bash
 scripts/symbiomics run . -profile singularity,local64 \
-    --input samplesheet.tsv --genome genome.fasta --taxon plant --project plant
+    --input samplesheet.csv --genome genome.fasta --taxon plant --project plant
 ```
 
 `conf/local64.config`는 실험실 서버(64코어/503GB) 기준이며, 다른 호스트는
@@ -106,14 +106,14 @@ scripts/symbiomics run . -profile singularity,local64 \
 
 ```bash
 symbiomics init -p matsutake   # project/matsutake/{input,output,config.yaml}
-# project/matsutake/input/samplesheet.tsv 편집, genome.fasta를 input/에 추가
+# project/matsutake/input/samplesheet.csv 편집, genome.fasta를 input/에 추가
 symbiomics run --project matsutake   # project/matsutake/config.yaml 자동 사용
 ```
 
-`project/<name>/input/`에는 시작 파일이 복사되어 있습니다:
-`samplesheet.tsv`, `genomes.tsv`, `reference_proteomes.tsv` — 필요한 것만
-편집하면 됩니다. 생성된 `config.yaml`도 키마다 주석과 옵션 예시가 붙어
-있어, 주석만 읽어도 시작 방법을 알 수 있습니다.
+`project/<name>/input/`에는 `samplesheet.csv`(맨 위에 열 설명 주석이 있고
+예시 행이 달린 템플릿)가 생성되어 있습니다. 예시 행을 실제 샘플로 교체하면
+됩니다(게놈/단백질 파일은 `input/`에 직접 넣습니다). 생성된 `config.yaml`도
+키마다 주석과 옵션 예시가 붙어 있어, 주석만 읽어도 시작 방법을 알 수 있습니다.
 
 수동 설정을 원하면 템플릿을 복사해 쓰는 방법도 그대로 유효합니다:
 
@@ -128,7 +128,7 @@ cp config.example.yaml config.yaml   # 주석 달린 템플릿을 복사해 편�
 ```yaml
 # config.yaml
 project: plant               # output -> project/<project>/output/
-input: input/samplesheet.tsv       # config 파일 기준 경로
+input: input/samplesheet.csv       # config 파일 기준 경로
 genome: input/genome.fasta
 taxon: plant
 profile: "singularity,local64"
@@ -179,13 +179,13 @@ symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
 ## 7. 첫 실행
 
 ```bash
-# 입력 파일 준비 (assets/samplesheet.example.tsv 참고)
-cp assets/samplesheet.example.tsv samplesheet.tsv
+# 입력 파일 준비 (assets/samplesheet.example.csv 참고)
+cp assets/samplesheet.example.csv samplesheet.csv
 # 전체 실행 -- config.yaml 경로
 symbiomics run -c config.yaml
 # 또는 플래그로 직접:
 # symbiomics run . -profile singularity,local64 \
-#     --input samplesheet.tsv --genome genome.fasta --taxon plant --project plant
+#     --input samplesheet.csv --genome genome.fasta --taxon plant --project plant
 ```
 
 며칠 걸리는 실행을 시작하기 전에 계획부터 검토하세요.

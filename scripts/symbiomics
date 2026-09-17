@@ -81,22 +81,24 @@ if [[ "$CMD" == "init" ]]; then
             exit 1
         fi
         mkdir -p "${PROJ_DIR}/input" "${PROJ_DIR}/output"
-        for tpl in samplesheet.example.tsv genomes.example.tsv reference_proteomes.example.tsv; do
-            src="${REPO_DIR}/assets/${tpl}"
-            if [[ ! -f "$src" ]]; then
-                echo "ERROR: template not found: $src" >&2
-                exit 1
-            fi
-        done
-        cp "$REPO_DIR/assets/samplesheet.example.tsv" "${PROJ_DIR}/input/samplesheet.tsv"
-        cp "$REPO_DIR/assets/genomes.example.tsv" "${PROJ_DIR}/input/genomes.tsv"
-        cp "$REPO_DIR/assets/reference_proteomes.example.tsv" "${PROJ_DIR}/input/reference_proteomes.tsv"
+        SHEET_TPL="${REPO_DIR}/assets/samplesheet.example.csv"
+        if [[ ! -f "$SHEET_TPL" ]]; then
+            echo "ERROR: template not found: $SHEET_TPL" >&2
+            exit 1
+        fi
+        # Scaffold the full template -- the top has column-description comments
+        # and one example row per column layout, so the sheet is self-explaining
+        # when opened in Excel. genomes.csv / reference_proteomes.csv stay in
+        # assets/ as schema references until their features are wired up.
+        cp "$SHEET_TPL" "${PROJ_DIR}/input/samplesheet.csv"
+        chmod 644 "${PROJ_DIR}/input/samplesheet.csv"
         cat > "${PROJ_DIR}/config.yaml" <<EOF
 # symbiomics project configuration (project/${PROJ}/)
 #
 # Quick flow:
-#   1. edit input/samplesheet.tsv   (required) — sample_id + fastq_1/2 or bam,
-#      '-' means "not set" (never blank); layout/strandedness can be 'auto'
+#   1. edit input/samplesheet.csv   (required) — column-description comments are
+#      at the top of the file; replace the example rows with your samples
+#      (sample_id + fastq_1/2 or bam)
 #   2. put your reference genome FASTA into input/genome.fasta
 #   3. run: symbiomics run --project ${PROJ}
 #   all results land in output/  (layout: see docs/usage.md)
@@ -106,7 +108,7 @@ if [[ "$CMD" == "init" ]]; then
 # Unknown keys are ignored (you can keep notes in here).
 
 project: ${PROJ}                   # project name; output goes to output/
-input: input/samplesheet.tsv       # RNA-seq samplesheet (edit this first)
+input: input/samplesheet.csv       # RNA-seq samplesheet (edit this first)
 genome: input/genome.fasta         # reference genome FASTA (drop the file in input/)
 taxon: auto                        # auto|fungi|plant|animal|other
                                    #   auto = clade guessed from the genome
@@ -125,9 +127,9 @@ profile: "singularity,local64"     # singularity|docker|conda + a host executor
 # genome_id: null                  # auto <- genome basename
 EOF
         echo "[init] created project/${PROJ}/"
-        echo "       input/samplesheet.tsv, input/genomes.tsv, input/reference_proteomes.tsv"
-        echo "       input/genome.fasta   <- put your reference genome FASTA here"
-        echo "       output/              <- all results land here"
+        echo "       input/samplesheet.csv   <- replace the example rows with your samples"
+        echo "       input/genome.fasta      <- put your reference genome FASTA here"
+        echo "       output/                 <- all results land here"
         echo "       config.yaml (project: ${PROJ})"
         echo "       then run: symbiomics run --project ${PROJ}"
         exit 0
@@ -152,7 +154,7 @@ symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
 
 Start a project (after ./setup.sh):
   symbiomics init -p <name>        # scaffold project/<name>/ (starter files + config)
-  # edit project/<name>/input/samplesheet.tsv, put your genome.fasta in input/
+  # edit project/<name>/input/samplesheet.csv, put your genome.fasta in input/
   symbiomics run --project <name>  # run; results go to project/<name>/output/
 
 Subcommands (pipeline order):
@@ -163,11 +165,11 @@ Subcommands (pipeline order):
   run          run the whole mRNA-seq pipeline
   functional   functional annotation only (proteome input)
 
-Starter files (init -p <name> copies these into project/<name>/input/):
-  samplesheet.tsv           RNA-seq samplesheet (sample_id, fastq_1/2 or bam) [required]
-  genomes.tsv               multi-genome batch table, one row per genome      [optional]
-  reference_proteomes.tsv   weighted reference proteomes for product naming   [optional]
+Starter files (init -p <name> creates these in project/<name>/):
+  input/samplesheet.csv     RNA-seq samplesheet (CSV; comments + example rows) [required]
+  input/genome.fasta        drop your reference genome FASTA here
   config.yaml               run config: project/input/genome/taxon/profile
+  (batch genomes.csv / reference_proteomes.csv schemas: assets/*.example.csv — reserved)
 
 Output:
   project/<name>/output/     all results land here (structure: docs/usage.md)

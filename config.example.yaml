@@ -9,9 +9,11 @@
 # Unknown keys are ignored (so you can leave notes in here).
 
 project: plant
-input: samplesheet.tsv        # RNA-seq samplesheet (sample_id, fastq_1/2 or bam)
-genome: genome.fasta          # reference genome FASTA
+input: samplesheet.csv        # RNA-seq samplesheet (CSV; sample_id + fastq_1/2 or bam)
+genome: genome.fasta          # reference genome FASTA used for alignment
 taxon: plant                  # auto|fungi|plant|animal|other
+                                  #   auto = clade guessed from the genome
+                                  #   Used by decide_strategy.py to pick tools
 
 # --- Runtime -----------------------------------------------------------------
 profile: "singularity,local64"   # singularity|docker|conda, plus a host executor
@@ -24,4 +26,18 @@ profile: "singularity,local64"   # singularity|docker|conda, plus a host executo
 # run_ase: false                   # WASP + phASER allele-specific expression
 # on_missing_tool: skip            # skip|fail
 # time_budget: null                # per heavy track, e.g. "240.h"
-# genome_id: null                  # auto <- genome basename
+# genome_id: null                  # auto <- genome basename (overridden by
+                                  #   samplesheet genome_id column when
+                                  #   genomes.csv is wired for batch mode)
+
+# Notes:
+#   * For single-genome runs, set `genome:` to your FASTA.
+#   * For multi-genome batch (future), ensure genomes.csv exists and
+#     samplesheet includes genome_id column matching genomes.csv.
+#     In that mode, the config `genome:` is ignored; each sample uses its
+#     own genome_id.
+#   * If you need to align one transcriptome against multiple genomes,
+#     either:
+#       - set a single `genome:` in config and leave samplesheet genome_id blank,
+#       - or set identical genome_id for all rows in samplesheet.
+#     Mixing different genome_id per sample is not yet supported.

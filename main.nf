@@ -25,10 +25,10 @@ def helpMessage() {
 
     Usage:
       scripts/symbiomics run . -profile singularity,local64 \\
-          --input samplesheet.tsv --genome genome.fasta --outdir results
+          --input samplesheet.csv --genome genome.fasta --outdir results
 
     Required:
-      --input                RNA-seq samplesheet (TSV or CSV). See assets/samplesheet.example.tsv
+      --input                RNA-seq samplesheet (CSV; TSV still accepted). See assets/samplesheet.example.csv
       --genome               genome FASTA (alias: --fasta)
 
     Commonly used:
