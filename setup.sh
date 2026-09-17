@@ -7,7 +7,7 @@
 #                                   Nextflow at runtime; some tools have no conda
 #                                   recipe and are skipped -- see conf/conda.config)
 #
-# Either way you need a conda env (default name: "nextflow", matching
+# Either way you need a conda env (default name: "symbiomics", matching
 # envs/runner.yml and the scripts/symbiomics launcher)
 # that ships Nextflow + a Java 17-21 JDK (the scripts/symbiomics launcher
 # resolves both). Nothing else in the repo creates that env -- that is exactly
@@ -26,7 +26,7 @@ REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUNNER_YML="${REPO_DIR}/envs/runner.yml"
 HOST_CONF="${REPO_DIR}/conf/host.sh"
 
-NF_ENV="${SYMBIOMICS_NF_ENV:-nextflow}"
+NF_ENV="${SYMBIOMICS_NF_ENV:-symbiomics}"
 
 DO_UPDATE=false
 DO_PULL=false
@@ -96,6 +96,23 @@ fi
 
 env_exists() { conda env list 2>/dev/null | awk '$1=="'"$NF_ENV"'" && NF>=1{found=1} END{exit !found}'; }
 
+# ------------------------------------------------------------ ToS gate
+# conda >= 24.9 gates anaconda-owned channels (defaults) behind a ToS prompt
+# even when the yml only lists conda-forge/bioconda, because the user's
+# .condarc channels are merged into the solve. Accept them quietly.
+accept_conda_tos() {
+    if ! conda tos --help >/dev/null 2>&1; then
+        return 0
+    fi
+    local url
+    while IFS= read -r url; do
+        [[ -n "$url" ]] || continue
+        if conda tos accept --override-channels --channel "$url" >/dev/null 2>&1; then
+            echo "[tos] accepted: $url"
+        fi
+    done < <(conda config --show default_channels 2>/dev/null | awk '/^[[:space:]]*-[[:space:]]/{print $2}')
+}
+
 if [[ "$DO_CHECK" == true ]]; then
     echo "mode: CHECK (verify only)"
 else
@@ -107,6 +124,9 @@ else
 fi
 
 # ------------------------------------------------------- create/update/env
+if [[ "$DO_CHECK" != true ]]; then
+    accept_conda_tos
+fi
 if env_exists; then
     if [[ "$DO_CHECK" == true ]]; then
         echo "[runner] env '$NF_ENV' exists (skipping checks only applies to install -- updating is not run)"
@@ -126,12 +146,12 @@ else
 fi
 
 # ------------------------------------------------------- isolation notice
-# A `symbiomics` env from an earlier setup (the old project-scoped default) is
-# not used by this project anymore. Say so instead of letting it sit silently
-# and confuse later debugging.
-if [[ "$NF_ENV" != "symbiomics" ]] && conda env list 2>/dev/null | awk '$1=="symbiomics"{found=1} END{exit !found}'; then
-    warn "stale 'symbiomics' env exists but is not used by this project (managing '$NF_ENV');"
-    warn "      remove it if nothing else uses it:  conda env remove -n symbiomics"
+# An env named `nextflow` from an earlier setup (or from another tool) is not
+# used by this project anymore. Say so instead of letting it sit silently and
+# confuse later debugging.
+if [[ "$NF_ENV" != "nextflow" ]] && conda env list 2>/dev/null | awk '$1=="nextflow"{found=1} END{exit !found}'; then
+    warn "stale 'nextflow' env exists but is not used by this project (managing '$NF_ENV');"
+    warn "      remove it if nothing else uses it:  conda env remove -n nextflow"
 fi
 
 # ------------------------------------------------------------- verify env
