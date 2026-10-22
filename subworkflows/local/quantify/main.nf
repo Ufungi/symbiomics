@@ -8,6 +8,7 @@
 //
 
 include { STRINGTIE_ASSEMBLE; STRINGTIE_MERGE } from '../../../modules/local/quantify'
+include { NORMALIZE_ANNOTATION                } from '../../../modules/local/quantify'
 include { INSPECT_ANNOTATION                  } from '../../../modules/local/quantify'
 include { FEATURECOUNTS; HTSEQ_COUNT          } from '../../../modules/local/quantify'
 include { MERGE_COUNTS                        } from '../../../modules/local/quantify'
@@ -17,11 +18,12 @@ workflow RNASEQ_ASSEMBLE {
     take:
     bam         // [ meta, bam, index ]
     guide_gff   // path or NO_FILE
+    genome      // [ fasta, fai ]
 
     main:
     ch_versions = Channel.empty()
 
-    STRINGTIE_ASSEMBLE(bam, guide_gff)
+    STRINGTIE_ASSEMBLE(bam, guide_gff, genome.map { fasta, _fai -> fasta })
     ch_versions = ch_versions.mix(STRINGTIE_ASSEMBLE.out.versions.first())
 
     STRINGTIE_MERGE(
@@ -41,11 +43,14 @@ workflow QUANTIFY {
     bam             // [ meta, bam, index ]
     annotation      // path -- the annotation to count against
     strandedness    // collected *.strandedness.json (may be empty)
+    genome          // [ fasta, fai ]
 
     main:
     ch_versions = Channel.empty()
     ch_multiqc  = Channel.empty()
     ch_matrices = Channel.empty()
+
+    genome_fasta = genome.map { fasta, _fai -> fasta }
 
     // One row per sample, from the EFFECTIVE strandedness carried in meta --
     // which covers declared samples as well as probed ones. Folding the
@@ -55,10 +60,16 @@ workflow QUANTIFY {
         .collectFile(name: 'strandedness.tsv', sort: true)
         .ifEmpty(file("${projectDir}/assets/NO_FILE"))
 
-    // Published GFF3s vary more than the counters assume. Rather than hardcode
-    // -t exon -g gene_id and fail opaquely on a file that uses something else,
-    // inspect the annotation and count on what it actually contains.
-    INSPECT_ANNOTATION(annotation)
+    // Counters group on the attribute that sits on the count_feature line and
+    // never walk Parent=. Published GFF3s keep the gene identity on the gene
+    // line only, so normalize first (append gene_id to exon lines), then
+    // inspect the result and count on what it actually contains.
+    NORMALIZE_ANNOTATION(annotation)
+    ch_versions = ch_versions.mix(NORMALIZE_ANNOTATION.out.versions)
+
+    countable = NORMALIZE_ANNOTATION.out.annotation
+
+    INSPECT_ANNOTATION(countable)
     ch_versions = ch_versions.mix(INSPECT_ANNOTATION.out.versions)
 
     spec = INSPECT_ANNOTATION.out.spec
@@ -66,7 +77,7 @@ workflow QUANTIFY {
         .first()
 
     if( params.counter in ['featurecounts', 'both'] ) {
-        FEATURECOUNTS(bam, annotation, spec)
+        FEATURECOUNTS(bam, countable, spec, genome_fasta)
         ch_versions = ch_versions.mix(FEATURECOUNTS.out.versions.first())
         ch_multiqc  = ch_multiqc.mix(FEATURECOUNTS.out.summary.map { _meta, s -> s })
 
@@ -80,7 +91,7 @@ workflow QUANTIFY {
     }
 
     if( params.counter in ['htseq', 'both'] ) {
-        HTSEQ_COUNT(bam, annotation, spec)
+        HTSEQ_COUNT(bam, countable, spec, genome_fasta)
         ch_versions = ch_versions.mix(HTSEQ_COUNT.out.versions.first())
 
         MERGE_COUNTS_HTSEQ(

@@ -208,9 +208,9 @@ doesn't imply more than the code does:
 - **Metabolomics integration** (LC-MS/GC-MS), tying host-symbiont gene
   expression to the actual metabolic exchange symbiosis is about.
 
-If either of these gets built, it's a separate pipeline/repo under the same
-Symbiomics umbrella, not a feature bolted onto this one — this repo stays
-scoped to genome annotation and RNA quantification (see
-`docs/allele_specific_expression.md`'s and this file's existing scope notes;
-also decided 2026-08-13: no DESeq2/edgeR-style DE/ASE significance calling
-in this repo either, for the same reason).
+If either of these gets built, it remains a separate pipeline/repo under the
+Symbiomics umbrella. This repository covers genome annotation, RNA
+quantification, and the standalone table-driven `symbiomics post` workflow
+for quantification QC, exploratory analysis and edgeR gene-level differential
+expression (scope expanded 2026-10-07). See [post-analysis](post_analysis.md).
+This does not add ASE significance calling to the Nextflow ASE workflow.

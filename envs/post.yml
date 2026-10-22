@@ -1,0 +1,36 @@
+name: symbiomics-post
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python>=3.10
+  - pyyaml
+  - r-base=4.4.3
+  - r-jsonlite=2.0.0
+  - bioconductor-edger=4.4.0
+  - bioconductor-limma=3.62.1
+  - bioconductor-tximport=1.34.0
+  - bioconductor-fgsea=1.32.2
+  - bioconductor-sva=3.54.0
+  - r-statmod=1.5.2
+  - bioconductor-deseq2=1.46.0
+  - r-ashr
+  # DE cross-check and figures (scripts/post_ext, walkthrough-style figures)
+  - r-patchwork
+  - r-ggrepel
+  - r-dplyr
+  - r-tidyr
+  - r-ragg
+  - r-systemfonts
+  - bioconductor-complexheatmap
+  - r-circlize
+  - r-factominer
+  - r-factoextra
+  - r-pheatmap
+  - r-pvclust
+  - r-pals
+  - bioconductor-topgo
+  - bioconductor-go.db
+  - bioconductor-biostrings
+

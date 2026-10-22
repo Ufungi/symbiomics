@@ -147,6 +147,7 @@ def main() -> int:
     ap.add_argument("--eggnog", default=None)
     ap.add_argument("--interpro", default=None)
     ap.add_argument("--dbcan", default=None, help="dbCAN overview.txt (Phase A)")
+    ap.add_argument("--localization", default=None, help="parse_predictors.py localization.tsv")
     ap.add_argument("--out", required=True)
     args = ap.parse_args()
 
@@ -161,13 +162,22 @@ def main() -> int:
     ip = read_interpro(args.interpro) if args.interpro else {}
     dc = read_dbcan(args.dbcan) if args.dbcan else {}
 
+    loc_cols, loc = [], {}
+    if args.localization:
+        with open(args.localization) as fh:
+            rd = csv.reader(fh, delimiter="\t")
+            hdr = next(rd)
+            loc_cols = hdr[1:]
+            loc = {r[0]: r[1:] for r in rd}
+
     source_counts = {"funannotate2": 0, "swissprot": 0, "eggnog": 0, "interpro": 0, "none": 0}
 
     with open(args.out, "w") as out:
         out.write(
             "protein_id\tproduct\tsource\tgo_terms\tec_number\tkegg_ko\t"
             "swissprot_hit\tswissprot_pident\tdbcan_family\tdbcan_tools\t"
-            "sources_with_evidence\tn_sources\n"
+            "sources_with_evidence\tn_sources"
+            + "".join("\t" + c for c in loc_cols) + "\n"
         )
         for pid in all_ids:
             go = eg.get(pid, {}).get("go", "")
@@ -202,7 +212,8 @@ def main() -> int:
             source_counts[source] += 1
             out.write(
                 f"{pid}\t{product}\t{source}\t{go}\t{ec}\t{ko}\t{sp_hit}\t{sp_pid}\t"
-                f"{dbcan_family}\t{dbcan_tools}\t{','.join(evidence)}\t{len(evidence)}\n"
+                f"{dbcan_family}\t{dbcan_tools}\t{','.join(evidence)}\t{len(evidence)}"
+                + "".join("\t" + v for v in loc.get(pid, ["-"] * len(loc_cols))) + "\n"
             )
 
     total = len(all_ids)

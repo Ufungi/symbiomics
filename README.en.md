@@ -63,6 +63,22 @@ same command runs on both; the pipeline picks different tools underneath.
 
 ---
 
+## Post-analysis of quantified counts
+
+Connect HTSeq/featureCounts counts or original Salmon quantifications through
+standard TSV tables. Quantification QC includes every sample before model
+validation; confirmed experimental designs then enable normalization,
+exploratory plots and edgeR analysis.
+
+```bash
+symbiomics post init -p my_study
+# Edit inputs.tsv and samples.tsv in post/my_study/
+symbiomics post run -p my_study --qc-only
+```
+
+See [post-analysis usage](docs/post_analysis.md) for metadata tables,
+exploratory versus inferential runs, reports and supported designs.
+
 ## Pipeline overview
 
 ```
@@ -137,7 +153,7 @@ which nextflow    # should resolve once `conda activate symbiomics` — or just
 ### 3. (Optional) provision databases for functional annotation
 
 ```bash
-scripts/symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
+scripts/symbiomics download-db --db_dir /data/db/eukannot
 ```
 
 Not required for the mRNA-seq arm. Only needed for `-entry functional`'s

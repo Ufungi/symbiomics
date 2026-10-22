@@ -1,0 +1,7 @@
+sample_id	input_id	source_sample_id	stats_source_path	biological_unit_id	library_id	technical_merge_id	study_id	sample_sets	include_analysis	exclusion_reason	subject_id	treatment	timepoint	time_h	batch	tissue	stats_sample_id	count_unit_override	technical_partition_id	technical_disjoint
+sample1	input1	sample1		bio1	lib1		study1	primary	true			control								
+sample2	input1	sample2		bio2	lib2		study1	primary	true			control								
+sample3	input1	sample3		bio3	lib3		study1	primary	true			control								
+sample4	input1	sample4		bio4	lib4		study1	primary	true			treated								
+sample5	input1	sample5		bio5	lib5		study1	primary	true			treated								
+sample6	input1	sample6		bio6	lib6		study1	primary	true			treated								

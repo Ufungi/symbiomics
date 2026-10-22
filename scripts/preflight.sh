@@ -3,7 +3,7 @@
 # Never exits non-zero on warnings; only hard failures (Java, Nextflow) do that.
 set -uo pipefail
 
-: "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
+: "${SYMBIOMICS_DB_DIR:=${HOME}/.symbiomics/db}"
 DB_DIR="${1:-$SYMBIOMICS_DB_DIR}"
 : "${SYMBIOMICS_NF_ENV:=symbiomics}"
 
@@ -109,7 +109,7 @@ if [[ -d "$DB_DIR" ]]; then
     ok "db_dir $DB_DIR exists"
 else
     warn "db_dir $DB_DIR does not exist yet"
-    fix "scripts/symbiomics run . -entry download_dbs --db_dir $DB_DIR"
+    fix "scripts/symbiomics download-db --db_dir $DB_DIR"
 fi
 
 # --------------------------------------------------------------- misc

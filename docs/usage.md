@@ -43,6 +43,23 @@ scripts/symbiomics run . -profile singularity,local64 ... -resume
 `--test_mode` never changes which code path runs — same masker, same aligner,
 same decisions — only the data volume. That is the point of it.
 
+## Existing counts: quantification QC and post-analysis
+
+```bash
+scripts/symbiomics post init -p my_study
+# Fill post/my_study/inputs.tsv and samples.tsv.
+scripts/symbiomics post run -p my_study --qc-only
+# After completing and confirming the experimental design tables:
+scripts/symbiomics post validate -p my_study
+scripts/symbiomics post run -p my_study
+```
+
+The `post` command family is standalone and does not launch Nextflow. It
+preserves zero/low-signal samples in QC and records separate outcomes for
+requested analyses. Use `analysis_mode=exploratory` for PCA before a design is
+confirmed. See [post-analysis](post_analysis.md) for table contracts,
+`merge`, explicit project directories, runtime configuration and limitations.
+
 ## The samplesheet
 
 CSV by default; the template (`assets/samplesheet.example.csv`) opens directly
@@ -59,7 +76,7 @@ MyBAM,-,-,reverse,/aligned/P.sorted.bam
 
 | column | values | default |
 |---|---|---|
-| `sample_id` | `[A-Za-z][A-Za-z0-9._-]{0,63}`, unique | required |
+| `sample_id` | `[A-Za-z0-9][A-Za-z0-9._-]{0,63}`, unique | required |
 | `layout` | `SE`, `PE`, `interleaved`, `auto`, `-` | `auto` |
 | `fastq_1` / `fastq_2` | path, or `;`-separated list of technical replicates | required / `-` |
 | `strandedness` | `auto`, `unstranded`, `forward`, `reverse` | `--strandedness` |
@@ -135,16 +152,18 @@ project/<project>/output/
 ├── 10_genome/          .fai, genome stats
 ├── 30_reads/           fastqc, trimming reports
 ├── 35_strandedness/    per-sample calls with the evidence behind them
-├── 40_align/           *.sorted.bam (+ .csi/.bai), summaries, samtools stats
+├── 40_align/           *.sorted.cram (+ .crai), summaries, samtools stats
 ├── 45_assemble/        per-sample and merged StringTie GTF
 ├── 95_quantify/        counts_featurecounts.tsv, counts_htseq.tsv, per-sample QC
 └── 99_report/          multiqc_report.html
 ```
 
-### Publishing large BAM sets
+### Publishing large alignment sets
 
-`--publish_mode copy` is the default. `link` (hardlink) avoids duplicating the
-BAMs but only works when the Nextflow work directory and the project output
+Alignments are stored as CRAM (reference-compressed) and published as
+`*.cram` + `*.crai` when `--save_bam` is on (the default). `--publish_mode copy`
+is the default. `link` (hardlink) avoids duplicating the CRAMs but only works
+when the Nextflow work directory and the project output
 (`project/<project>/output/`) are on the **same filesystem**; the launcher puts work on
 `/data/db` by default, so set it explicitly first:
 
@@ -153,7 +172,7 @@ NXF_WORK=/path/to/work scripts/symbiomics run . ... --publish_mode link
 ```
 
 The pipeline checks this at startup and refuses rather than failing after the
-first large BAM is written.
+first large CRAM is written.
 
 ## Profiles
 

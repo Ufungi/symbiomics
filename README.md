@@ -61,6 +61,21 @@ haplotype-resolved 침엽수 게놈, 2,006개 contig, 최장 contig 2.008 Gb). �
 
 ---
 
+## 정량 결과 후속 분석
+
+이미 생성된 HTSeq/featureCounts count 또는 원본 Salmon 정량 결과는 표준 TSV로
+연결합니다. 모든 샘플의 유전자 할당률·검출률 QC를 먼저 만들고, 실험 설계가
+확인된 경우 정규화·PCA·edgeR 분석을 이어서 수행합니다.
+
+```bash
+symbiomics post init -p my_study
+# post/my_study/의 inputs.tsv와 samples.tsv 편집
+symbiomics post run -p my_study --qc-only
+```
+
+실험 설계 표, 탐색 분석, 결과 보고서와 지원 범위는
+[후속 분석 사용법](docs/post_analysis.md)을 참고하세요.
+
 ## 파이프라인 개요
 
 ```
@@ -160,7 +175,7 @@ which nextflow    # `conda activate symbiomics` 이후에만 resolve 됨 — 또
 ### 3. (선택) 기능주석용 데이터베이스 프로비저닝
 
 ```bash
-symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
+symbiomics download-db --db_dir /data/db/eukannot
 ```
 
 mRNA-seq arm에는 필요하지 않습니다. `-entry functional`의 Phase B

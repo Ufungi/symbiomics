@@ -12,7 +12,7 @@
 // aligns a small subsample unstranded purely to make the call.
 //
 
-include { FASTQC; SEQKIT_SUBSAMPLE; FASTP        } from '../../../modules/local/reads'
+include { FASTQC; SEQKIT_SUBSAMPLE; FASTP; TRIMGALORE } from '../../../modules/local/reads'
 include { HISAT2_BUILD; HISAT2_ALIGN             } from '../../../modules/local/align'
 include { SAMTOOLS_SORT; SAMTOOLS_INDEX          } from '../../../modules/local/align'
 include { BAM_STATS; INFER_STRANDEDNESS          } from '../../../modules/local/align'
@@ -36,7 +36,7 @@ workflow RNASEQ_ALIGN {
     // govern execution rather than just describe it.
     use_mmap    = strategy.map { plan -> plan?.decisions?.aligner?.mmap_index ?: false }
     large_index = strategy.map { plan -> plan?.decisions?.aligner?.large_index ?: false }
-    bam_index   = strategy.map { plan -> plan?.decisions?.bam_index?.choice ?: 'csi' }
+    genome_fasta = genome.map { fasta, _fai -> fasta }
 
     // ------------------------------------------------------------- 30 reads
     FASTQC(reads)
@@ -55,6 +55,11 @@ workflow RNASEQ_ALIGN {
         ch_trimmed  = FASTP.out.reads
         ch_versions = ch_versions.mix(FASTP.out.versions.first())
         ch_multiqc  = ch_multiqc.mix(FASTP.out.json.map { _meta, json -> json })
+    } else if( params.trimmer == 'trimgalore' ) {
+        TRIMGALORE(ch_input)
+        ch_trimmed  = TRIMGALORE.out.reads
+        ch_versions = ch_versions.mix(TRIMGALORE.out.versions.first())
+        ch_multiqc  = ch_multiqc.mix(TRIMGALORE.out.html)
     } else {
         ch_trimmed = ch_input
     }
@@ -103,7 +108,7 @@ workflow RNASEQ_ALIGN {
             [ meta + [strandedness: 'unstranded', declared: meta.strandedness], fq ]
         }
 
-    HISAT2_ALIGN_PROBE(probe_reads, ch_index, ch_prefix, use_mmap)
+    HISAT2_ALIGN_PROBE(probe_reads, ch_index, ch_prefix, use_mmap, genome_fasta)
     ch_versions = ch_versions.mix(HISAT2_ALIGN_PROBE.out.versions.first())
 
     INFER_STRANDEDNESS(HISAT2_ALIGN_PROBE.out.bam, genome)
@@ -130,25 +135,26 @@ workflow RNASEQ_ALIGN {
     ch_for_align = declared.mix(probed)
 
     // ------------------------------------------------------------- 40 align
-    HISAT2_ALIGN(ch_for_align, ch_index, ch_prefix, use_mmap)
+    HISAT2_ALIGN(ch_for_align, ch_index, ch_prefix, use_mmap, genome_fasta)
     ch_versions = ch_versions.mix(HISAT2_ALIGN.out.versions.first())
     ch_multiqc  = ch_multiqc.mix(HISAT2_ALIGN.out.summary.map { _meta, txt -> txt })
 
-    SAMTOOLS_SORT(HISAT2_ALIGN.out.bam)
+    // Pre-aligned rows rejoin here, having skipped trim and align entirely.
+    // Their BAM is converted to sorted CRAM so the emitted channel is uniform.
+    SAMTOOLS_SORT(prealigned, genome_fasta)
     ch_versions = ch_versions.mix(SAMTOOLS_SORT.out.versions.first())
 
-    // Pre-aligned rows rejoin here, having skipped trim and align entirely.
-    ch_all_bam = SAMTOOLS_SORT.out.bam.mix(prealigned)
+    ch_all_bam = HISAT2_ALIGN.out.bam.mix(SAMTOOLS_SORT.out.bam)
 
-    SAMTOOLS_INDEX(ch_all_bam, bam_index)
+    SAMTOOLS_INDEX(ch_all_bam)
     ch_versions = ch_versions.mix(SAMTOOLS_INDEX.out.versions.first())
 
-    BAM_STATS(SAMTOOLS_INDEX.out.bam)
+    BAM_STATS(SAMTOOLS_INDEX.out.bam, genome_fasta)
     ch_versions = ch_versions.mix(BAM_STATS.out.versions.first())
     ch_multiqc  = ch_multiqc.mix(BAM_STATS.out.stats, BAM_STATS.out.flagstat, BAM_STATS.out.idxstats)
 
     emit:
-    bam          = SAMTOOLS_INDEX.out.bam         // [ meta, bam, index ]  <- THE channel
+    bam          = SAMTOOLS_INDEX.out.bam         // [ meta, cram, crai ]  <- THE channel
     strandedness = INFER_STRANDEDNESS.out.json.map { _meta, json -> json }
     // Exposed so a consumer that needs to align AGAIN against the identical
     // index -- currently only WASP's remap step in ALLELE_SPECIFIC_EXPRESSION

@@ -74,7 +74,7 @@ process WASP_FIND_INTERSECTING_SNPS {
     tag "${meta.id}"
 
     input:
-    tuple val(meta), path(bam), path(index)
+    tuple val(meta), path(bam)
     path  snp_dir
 
     output:

@@ -174,7 +174,7 @@ else
 fi
 
 # -------------------------------------------------- write per-host override
-if [[ "$DO_CHECK" != true ]] && [[ "$CONDA_SH" != "/home/genome/anaconda3/etc/profile.d/conda.sh" ]]; then
+if [[ "$DO_CHECK" != true ]] && [[ -n "$CONDA_SH" ]]; then
     mkdir -p "$(dirname "$HOST_CONF")"
     {
         echo "# Written by setup.sh -- do not edit by hand."
@@ -246,5 +246,5 @@ echo "     cp config.example.yaml config.yaml   # edit project/input/genome/taxo
 echo "     symbiomics run -c config.yaml        # run the whole pipeline"
 echo "  1. symbiomics preflight                 # environmental health check"
 echo "  2. (optional) download functional-annotation DBs:"
-echo "       symbiomics run . -entry download_dbs --db_dir /data/db/eukannot"
+echo "       symbiomics download-db --db_dir /data/db/eukannot"
 echo "  See docs/installation.md for the full manual."

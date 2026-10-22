@@ -191,6 +191,7 @@ process ASSIGN_PRODUCTS {
     path funannotate2_tsv  // NO_FILE if not run (fungal branch, F4)
     path interpro_tsv      // NO_FILE if not run (Phase B)
     path dbcan_overview    // NO_FILE if not run
+    path localization      // NO_FILE if no predictor module requested
 
     output:
     path 'products.tsv', emit: tsv
@@ -207,8 +208,9 @@ process ASSIGN_PRODUCTS {
     def f2 = funannotate2_tsv.size() > 0 ? "--funannotate2 '${funannotate2_tsv}'" : ''
     def ip = interpro_tsv.size() > 0 ? "--interpro '${interpro_tsv}'" : ''
     def dc = dbcan_overview.size() > 0 ? "--dbcan '${dbcan_overview}'" : ''
+    def lo = localization.size() > 0 ? "--localization '${localization}'" : ''
     """
-    assign_products.py --proteome '${proteome}' ${sp} ${eg} ${f2} ${ip} ${dc} --out products.tsv
+    assign_products.py --proteome '${proteome}' ${sp} ${eg} ${f2} ${ip} ${dc} ${lo} --out products.tsv
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

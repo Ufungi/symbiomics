@@ -10,6 +10,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
+# Standalone post-analysis exits before any Nextflow/conda initialization.
+if [[ "${1:-}" == "post" || "${1:-}" == "merge" ]]; then
+    exec "${SYMBIOMICS_PYTHON:-python3}" "${REPO_DIR}/bin/symbiomics_post.py" "$@"
+fi
 # conda.sh location, in priority order:
 #   1. SYMBIOMICS_CONDA_SH (explicit, from env or conf/host.sh)
 #   2. a conda found on PATH (portable fallback)
@@ -30,7 +34,7 @@ if [[ -z "${SYMBIOMICS_CONDA_SH:-}" ]]; then
 fi
 : "${SYMBIOMICS_CONDA_SH:=}"
 : "${SYMBIOMICS_NF_ENV:=symbiomics}"
-: "${SYMBIOMICS_DB_DIR:=/data/db/eukannot}"
+: "${SYMBIOMICS_DB_DIR:=${HOME}/.symbiomics/db}"
 
 CMD="${1:-}"
 
@@ -155,7 +159,7 @@ symbiomics — eukaryotic mRNA-seq & genome annotation Nextflow pipeline
 Start a project (after ./setup.sh):
   symbiomics init -p <name>        # scaffold project/<name>/ (starter files + config)
   # edit project/<name>/input/samplesheet.csv, put your genome.fasta in input/
-  symbiomics run --project <name>  # run; results go to project/<name>/output/
+  symbiomics run -p <name>         # -p is an alias for --project
 
 Subcommands (pipeline order):
   init         scaffold a project: init -p <name> (or plain init -> config.yaml)
@@ -164,6 +168,8 @@ Subcommands (pipeline order):
   strategy     show the full execution plan and stop (dry-run)
   run          run the whole mRNA-seq pipeline
   functional   functional annotation only (proteome input)
+  merge        merge compatible count matrices and quantification statistics
+  post         table-driven QC, design validation, PCA and DEG (post --help)
 
 Starter files (init -p <name> creates these in project/<name>/):
   input/samplesheet.csv     RNA-seq samplesheet (CSV; comments + example rows) [required]
@@ -214,8 +220,11 @@ fi
 export NXF_WORK="${NXF_WORK:-${SYMBIOMICS_DB_DIR}/work}"
 export NXF_SINGULARITY_CACHEDIR="${NXF_SINGULARITY_CACHEDIR:-${SYMBIOMICS_DB_DIR}/singularity}"
 export NXF_OPTS="${NXF_OPTS:--Xms1g -Xmx8g}"
-# RepeatMasker and other Perl tools emit locale warnings under ko_KR.UTF-8.
-export LC_ALL="${LC_ALL:-C}"
+# RepeatMasker and other Perl tools emit locale warnings under ko_KR.UTF-8,
+# but plain C makes the JVM mangle non-ASCII paths (sun.jnu.encoding=ASCII
+# -> Korean directories staged as '????'). C.UTF-8 keeps C collation while
+# giving UTF-8 path encoding.
+export LC_ALL="${LC_ALL:-C.UTF-8}"
 
 mkdir -p "$NXF_WORK" "$NXF_SINGULARITY_CACHEDIR" 2>/dev/null || true
 
@@ -230,7 +239,7 @@ case "$CMD" in
         ENTRY="download_dbs"
         shift
         ;;
-    strategy|functional)
+    strategy|functional|pairing|variation)
         ENTRY="$CMD"
         shift
         ;;
@@ -265,9 +274,9 @@ while (( $# > 0 )); do
             CONFIG_PATH="${1#*=}"
             shift
             ;;
-        --project)
+        -p|--project)
             if [[ $# -lt 2 ]]; then
-                echo "ERROR: --project requires a name argument" >&2
+                echo "ERROR: -p/--project requires a name argument" >&2
                 exit 1
             fi
             # PlaceTax-style: --project NAME == --outdir $REPO_DIR/project/NAME/output.
@@ -295,7 +304,8 @@ while (( $# > 0 )); do
 done
 
 # Default to the repo's config.yaml if one exists (created by `symbiomics init`).
-if [[ -z "$CONFIG_PATH" && -f "$REPO_DIR/config.yaml" ]]; then
+# SYMBIOMICS_NO_AUTOCONFIG=1 disables this (tests, CI: a stray config.yaml must not override -profile).
+if [[ -z "$CONFIG_PATH" && -z "${SYMBIOMICS_NO_AUTOCONFIG:-}" && -f "$REPO_DIR/config.yaml" ]]; then
     CONFIG_PATH="$REPO_DIR/config.yaml"
 fi
 
@@ -335,6 +345,6 @@ if (( $# == 0 )) || [[ "$1" == -* ]]; then
 fi
 
 if [[ -n "$ENTRY" ]]; then
-    exec nextflow run "$@" -entry "$ENTRY"
+    exec nextflow run "$@" --entry "$ENTRY"
 fi
 exec nextflow run "$@"

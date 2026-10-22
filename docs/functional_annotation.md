@@ -16,7 +16,7 @@ scripts/symbiomics run . -entry functional -profile singularity,local64 \
 
 | `--taxon` | route |
 |---|---|
-| `fungi` | funannotate2 + `funannotate2-addons` (eggNOG-mapper, InterProScan, antiSMASH, SignalP6 are already wrapped by funannotate2 — **not called separately**). Not yet implemented — errors clearly rather than silently running the wrong thing; see the roadmap. |
+| `fungi` | funannotate2 + `funannotate2-addons` (eggNOG-mapper, InterProScan, antiSMASH, SignalP6 are already wrapped by funannotate2 — **not called separately**). funannotate2 is not wired yet (large database): the run warns and falls back to the shared core (Swiss-Prot, eggNOG, dbCAN, predictors), so fungal proteomes are annotated, just without funannotate2. |
 | `plant` / `animal` / `other` | the shared core below |
 
 No AHRD anywhere in this pipeline. Product naming is a direct best-hit ladder
@@ -80,6 +80,41 @@ Not yet wired into `functional_core`. Planned:
 | `kofam` | KofamScan | `ftp.genome.jp/pub/db/kofam` | ~6.5 GB |
 | `dbcan5` | run_dbcan v5 | `db_v5-2_9-13-2025` | ~10 GB |
 | fungal branch | funannotate2 | `funannotate2 install -d all` | ~15 GB |
+
+## Sequence-feature predictors (secretome, localisation, TM, effector, peptidase)
+
+Add any of `signalp,targetp,deeploc,deeptmhmm,phobius,effectorp,merops` to
+`--functional_modules`. Each tool is one process; raw output is published in
+`80_functional/predictors/`, merged by `bin/parse_predictors.py` into
+`localization.tsv`, and appended to `products.tsv` (`n_sp_tools`, `n_tm`,
+`secreted`, plus per-tool columns for the tools that ran).
+
+| module | tool | licence / install | param |
+|---|---|---|---|
+| `signalp` | SignalP 6 | DTU academic, manual download | `--signalp6_cmd` |
+| `targetp` | TargetP 2 (`-org pl` for `--taxon plant`, else `non-pl`) | DTU academic | `--targetp_cmd` |
+| `deeploc` | DeepLoc 2 | DTU academic | `--deeploc2_cmd`, `--deeploc2_model` |
+| `deeptmhmm` | DeepTMHMM | BioLib / DTU | `--deeptmhmm_cmd` |
+| `phobius` | Phobius | SBC academic | `--phobius_cmd` |
+| `effectorp` | EffectorP 3 (reported only for secreted proteins) | open source | `--effectorp_cmd` |
+| `merops` | DIAMOND vs MEROPS `merops_scan.lib` | free | `--merops_dmnd` |
+
+The DTU/SBC tools cannot be bundled or downloaded for you: accept their licence,
+install them, and put the command on `PATH` (or pass an absolute path). A tool
+that is not found yields an empty output and is left out of the consensus
+(`--on_missing_tool fail` makes it an error). Use the `conda`/local profile for
+these: a container profile cannot see host-installed tools.
+
+`secreted = yes` needs >= `--secretome_min_tools` (default 2, capped at the
+number of signal-peptide tools that ran) votes from SignalP6 / TargetP2 SP /
+Phobius / DeepTMHMM SP / DeepLoc2 "Signal peptide" **and** no transmembrane
+helix (Phobius TM or DeepTMHMM). `NA` means no signal-peptide tool ran.
+
+CAZymes: `dbcan` already runs HMMER + DIAMOND + eCAMI; `dbcan_tools >= 2`
+is the usual high-confidence call (the dbCAN3 recommendation).
+
+Entry points are selected with `--entry` (set by `symbiomics functional|strategy|pairing|variation`);
+Nextflow's `-entry` is not used because the strict parser rejects it.
 
 ## The product-name ladder
 

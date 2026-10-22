@@ -1,0 +1,3 @@
+plot_id	scope	analysis_id	metric	x	color	facet	order	scale
+assignment	quant_qc		assignment_rate_pct	treatment	treatment	study_id	control|treated	linear
+detection	quant_qc		genes_detected_pct	treatment	treatment	study_id	control|treated	linear

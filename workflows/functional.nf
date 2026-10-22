@@ -29,12 +29,8 @@ workflow FUNCTIONAL {
 
     def taxon = params.taxon ?: 'other'
     if( taxon == 'fungi' ) {
-        error """
-        --taxon fungi routes to funannotate2 + funannotate2-addons, which is not
-        yet implemented (planned: F4 / Phase B, see docs/roadmap.md).
-        For now, run with --taxon plant/animal/other to use the shared
-        DIAMOND-vs-Swiss-Prot + eggNOG-mapper + dbCAN core instead.
-        """.stripIndent()
+        log.warn "[functional] --taxon fungi: funannotate2 is not wired yet (needs a large database); " +
+                 "running the shared core (Swiss-Prot / eggNOG / dbCAN / predictors) instead."
     }
 
     FUNCTIONAL_CORE(Channel.fromPath(proteome_file))

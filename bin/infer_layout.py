@@ -45,7 +45,7 @@ ALIASES = {
     "use_for": "use_for",
 }
 
-SAMPLE_RE = re.compile(r"^[A-Za-z][A-Za-z0-9._-]{0,63}$")
+SAMPLE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 FQ_EXT_RE = re.compile(r"\.(fastq|fq)(\.(gz|bz2|zst))?$", re.IGNORECASE)
 
 # (pattern, replacement) applied to the extension-stripped stem, in order.
@@ -253,7 +253,7 @@ def main() -> int:
         if not SAMPLE_RE.match(sample):
             die(
                 f"[samplesheet] line {lineno}: sample_id {sample!r} is invalid.\n"
-                f"        Must match [A-Za-z][A-Za-z0-9._-]{{0,63}}"
+                f"        Must match [A-Za-z0-9][A-Za-z0-9._-]{{0,63}}"
             )
         if sample in seen:
             die(

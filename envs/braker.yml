@@ -1,0 +1,17 @@
+name: symbiomics-braker
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - braker=3.0.8
+  - augustus=3.5.0
+  - genemark-es=4.68
+  - samtools=1.21
+  - gffread=0.12.7
+  - perl=5.32
+  - perl-bioperl=1.7.8
+  - perl-yaml=1.30
+  - perl-file-which=1.27
+  - perl-parallel-forkmanager=2.02
+  - python=3.11
+  - gffread=0.12.7

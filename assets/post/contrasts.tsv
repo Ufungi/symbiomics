@@ -1,0 +1,3 @@
+analysis_id	contrast_id	basis	term	weight	test_id
+primary	treated_vs_control	cell	treatment=treated	1	
+primary	treated_vs_control	cell	treatment=control	-1	

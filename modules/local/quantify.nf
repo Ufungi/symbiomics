@@ -15,6 +15,7 @@ process STRINGTIE_ASSEMBLE {
     input:
     tuple val(meta), path(bam), path(index)
     path  guide_gff
+    path  genome_fasta
 
     output:
     tuple val(meta), path('*.transcripts.gtf'), emit: gtf
@@ -27,6 +28,7 @@ process STRINGTIE_ASSEMBLE {
     def extra  = params.stringtie_extra ?: ''
     """
     stringtie '${bam}' -p ${task.cpus} ${strand} ${guide} ${extra} \\
+        --ref '${genome_fasta}' \\
         -o ${meta.id}.transcripts.gtf -l ${meta.id}
 
     cat <<-END_VERSIONS > versions.yml
@@ -93,6 +95,44 @@ process STRINGTIE_MERGE {
     """
 }
 
+process NORMALIZE_ANNOTATION {
+    label 'process_single'
+    tag "${annotation.name}"
+
+    input:
+    path annotation
+
+    output:
+    path 'annotation.normalized.gff3', emit: annotation
+    path 'normalize_report.json'     , emit: report
+    path 'versions.yml'              , emit: versions
+
+    script:
+    """
+    # HTSeq/featureCounts group on the attribute sitting on the count_feature
+    # line and never walk Parent=. Published GFF3s put the gene identity only
+    # on the gene line, so without this step --idattr gene_id falls back to
+    # the exon's own ID and the matrix has one row per exon.
+    normalize_gff3_gene_id.py \\
+        --annotation '${annotation}' \\
+        --want-feature '${params.count_feature}' \\
+        --out annotation.normalized.gff3 \\
+        --report normalize_report.json
+
+    cat <<-END_VERSIONS > versions.yml
+    "${task.process}":
+        python: \$(python3 --version | sed 's/Python //')
+    END_VERSIONS
+    """
+
+    stub:
+    """
+    cp '${annotation}' annotation.normalized.gff3
+    echo '{"n_want_feature":0,"n_with_gene_id":0,"passthrough":true}' > normalize_report.json
+    echo '"${task.process}": {python: stub}' > versions.yml
+    """
+}
+
 process INSPECT_ANNOTATION {
     label 'process_single'
     tag "${annotation.name}"
@@ -133,6 +173,7 @@ process FEATURECOUNTS {
     tuple val(meta), path(bam), path(index)
     path  annotation
     val   spec          // [feature: ..., attribute: ...] from INSPECT_ANNOTATION
+    path  genome_fasta
 
     output:
     tuple val(meta), path('*.featureCounts.txt')        , emit: counts
@@ -154,11 +195,14 @@ process FEATURECOUNTS {
         exit 1
     fi
 
+    # featureCounts has no CRAM reader; convert to a transient BAM, count, drop it.
+    samtools view -@ 2 -b -T '${genome_fasta}' -o ${meta.id}.count.bam '${bam}'
     featureCounts \\
         -T ${task.cpus} ${paired} ${multi} \\
         -t ${spec.feature} -g ${spec.attribute} \\
         -s ${s} -F GTF \\
-        -a '${annotation}' -o ${meta.id}.featureCounts.txt '${bam}'
+        -a '${annotation}' -o ${meta.id}.featureCounts.txt ${meta.id}.count.bam
+    rm -f ${meta.id}.count.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
@@ -182,6 +226,7 @@ process HTSEQ_COUNT {
     tuple val(meta), path(bam), path(index)
     path  annotation
     val   spec
+    path  genome_fasta
 
     output:
     tuple val(meta), path('*.htseq.tsv'), emit: counts
@@ -191,14 +236,18 @@ process HTSEQ_COUNT {
     def s = meta.strandedness == 'forward' ? 'yes'
           : meta.strandedness == 'reverse' ? 'reverse' : 'no'
     """
-    # -r pos is mandatory here: the BAM is coordinate-sorted and HTSeq defaults
-    # to -r name, which drops PE mates and blows up memory.
+    # -r pos is mandatory here: the alignment is coordinate-sorted and HTSeq
+    # defaults to -r name, which drops PE mates and blows up memory.
+    # htseq-count reads through pysam, which cannot decode CRAM without an
+    # explicit reference, so convert to a transient BAM first.
+    samtools view -@ 2 -b -T '${genome_fasta}' -o ${meta.id}.count.bam '${bam}'
     htseq-count \\
         --order pos --stranded ${s} \\
         --type ${spec.feature} --idattr ${spec.attribute} \\
         --nprocesses ${task.cpus} \\
         --counts_output ${meta.id}.htseq.tsv \\
-        '${bam}' '${annotation}'
+        ${meta.id}.count.bam '${annotation}'
+    rm -f ${meta.id}.count.bam
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

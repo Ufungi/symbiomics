@@ -30,6 +30,7 @@ process SALMON_CHECK_DISJOINT_IDS {
     path 'versions.yml'   , emit: versions
 
     script:
+    def args = task.ext.args ?: ''
     """
     check_disjoint_fasta_ids.py --out combined.cds.fa ${fastas}
 
@@ -60,6 +61,7 @@ process SALMON_INDEX {
     path 'versions.yml', emit: versions
 
     script:
+    def args = task.ext.args ?: ''
     if( use_decoy && genome_fasta.name != 'NO_FILE' ) {
         """
         # Decoy-aware index: transcriptome sequences first, then the genome as
@@ -68,7 +70,7 @@ process SALMON_INDEX {
         grep '^>' '${genome_fasta}' | sed 's/^>//' | cut -d' ' -f1 > decoys.txt
         cat '${transcript_fasta}' '${genome_fasta}' > gentrome.fa
 
-        salmon index -t gentrome.fa -d decoys.txt -i salmon_index \\
+        salmon index -t gentrome.fa -d decoys.txt -i salmon_index ${args} \\
             -k 31 -p ${task.cpus}
 
         cat <<-END_VERSIONS > versions.yml
@@ -78,7 +80,8 @@ process SALMON_INDEX {
         """
     } else {
         """
-        salmon index -t '${transcript_fasta}' -i salmon_index -k 31 -p ${task.cpus}
+        salmon index -t '${transcript_fasta}' -i salmon_index ${args} \\
+            -k 31 -p ${task.cpus}
 
         cat <<-END_VERSIONS > versions.yml
         "${task.process}":
@@ -108,6 +111,7 @@ process SALMON_QUANT {
     path 'versions.yml', emit: versions
 
     script:
+    def args = task.ext.args ?: ''
     // -l A: Salmon's own automatic library-type detection. Independent of, and
     // reported alongside, this pipeline's junction-motif strandedness call
     // (see INFER_STRANDEDNESS) -- agreement between the two is a QC signal,
@@ -116,7 +120,7 @@ process SALMON_QUANT {
         ? "-r ${reads[0]}"
         : "-1 ${reads[0..<(reads.size()/2 as int)].join(' ')} -2 ${reads[(reads.size()/2 as int)..<reads.size()].join(' ')}"
     """
-    salmon quant -i '${index}' -l A ${reads_arg} \\
+    salmon quant -i '${index}' -l A ${reads_arg} ${args} \\
         -p ${task.cpus} --validateMappings --gcBias --seqBias \\
         -o ${meta.id}
 

@@ -3,7 +3,7 @@
 // already produces -- no new alignment mode. See docs/allele_specific_expression.md
 // for why standalone WASP (not STAR+WASP) and where the phased VCF comes from.
 //
-//   HA BAM (RNASEQ_ALIGN, unmodified)
+//   HA CRAM (RNASEQ_ALIGN, unmodified) -> CRAM_TO_BAM
 //        |
 //        v
 //   WASP_FIND_INTERSECTING_SNPS  -> keep.bam (no SNP overlap, pass through)
@@ -28,11 +28,13 @@ include { VCF_BGZIP_INDEX; VCF_TO_WASP_SNPDIR                        } from '../
 include { WASP_FIND_INTERSECTING_SNPS; WASP_FILTER_REMAPPED_READS    } from '../../../modules/local/ase'
 include { WASP_MERGE_KEEP; PHASER; PHASER_GENE_AE; GFF3_TO_GENE_BED  } from '../../../modules/local/ase'
 include { HISAT2_ALIGN as HISAT2_REMAP                               } from '../../../modules/local/align'
-include { SAMTOOLS_SORT as SAMTOOLS_SORT_REMAP                       } from '../../../modules/local/align'
+include { SAMTOOLS_CRAM_TO_BAM as SAMTOOLS_CRAM_TO_BAM_REMAP         } from '../../../modules/local/align'
+include { SAMTOOLS_CRAM_TO_BAM                                       } from '../../../modules/local/align'
 
 workflow ALLELE_SPECIFIC_EXPRESSION {
     take:
-    bam            // [ meta, bam, index ] -- the existing HA-only HISAT2 output
+    bam            // [ meta, bam, index ] -- the existing HA-only HISAT2 output (CRAM)
+    genome         // [ fasta, fai ]
     phased_vcf     // path
     gff3_ha        // path
     hisat2_index   // path -- the SAME index the original alignment used
@@ -41,6 +43,7 @@ workflow ALLELE_SPECIFIC_EXPRESSION {
 
     main:
     ch_versions = Channel.empty()
+    genome_fasta = genome.map { fasta, _fai -> fasta }
 
     VCF_BGZIP_INDEX(phased_vcf)
     ch_versions = ch_versions.mix(VCF_BGZIP_INDEX.out.versions)
@@ -52,19 +55,24 @@ workflow ALLELE_SPECIFIC_EXPRESSION {
     GFF3_TO_GENE_BED(gff3_ha)
     ch_versions = ch_versions.mix(GFF3_TO_GENE_BED.out.versions)
 
-    WASP_FIND_INTERSECTING_SNPS(bam, ch_snp_dir)
+    // The WASP scripts are pysam-based and expect BAM; the shared alignment
+    // channel is CRAM, so convert at the boundary.
+    SAMTOOLS_CRAM_TO_BAM(bam.map { meta, cram, _crai -> [meta, cram] }, genome_fasta)
+    ch_versions = ch_versions.mix(SAMTOOLS_CRAM_TO_BAM.out.versions.first())
+
+    WASP_FIND_INTERSECTING_SNPS(SAMTOOLS_CRAM_TO_BAM.out.bam, ch_snp_dir)
     ch_versions = ch_versions.mix(WASP_FIND_INTERSECTING_SNPS.out.versions.first())
 
     // Re-align the allele-flipped reads with the SAME aligner and index the
     // original alignment used -- this IS the WASP bias check.
-    HISAT2_REMAP(WASP_FIND_INTERSECTING_SNPS.out.remap_fastq, hisat2_index, index_prefix, use_mmap)
+    HISAT2_REMAP(WASP_FIND_INTERSECTING_SNPS.out.remap_fastq, hisat2_index, index_prefix, use_mmap, genome_fasta)
     ch_versions = ch_versions.mix(HISAT2_REMAP.out.versions.first())
 
-    SAMTOOLS_SORT_REMAP(HISAT2_REMAP.out.bam)
-    ch_versions = ch_versions.mix(SAMTOOLS_SORT_REMAP.out.versions.first())
+    SAMTOOLS_CRAM_TO_BAM_REMAP(HISAT2_REMAP.out.bam, genome_fasta)
+    ch_versions = ch_versions.mix(SAMTOOLS_CRAM_TO_BAM_REMAP.out.versions.first())
 
     to_remap_and_remapped = WASP_FIND_INTERSECTING_SNPS.out.to_remap_bam
-        .join(SAMTOOLS_SORT_REMAP.out.bam, by: 0)
+        .join(SAMTOOLS_CRAM_TO_BAM_REMAP.out.bam, by: 0)
 
     WASP_FILTER_REMAPPED_READS(to_remap_and_remapped)
     ch_versions = ch_versions.mix(WASP_FILTER_REMAPPED_READS.out.versions.first())

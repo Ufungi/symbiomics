@@ -194,7 +194,8 @@ workflow SYMBIOMICS {
         if( enabled('assemble') && params.run_stringtie ) {
             RNASEQ_ASSEMBLE(
                 bam_fork.to_assemble.filter { meta, _b, _i -> 'stringtie' in meta.use_for },
-                guide
+                guide,
+                ch_genome
             )
             ch_versions = ch_versions.mix(RNASEQ_ASSEMBLE.out.versions)
             ch_annotation = RNASEQ_ASSEMBLE.out.merged
@@ -213,7 +214,8 @@ workflow SYMBIOMICS {
             QUANTIFY(
                 bam_fork.to_quant.filter { meta, _b, _i -> 'count' in meta.use_for },
                 quant_gff,
-                RNASEQ_ALIGN.out.strandedness
+                RNASEQ_ALIGN.out.strandedness,
+                ch_genome
             )
             ch_versions = ch_versions.mix(QUANTIFY.out.versions)
             ch_multiqc  = ch_multiqc.mix(QUANTIFY.out.multiqc)
@@ -234,6 +236,7 @@ workflow SYMBIOMICS {
             }
             ALLELE_SPECIFIC_EXPRESSION(
                 bam_fork.to_evidence,
+                ch_genome,
                 Channel.value(file(params.ase_phased_vcf, checkIfExists: true)),
                 Channel.value(file(params.gff3_ha, checkIfExists: true)),
                 RNASEQ_ALIGN.out.hisat2_index,

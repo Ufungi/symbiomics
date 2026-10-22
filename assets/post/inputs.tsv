@@ -1,0 +1,2 @@
+input_id	source_project	assay_id	format	counts_path	stats_path	stats_format	gene_universe	run_metadata_path	reference_id	annotation_id	reference_sha256	annotation_sha256	count_unit	assignment_mode	provenance_level	gene_map_path
+input1	project1	assay1	generic_raw_matrix	counts.tsv		none	full		REPLACE_reference	REPLACE_annotation			read	exclusive	declared	

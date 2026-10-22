@@ -91,7 +91,7 @@ def main() -> int:
     discarded_conflict = 0
     discarded_motif = 0
 
-    with pysam.AlignmentFile(args.bam, "rb") as bam:
+    with pysam.AlignmentFile(args.bam, "rb", reference_filename=args.fasta) as bam:
         for record in bam.fetch(until_eof=True):
             if seen >= args.max_reads:
                 break

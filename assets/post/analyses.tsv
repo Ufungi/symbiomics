@@ -1,0 +1,2 @@
+analysis_id	sample_set	assay_id	analysis_mode	design_type	factor_cols	numeric_cols	nuisance_factor_cols	nuisance_numeric_cols	interaction_terms	subject_col	reference_levels	numeric_units	normalization	fdr_cut	lfc_cut	effect_test	enrichment	seed	go_method	pathway_methods	adjusted_view	adjusted_batch_col
+primary	primary	assay1	inferential	group	treatment						treatment=control		TMM	0.05	1	qlf	none	123			none	

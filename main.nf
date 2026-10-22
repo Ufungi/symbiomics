@@ -5,8 +5,8 @@
  *
  * Entry points:
  *   (default)          full pipeline
- *   -entry strategy    resolve and print the execution plan, run nothing else
- *   -entry preflight   environment checks only
+ *   --entry strategy   resolve and print the execution plan, run nothing else
+ *   --entry functional|pairing|variation  (see the named workflows below)
  */
 
 nextflow.enable.dsl = 2
@@ -17,6 +17,7 @@ include { GENOME_PREP  } from './subworkflows/local/genome_prep'
 include { INPUT_CHECK_WF } from './subworkflows/local/input_check'
 include { HAPLOTYPE_PAIRING } from './subworkflows/local/haplotype_pairing'
 include { INSPECT_VARIATION_FILE } from './modules/local/variation'
+include { DOWNLOAD_SWISSPROT; DOWNLOAD_EGGNOG } from './modules/local/download_dbs'
 
 def helpMessage() {
     log.info """
@@ -57,6 +58,17 @@ workflow {
         helpMessage()
         return
     }
+    // Entry points are selected with --entry <name>, not Nextflow's -entry:
+    // the strict parser (NF 26) no longer accepts -entry on a script that also
+    // has an unnamed default workflow. scripts/symbiomics maps `symbiomics
+    // functional|strategy|pairing|variation` onto this param.
+    def entry = params.entry ?: ''
+    if( entry == 'strategy' )   { ENTRY_STRATEGY();   return }
+    if( entry == 'functional' ) { ENTRY_FUNCTIONAL(); return }
+    if( entry == 'pairing' )    { ENTRY_PAIRING();    return }
+    if( entry == 'variation' )  { ENTRY_VARIATION();  return }
+    if( entry == 'download_dbs' ) { ENTRY_DOWNLOAD_DBS(); return }
+    if( entry ) { error "Unknown --entry '${entry}' (strategy|functional|pairing|variation)" }
     // --genome is not required for the two paths that operate on sequences
     // directly: --transcript_fasta (Salmon-only quantification, no alignment)
     // and --proteome (functional annotation, no structural annotation at all).
@@ -81,6 +93,16 @@ workflow {
         log.warn "[symbiomics] --reference_proteomes is declared but NOT wired yet; ignoring."
     }
     SYMBIOMICS()
+
+    // NF 26 strict syntax: top-level workflow.onComplete is a statement and
+    // fails to compile; inside the default workflow use assignment form so
+    // `workflow` is non-null when the handler runs. Null-safe so a missing
+    // manifest never masks the real exit status.
+    workflow.onComplete = {
+        def name = workflow?.manifest?.name ?: 'symbiomics'
+        def status = workflow?.success ? 'completed' : 'FAILED'
+        log.info "${name} ${status} — ${workflow?.duration}"
+    }
 }
 
 /*
@@ -88,7 +110,7 @@ workflow {
  * a huge-genome run is a multi-week commitment and the plan should be reviewed
  * before it starts, not discovered from the log afterwards.
  */
-workflow strategy {
+workflow ENTRY_STRATEGY {
     genome_file = file(params.genome ?: params.fasta, checkIfExists: true)
     genome_id   = params.genome_id ?: genome_file.simpleName
     genome_meta = [ id: genome_id, species: params.species ?: genome_id ]
@@ -122,7 +144,7 @@ workflow strategy {
  * -entry functional -- protein-in functional annotation. No genome, no
  * samplesheet: scripts/symbiomics run . -entry functional --proteome p.faa
  */
-workflow functional {
+workflow ENTRY_FUNCTIONAL {
     FUNCTIONAL()
 }
 
@@ -132,7 +154,7 @@ workflow functional {
  * EM split. Standalone so this expensive step runs once per genome pair and
  * both downstream consumers (F6, F7) reuse its output.
  */
-workflow pairing {
+workflow ENTRY_PAIRING {
     if( !params.genome_hb ) {
         error "Missing required parameter: --genome_hb <second-haplotype genome fasta>"
     }
@@ -157,7 +179,7 @@ workflow pairing {
  * resequencing variant file rather than compute one from HA/HB alignment.
  * See docs/allele_specific_expression.md.
  */
-workflow variation {
+workflow ENTRY_VARIATION {
     if( !params.resequencing_variation_file ) {
         error "Missing required parameter: --resequencing_variation_file <path>"
     }
@@ -168,13 +190,16 @@ workflow variation {
     INSPECT_VARIATION_FILE.out.vcf.view { "VCF: ${it}" }
 }
 
-workflow.onComplete {
-    def status = workflow.success ? 'completed' : 'FAILED'
-    log.info """
-    ${workflow.manifest.name} ${status}
-      duration : ${workflow.duration}
-      outdir   : ${params.outdir}
-      strategy : ${params.outdir}/00_pipeline_info/strategy.yml
-      versions : ${params.tracedir}/versions.yml
-    """.stripIndent()
+/*
+ * --entry download_dbs -- fetch the databases the functional entry can use.
+ */
+workflow ENTRY_DOWNLOAD_DBS {
+    if( !params.db_dir ) {
+        error "Missing required parameter: --db_dir <directory> (or set SYMBIOMICS_DB_DIR)"
+    }
+    def wanted = params.download_dbs.tokenize(',')*.trim()
+    if( 'swissprot' in wanted ) { DOWNLOAD_SWISSPROT().view { "Swiss-Prot: ${it}  (use --swissprot_fasta)" } }
+    if( 'eggnog' in wanted )    { DOWNLOAD_EGGNOG().view { "eggNOG: ${it.parent}  (use --eggnog_db_dir)" } }
+    def other = wanted - ['swissprot', 'eggnog']
+    if( other ) { log.warn "[download_dbs] not downloadable here (licence/manual): ${other.join(', ')} -- see docs/functional_annotation.md" }
 }

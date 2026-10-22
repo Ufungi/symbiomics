@@ -147,3 +147,56 @@ process FASTP {
     echo '"${task.process}": {fastp: stub}' > versions.yml
     """
 }
+
+process TRIMGALORE {
+    label 'process_medium'
+    tag "${meta.id}"
+
+    input:
+    tuple val(meta), path(reads)
+
+    output:
+    tuple val(meta), path('trim_*/*.fq.gz'), emit: reads
+    path '*trimming_report.txt'             , emit: html
+    path 'versions.yml'                     , emit: versions
+
+    script:
+    def args = task.ext.args ?: ''
+    def trimmed  = meta.single_end ? "trim_${meta.id}" : "trim_${meta.id}"
+    if( meta.single_end ) {
+        """
+        trim_galore --cores ${task.cpus} ${args} \\
+            -o trim_${meta.id} \\
+            ${reads}
+        mv trim_${meta.id}/*trimming_report.txt . 2>/dev/null || true
+
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            trim_galore: \$(trim_galore --version | sed 's/.*version //')
+            cutadapt: \$(cutadapt --version)
+        END_VERSIONS
+        """
+    } else {
+        """
+        trim_galore --paired --cores ${task.cpus} ${args} \\
+            -o trim_${meta.id} \\
+            ${reads}
+        mv trim_${meta.id}/*trimming_report.txt . 2>/dev/null || true
+
+        cat <<-END_VERSIONS > versions.yml
+        "${task.process}":
+            trim_galore: \$(trim_galore --version | sed 's/.*version //')
+            cutadapt: \$(cutadapt --version)
+        END_VERSIONS
+        """
+    }
+
+    stub:
+    """
+    mkdir -p trim_${meta.id}
+    echo | gzip -c > trim_${meta.id}/trim_${meta.id}_val_1.fq.gz
+    ${meta.single_end ? '' : "echo | gzip -c > trim_${meta.id}/trim_${meta.id}_val_2.fq.gz"}
+    touch ./${meta.id}_trimming_report.txt
+    echo '"${task.process}": {trim_galore: stub}' > versions.yml
+    """
+}

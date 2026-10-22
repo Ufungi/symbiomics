@@ -170,7 +170,7 @@ Java, Nextflow, 컨테이너 런타임, GPU, 디스크, `ulimit`, 로케일, 데
 dbCAN v3)는 필요 없습니다.
 
 ```bash
-symbiomics run . -entry download_dbs --db_dir /data/db/eukannot
+symbiomics download-db --db_dir /data/db/eukannot
 ```
 
 `db_dir`의 기본값은 `SYMBIOMICS_DB_DIR`(기본 `/data/db/eukannot`)입니다.
